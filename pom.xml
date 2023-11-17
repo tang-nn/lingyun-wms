@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ruoyi</groupId>
-    <artifactId>LingYun-wms</artifactId>
+    <artifactId>lingyun-wms</artifactId>
     <version>3.6.3</version>
 
     <name>ruoyi</name>
