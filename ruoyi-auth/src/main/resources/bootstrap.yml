@@ -1,9 +1,9 @@
 # Tomcat
-server: 
+server:
   port: 9200
 
 # Spring
-spring: 
+spring:
   application:
     # 应用名称
     name: ruoyi-auth
