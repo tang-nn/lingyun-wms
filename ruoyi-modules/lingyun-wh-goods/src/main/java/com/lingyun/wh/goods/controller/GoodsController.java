@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.Console;
 import java.util.List;
 
 /**
@@ -24,8 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/goods")
-public class GoodsController extends BaseController
-{
+public class GoodsController extends BaseController {
     @Autowired
     private IGoodsService goodsService;
 
@@ -34,11 +32,10 @@ public class GoodsController extends BaseController
      */
     @RequiresPermissions("gd:good:gdinfo")
     @GetMapping("/gdinfo")
-    public TableDataInfo list(Goods goods)
-    {
+    public TableDataInfo list(Goods goods) {
         startPage();
         List<Goods> list = goodsService.selectGoodsList(goods);
-        System.out.println("list==="+list);
+        System.out.println("list===" + list);
         return getDataTable(list);
     }
 
@@ -48,8 +45,7 @@ public class GoodsController extends BaseController
     @RequiresPermissions("lingyun-wh-goods:goods:export")
     @Log(title = "货品信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, Goods goods)
-    {
+    public void export(HttpServletResponse response, Goods goods) {
         List<Goods> list = goodsService.selectGoodsList(goods);
         ExcelUtil<Goods> util = new ExcelUtil<Goods>(Goods.class);
         util.exportExcel(response, list, "货品信息数据");
@@ -60,8 +56,7 @@ public class GoodsController extends BaseController
      */
     @RequiresPermissions("lingyun-wh-goods:goods:query")
     @GetMapping(value = "/{gId}")
-    public AjaxResult getInfo(@PathVariable("gId") String gId)
-    {
+    public AjaxResult getInfo(@PathVariable("gId") String gId) {
         return success(goodsService.selectGoodsByGId(gId));
     }
 
@@ -71,8 +66,7 @@ public class GoodsController extends BaseController
     @RequiresPermissions("lingyun-wh-goods:goods:add")
     @Log(title = "货品信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Goods goods)
-    {
+    public AjaxResult add(@RequestBody Goods goods) {
         return toAjax(goodsService.insertGoods(goods));
     }
 
@@ -82,8 +76,7 @@ public class GoodsController extends BaseController
     @RequiresPermissions("lingyun-wh-goods:goods:edit")
     @Log(title = "货品信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Goods goods)
-    {
+    public AjaxResult edit(@RequestBody Goods goods) {
         return toAjax(goodsService.updateGoods(goods));
     }
 
@@ -93,8 +86,7 @@ public class GoodsController extends BaseController
     @RequiresPermissions("lingyun-wh-goods:goods:remove")
     @Log(title = "货品信息", businessType = BusinessType.DELETE)
     @DeleteMapping("/{gIds}")
-    public AjaxResult remove(@PathVariable String[] gIds)
-    {
+    public AjaxResult remove(@PathVariable String[] gIds) {
         return toAjax(goodsService.deleteGoodsByGIds(gIds));
     }
 }

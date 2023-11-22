@@ -11,99 +11,104 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author Lijin
  * @date 2023-11-21
  */
-public class GoodsType extends BaseEntity
-{
+public class GoodsType extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
-    /** 货品类型 ID */
+    /**
+     * 货品类型 ID
+     */
     private String gtId;
 
-    /** 货品类型编号 */
+    /**
+     * 货品类型编号
+     */
     @Excel(name = "货品类型编号")
     private String gtCode;
 
-    /** 货品类型名称 */
+    /**
+     * 货品类型名称
+     */
     @Excel(name = "货品类型名称")
     private String gtName;
 
-    /** 排序 */
+    /**
+     * 排序
+     */
     @Excel(name = "排序")
     private Long sort;
 
-    /** 货品状态 */
+    /**
+     * 货品状态
+     */
     @Excel(name = "货品状态")
     private Integer status;
 
-    /** 父级类型 */
+    /**
+     * 父级类型
+     */
     @Excel(name = "父级类型")
     private String parentId;
 
-    /** 逻辑删除，0：存在；1：已删除，不存在 */
+    /**
+     * 逻辑删除，0：存在；1：已删除，不存在
+     */
     @Excel(name = "逻辑删除，0：存在；1：已删除，不存在")
-    private String isDelete;
+    private Boolean isDelete;
 
-    public void setGtId(String gtId)
-    {
+    public String getGtId() {
+        return gtId;
+    }
+
+    public void setGtId(String gtId) {
         this.gtId = gtId;
     }
 
-    public String getGtId()
-    {
-        return gtId;
+    public String getGtCode() {
+        return gtCode;
     }
-    public void setGtCode(String gtCode)
-    {
+
+    public void setGtCode(String gtCode) {
         this.gtCode = gtCode;
     }
 
-    public String getGtCode()
-    {
-        return gtCode;
+    public String getGtName() {
+        return gtName;
     }
-    public void setGtName(String gtName)
-    {
+
+    public void setGtName(String gtName) {
         this.gtName = gtName;
     }
 
-    public String getGtName()
-    {
-        return gtName;
+    public Long getSort() {
+        return sort;
     }
-    public void setSort(Long sort)
-    {
+
+    public void setSort(Long sort) {
         this.sort = sort;
     }
 
-    public Long getSort()
-    {
-        return sort;
+    public Integer getStatus() {
+        return status;
     }
-    public void setStatus(Integer status)
-    {
+
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
-    public Integer getStatus()
-    {
-        return status;
+    public String getParentId() {
+        return parentId;
     }
-    public void setParentId(String parentId)
-    {
+
+    public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 
-    public String getParentId()
-    {
-        return parentId;
-    }
-    public void setIsDelete(String isDelete)
-    {
-        this.isDelete = isDelete;
+    public Boolean getIsDelete() {
+        return isDelete;
     }
 
-    public String getIsDelete()
-    {
-        return isDelete;
+    public void setIsDelete(Boolean isDelete) {
+        this.isDelete = isDelete;
     }
 
     @Override

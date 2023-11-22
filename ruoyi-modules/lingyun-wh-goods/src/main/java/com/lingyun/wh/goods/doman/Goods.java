@@ -17,186 +17,199 @@ public class Goods extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    /** 货品ID */
+    /**
+     * 货品ID
+     */
     private String gId;
 
-    /** 货品编号 */
+    /**
+     * 货品编号
+     */
     @Excel(name = "货品编号")
     private String gCode;
 
-    /** 货品名称 */
+    /**
+     * 货品名称
+     */
     @Excel(name = "货品名称")
     private String gName;
 
-    /** 货品类_货品类型 ID */
+    /**
+     * 货品类_货品类型 ID
+     */
     @Excel(name = "货品类_货品类型 ID")
     private String gtId;
 
-    /** 排序 */
+    /**
+     * 排序
+     */
     @Excel(name = "排序")
     private Long sort;
 
-    /** 状态，0:default，启用；1：禁用 */
+    /**
+     * 状态，0:default，启用；1：禁用
+     */
     @Excel(name = "状态，0:default，启用；1：禁用")
     private Integer status;
 
-    /** 规格型号 */
+    /**
+     * 规格型号
+     */
     @Excel(name = "规格型号")
     private String specCode;
 
-    /** 出库参考价 */
+    /**
+     * 出库参考价
+     */
     @Excel(name = "出库参考价")
     private BigDecimal orPrice;
 
-    /** 入库参考价 */
+    /**
+     * 入库参考价
+     */
     @Excel(name = "入库参考价")
     private BigDecimal wrPrice;
 
-    /** 有保质期，0:default，没有保质期；1：有保质期 */
+    /**
+     * 有保质期，0:default，没有保质期；1：有保质期
+     */
     @Excel(name = "有保质期，0:default，没有保质期；1：有保质期")
     private Integer hasShelfLife;
 
-    /** 预警天数 */
+    /**
+     * 预警天数
+     */
     @Excel(name = "预警天数")
     private Integer warningDays;
 
-    /** 货品上限 */
+    /**
+     * 货品上限
+     */
     @Excel(name = "货品上限")
     private BigDecimal itemLimit;
 
-    /** 货品下限 */
+    /**
+     * 货品下限
+     */
     @Excel(name = "货品下限")
     private BigDecimal lowerLimit;
 
-    /** 逻辑删除，0：存在；1：已删除，不存在 */
+    /**
+     * 逻辑删除，0：存在；1：已删除，不存在
+     */
     @Excel(name = "逻辑删除，0：存在；1：已删除，不存在")
-    private String isDelete;
+    private Boolean isDelete;
 
-    public void setgId(String gId)
-    {
+    public String getgId() {
+        return gId;
+    }
+
+    public void setgId(String gId) {
         this.gId = gId;
     }
 
-    public String getgId()
-    {
-        return gId;
+    public String getgCode() {
+        return gCode;
     }
-    public void setgCode(String gCode)
-    {
+
+    public void setgCode(String gCode) {
         this.gCode = gCode;
     }
 
-    public String getgCode()
-    {
-        return gCode;
+    public String getgName() {
+        return gName;
     }
-    public void setgName(String gName)
-    {
+
+    public void setgName(String gName) {
         this.gName = gName;
     }
 
-    public String getgName()
-    {
-        return gName;
+    public String getGtId() {
+        return gtId;
     }
-    public void setGtId(String gtId)
-    {
+
+    public void setGtId(String gtId) {
         this.gtId = gtId;
     }
 
-    public String getGtId()
-    {
-        return gtId;
+    public Long getSort() {
+        return sort;
     }
-    public void setSort(Long sort)
-    {
+
+    public void setSort(Long sort) {
         this.sort = sort;
     }
 
-    public Long getSort()
-    {
-        return sort;
+    public Integer getStatus() {
+        return status;
     }
-    public void setStatus(Integer status)
-    {
+
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
-    public Integer getStatus()
-    {
-        return status;
+    public String getSpecCode() {
+        return specCode;
     }
-    public void setSpecCode(String specCode)
-    {
+
+    public void setSpecCode(String specCode) {
         this.specCode = specCode;
     }
 
-    public String getSpecCode()
-    {
-        return specCode;
+    public BigDecimal getOrPrice() {
+        return orPrice;
     }
-    public void setOrPrice(BigDecimal orPrice)
-    {
+
+    public void setOrPrice(BigDecimal orPrice) {
         this.orPrice = orPrice;
     }
 
-    public BigDecimal getOrPrice()
-    {
-        return orPrice;
+    public BigDecimal getWrPrice() {
+        return wrPrice;
     }
-    public void setWrPrice(BigDecimal wrPrice)
-    {
+
+    public void setWrPrice(BigDecimal wrPrice) {
         this.wrPrice = wrPrice;
     }
 
-    public BigDecimal getWrPrice()
-    {
-        return wrPrice;
+    public Integer getHasShelfLife() {
+        return hasShelfLife;
     }
-    public void setHasShelfLife(Integer hasShelfLife)
-    {
+
+    public void setHasShelfLife(Integer hasShelfLife) {
         this.hasShelfLife = hasShelfLife;
     }
 
-    public Integer getHasShelfLife()
-    {
-        return hasShelfLife;
+    public Integer getWarningDays() {
+        return warningDays;
     }
-    public void setWarningDays(Integer warningDays)
-    {
+
+    public void setWarningDays(Integer warningDays) {
         this.warningDays = warningDays;
     }
 
-    public Integer getWarningDays()
-    {
-        return warningDays;
+    public BigDecimal getItemLimit() {
+        return itemLimit;
     }
-    public void setItemLimit(BigDecimal itemLimit)
-    {
+
+    public void setItemLimit(BigDecimal itemLimit) {
         this.itemLimit = itemLimit;
     }
 
-    public BigDecimal getItemLimit()
-    {
-        return itemLimit;
+    public BigDecimal getLowerLimit() {
+        return lowerLimit;
     }
-    public void setLowerLimit(BigDecimal lowerLimit)
-    {
+
+    public void setLowerLimit(BigDecimal lowerLimit) {
         this.lowerLimit = lowerLimit;
     }
 
-    public BigDecimal getLowerLimit()
-    {
-        return lowerLimit;
-    }
-    public void setIsDelete(String isDelete)
-    {
-        this.isDelete = isDelete;
+    public Boolean getIsDelete() {
+        return isDelete;
     }
 
-    public String getIsDelete()
-    {
-        return isDelete;
+    public void setIsDelete(Boolean isDelete) {
+        this.isDelete = isDelete;
     }
 
     @Override

@@ -5,47 +5,66 @@
 <mapper namespace="com.lingyun.wh.goods.mapper.GoodsMapper">
 
     <resultMap type="com.lingyun.wh.goods.doman.Goods" id="GoodsResult">
-        <result property="gId"    column="g_id"    />
-        <result property="gCode"    column="g_code"    />
-        <result property="gName"    column="g_name"    />
-        <result property="gtId"    column="gt_id"    />
-        <result property="sort"    column="sort"    />
-        <result property="status"    column="status"    />
-        <result property="specCode"    column="spec_code"    />
-        <result property="remark"    column="remark"    />
-        <result property="orPrice"    column="or_price"    />
-        <result property="wrPrice"    column="wr_price"    />
-        <result property="hasShelfLife"    column="has_shelf_life"    />
-        <result property="warningDays"    column="warning_days"    />
-        <result property="itemLimit"    column="item_limit"    />
-        <result property="lowerLimit"    column="lower_limit"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="isDelete"    column="is_delete"    />
+        <result property="gId" column="g_id"/>
+        <result property="gCode" column="g_code"/>
+        <result property="gName" column="g_name"/>
+        <result property="gtId" column="gt_id"/>
+        <result property="sort" column="sort"/>
+        <result property="status" column="status"/>
+        <result property="specCode" column="spec_code"/>
+        <result property="remark" column="remark"/>
+        <result property="orPrice" column="or_price"/>
+        <result property="wrPrice" column="wr_price"/>
+        <result property="hasShelfLife" column="has_shelf_life"/>
+        <result property="warningDays" column="warning_days"/>
+        <result property="itemLimit" column="item_limit"/>
+        <result property="lowerLimit" column="lower_limit"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDelete" column="is_delete"/>
     </resultMap>
 
     <sql id="selectGoodsVo">
-        select g_id, g_code, g_name, gt_id, sort, status, spec_code, remark, or_price, wr_price, has_shelf_life, warning_days, item_limit, lower_limit, create_by, create_time, update_by, update_time, is_delete from wh_goods
+        select g_id,
+               g_code,
+               g_name,
+               gt_id,
+               sort,
+               status,
+               spec_code,
+               remark,
+               or_price,
+               wr_price,
+               has_shelf_life,
+               warning_days,
+               item_limit,
+               lower_limit,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               is_delete
+        from wh_goods
     </sql>
 
     <select id="selectGoodsList" parameterType="com.lingyun.wh.goods.doman.Goods" resultType="map">
         <include refid="selectGoodsVo"/>
         <where>
-            <if test="gCode != null  and gCode != ''"> and g_code = #{gCode}</if>
-            <if test="gName != null  and gName != ''"> and g_name like concat('%', #{gName}, '%')</if>
-            <if test="gtId != null  and gtId != ''"> and gt_id = #{gtId}</if>
-            <if test="sort != null "> and sort = #{sort}</if>
-            <if test="status != null "> and status = #{status}</if>
-            <if test="specCode != null  and specCode != ''"> and spec_code = #{specCode}</if>
-            <if test="orPrice != null "> and or_price = #{orPrice}</if>
-            <if test="wrPrice != null "> and wr_price = #{wrPrice}</if>
-            <if test="hasShelfLife != null "> and has_shelf_life = #{hasShelfLife}</if>
-            <if test="warningDays != null "> and warning_days = #{warningDays}</if>
-            <if test="itemLimit != null "> and item_limit = #{itemLimit}</if>
-            <if test="lowerLimit != null "> and lower_limit = #{lowerLimit}</if>
-            <if test="isDelete != null  and isDelete != ''"> and is_delete = #{isDelete}</if>
+            <if test="gCode != null  and gCode != ''">and g_code = #{gCode}</if>
+            <if test="gName != null  and gName != ''">and g_name like concat('%', #{gName}, '%')</if>
+            <if test="gtId != null  and gtId != ''">and gt_id = #{gtId}</if>
+            <if test="sort != null ">and sort = #{sort}</if>
+            <if test="status != null ">and status = #{status}</if>
+            <if test="specCode != null  and specCode != ''">and spec_code = #{specCode}</if>
+            <if test="orPrice != null ">and or_price = #{orPrice}</if>
+            <if test="wrPrice != null ">and wr_price = #{wrPrice}</if>
+            <if test="hasShelfLife != null ">and has_shelf_life = #{hasShelfLife}</if>
+            <if test="warningDays != null ">and warning_days = #{warningDays}</if>
+            <if test="itemLimit != null ">and item_limit = #{itemLimit}</if>
+            <if test="lowerLimit != null ">and lower_limit = #{lowerLimit}</if>
+            <if test="isDelete != null and isDelete != ''">and is_delete = #{isDelete}</if>
         </where>
     </select>
 
@@ -124,7 +143,9 @@
     </update>
 
     <delete id="deleteGoodsByGId" parameterType="String">
-        delete from wh_goods where g_id = #{gId}
+        delete
+        from wh_goods
+        where g_id = #{gId}
     </delete>
 
     <delete id="deleteGoodsByGIds" parameterType="String">
