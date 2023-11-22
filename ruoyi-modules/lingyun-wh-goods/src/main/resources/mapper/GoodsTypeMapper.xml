@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingyun.wh.goods.mapper.GoodsTypeMapper">
+
+    <resultMap type="com.lingyun.wh.goods.doman.GoodsType" id="GoodsTypeResult">
+        <result property="gtId"    column="gt_id"    />
+        <result property="gtCode"    column="gt_code"    />
+        <result property="gtName"    column="gt_name"    />
+        <result property="sort"    column="sort"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="isDelete"    column="is_delete"    />
+    </resultMap>
+
+    <sql id="selectGoodsTypeVo">
+        select gt_id, gt_code, gt_name, sort, status, remark, parent_id, create_by, create_time, update_by, update_time, is_delete from wh_goods_type
+    </sql>
+
+    <select id="selectGoodsTypeList" parameterType="com.lingyun.wh.goods.doman.GoodsType" resultMap="GoodsTypeResult">
+        <include refid="selectGoodsTypeVo"/>
+        <where>
+            <if test="gtCode != null  and gtCode != ''"> and gt_code = #{gtCode}</if>
+            <if test="gtName != null  and gtName != ''"> and gt_name like concat('%', #{gtName}, '%')</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="parentId != null  and parentId != ''"> and parent_id = #{parentId}</if>
+            <if test="isDelete != null  and isDelete != ''"> and is_delete = #{isDelete}</if>
+        </where>
+    </select>
+
+    <select id="selectGoodsTypeByGtId" parameterType="String" resultMap="GoodsTypeResult">
+        <include refid="selectGoodsTypeVo"/>
+        where gt_id = #{gtId}
+    </select>
+
+    <insert id="insertGoodsType" parameterType="com.lingyun.wh.goods.doman.GoodsType" useGeneratedKeys="true" keyProperty="gtId">
+        insert into wh_goods_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="gtCode != null and gtCode != ''">gt_code,</if>
+            <if test="gtName != null and gtName != ''">gt_name,</if>
+            <if test="sort != null">sort,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="parentId != null and parentId != ''">parent_id,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="isDelete != null and isDelete != ''">is_delete,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="gtCode != null and gtCode != ''">#{gtCode},</if>
+            <if test="gtName != null and gtName != ''">#{gtName},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="parentId != null and parentId != ''">#{parentId},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="isDelete != null and isDelete != ''">#{isDelete},</if>
+        </trim>
+    </insert>
+
+    <update id="updateGoodsType" parameterType="com.lingyun.wh.goods.doman.GoodsType">
+        update wh_goods_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="gtCode != null and gtCode != ''">gt_code = #{gtCode},</if>
+            <if test="gtName != null and gtName != ''">gt_name = #{gtName},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="parentId != null and parentId != ''">parent_id = #{parentId},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="isDelete != null and isDelete != ''">is_delete = #{isDelete},</if>
+        </trim>
+        where gt_id = #{gtId}
+    </update>
+
+    <delete id="deleteGoodsTypeByGtId" parameterType="String">
+        delete from wh_goods_type where gt_id = #{gtId}
+    </delete>
+
+    <delete id="deleteGoodsTypeByGtIds" parameterType="String">
+        delete from wh_goods_type where gt_id in
+        <foreach item="gtId" collection="array" open="(" separator="," close=")">
+            #{gtId}
+        </foreach>
+    </delete>
+</mapper>
