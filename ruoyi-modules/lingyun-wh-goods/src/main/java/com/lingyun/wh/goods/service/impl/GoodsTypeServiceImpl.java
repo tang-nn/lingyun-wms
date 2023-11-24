@@ -45,6 +45,13 @@ public class GoodsTypeServiceImpl implements IGoodsTypeService
         return goodsTypeMapper.selectGoodsTypeList(goodsType);
     }
 
+
+    @Override
+    public List<GoodsType> selectGoodsTypes() {
+        return goodsTypeMapper.selectGoodsTypes();
+    }
+
+
     /**
      * 新增货品类型
      *

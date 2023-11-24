@@ -9,6 +9,8 @@ export function listMenu(query) {
   })
 }
 
+
+
 // 查询菜单详细
 export function getMenu(menuId) {
   return request({

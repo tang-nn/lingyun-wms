@@ -1,7 +1,6 @@
 package com.lingyun.wh.goods.mapper;
 
 import com.lingyun.wh.goods.doman.Goods;
-import com.ruoyi.system.api.domain.SysDictData;
 
 import java.util.List;
 import java.util.Map;

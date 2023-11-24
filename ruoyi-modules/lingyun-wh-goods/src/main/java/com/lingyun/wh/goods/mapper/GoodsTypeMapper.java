@@ -29,6 +29,12 @@ public interface GoodsTypeMapper
      */
     public List<GoodsType> selectGoodsTypeList(GoodsType goodsType);
 
+    /***
+     * 查询货品类型下拉框
+     */
+
+    public List<GoodsType>selectGoodsTypes();
+
     /**
      * 新增货品类型
      *

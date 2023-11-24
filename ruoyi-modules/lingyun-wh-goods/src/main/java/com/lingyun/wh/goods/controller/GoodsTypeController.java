@@ -22,7 +22,7 @@ import java.util.List;
  * @date 2023-11-21
  */
 @RestController
-@RequestMapping("/type")
+@RequestMapping("/goods/type")
 public class GoodsTypeController extends BaseController
 {
     @Autowired
@@ -38,6 +38,19 @@ public class GoodsTypeController extends BaseController
         startPage();
         List<GoodsType> list = goodsTypeService.selectGoodsTypeList(goodsType);
         return getDataTable(list);
+    }
+
+    /***
+     * 查询货品类型下拉框
+     */
+    @RequiresPermissions("lingyun-wh-goods:type:select")
+    @GetMapping("/select")
+    public AjaxResult selectGoodsTypes()
+    {
+        startPage();
+        List<GoodsType> list = goodsTypeService.selectGoodsTypes();
+        System.out.println("商品type========"+list);
+        return success(list);
     }
 
     /**

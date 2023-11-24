@@ -59,6 +59,7 @@ public class GoodsType extends BaseEntity
     @Excel(name = "逻辑删除，0：存在；1：已删除，不存在")
     private Boolean isDelete;
 
+
     public String getGtId() {
         return gtId;
     }
