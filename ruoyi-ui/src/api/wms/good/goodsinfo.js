@@ -58,9 +58,9 @@ export function changeRoleStatus(roleId, status) {
 }
 
 // 删除角色
-export function delRole(roleId) {
+export function delRole(g_ids) {
   return request({
-    url: '/system/role/' + roleId,
+    url: '/wms/goods/' + g_ids,
     method: 'delete'
   })
 }

@@ -60,6 +60,7 @@ export default {
       if (this.value !== null && typeof this.value !== "undefined") {
         // 传入值为非数组
         if (!Array.isArray(this.value)) {
+          console.log("this.options: ", this.options)
           if (this.options.some((v) => v.value == this.value)) return false;
           this.unmatchArray.push(this.value);
           return true;

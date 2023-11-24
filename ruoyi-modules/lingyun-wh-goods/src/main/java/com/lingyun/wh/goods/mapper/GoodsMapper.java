@@ -1,9 +1,10 @@
 package com.lingyun.wh.goods.mapper;
 
 import com.lingyun.wh.goods.doman.Goods;
-import org.springframework.stereotype.Repository;
+import com.ruoyi.system.api.domain.SysDictData;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 货品信息Mapper接口
@@ -11,7 +12,6 @@ import java.util.List;
  * @author lijin
  * @date 2023-11-21
  */
-@Repository
 public interface GoodsMapper {
     /**
      * 查询货品信息
@@ -22,12 +22,20 @@ public interface GoodsMapper {
     public Goods selectGoodsByGId(String gId);
 
     /**
+     * 根据商品名称查询是否存在
+     * @param gname
+     * @return
+     */
+    public int selectGoodsByGname(String gname);
+
+    /**
      * 查询货品信息列表
      *
-     * @param goods 货品信息
+     * @param
      * @return 货品信息集合
      */
-    public List<Goods> selectGoodsList(Goods goods);
+    public List<Map<String,Object>> selectGoodsList(Map<String,Object>map);
+
 
     /**
      * 新增货品信息
@@ -60,5 +68,8 @@ public interface GoodsMapper {
      * @return 结果
      */
     public int deleteGoodsByGIds(String[] gIds);
+
+
+
 
 }
