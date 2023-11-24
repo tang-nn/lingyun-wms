@@ -4,33 +4,53 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lingyun.wh.goods.mapper.GoodsMapper">
 
-    <resultMap type="com.lingyun.wh.goods.doman.Goods" id="GoodsResult">
-        <result property="gId"    column="g_id"    />
-        <result property="gCode"    column="g_code"    />
-        <result property="gName"    column="g_name"    />
-        <result property="gtId"    column="gt_id"    />
-        <result property="sort"    column="sort"    />
-        <result property="status"    column="status"    />
-        <result property="specCode"    column="spec_code"    />
-        <result property="remark"    column="remark"    />
-        <result property="orPrice"    column="or_price"    />
-        <result property="wrPrice"    column="wr_price"    />
-        <result property="hasShelfLife"    column="has_shelf_life"    />
-        <result property="warningDays"    column="warning_days"    />
-        <result property="itemLimit"    column="item_limit"    />
-        <result property="lowerLimit"    column="lower_limit"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="isDelete"    column="is_delete"    />
-    </resultMap>
+<!--    <resultMap type="com.lingyun.wh.goods.doman.Goods" id="GoodsResult">-->
+<!--        <result property="gId"    column="g_id"    />-->
+<!--        <result property="gCode"    column="g_code"    />-->
+<!--        <result property="gName"    column="g_name"    />-->
+<!--        <result property="gtId"    column="gt_id"    />-->
+<!--        <result property="sId"    column="s_id"    />-->
+<!--        <result property="sort"    column="sort"    />-->
+<!--        <result property="status"    column="status"    />-->
+<!--        <result property="specCode"    column="spec_code"    />-->
+<!--        <result property="remark"    column="remark"    />-->
+<!--        <result property="orPrice"    column="or_price"    />-->
+<!--        <result property="wrPrice"    column="wr_price"    />-->
+<!--        <result property="warningId"    column="warning_id"    />-->
+<!--        <result property="hasShelfLife"    column="has_shelf_life"    />-->
+<!--        <result property="shelfLife"    column="shelf_life"    />-->
+<!--        <result property="itemLimit"    column="item_limit"    />-->
+<!--        <result property="lowerLimit"    column="lower_limit"    />-->
+<!--        <result property="createBy"    column="create_by"    />-->
+<!--        <result property="createTime"    column="create_time"    />-->
+<!--        <result property="updateBy"    column="update_by"    />-->
+<!--        <result property="updateTime"    column="update_time"    />-->
+<!--        <result property="isDelete"    column="is_delete"    />-->
+<!--    </resultMap>-->
 
     <sql id="selectGoodsVo">
-        select g_id, g_code, g_name, gt_id, sort, status, spec_code, remark, or_price, wr_price, has_shelf_life, warning_days, item_limit, lower_limit, create_by, create_time, update_by, update_time, is_delete from wh_goods
+        select wg.g_id, wg.g_code, wg.g_name, wg.gt_id, wg.sort, wg.`status`,
+               wg.spec_code, wg.remark, wg.or_price, wg.wr_price, wg.has_shelf_life,shelf_life,
+               wg.item_limit, wg.lower_limit, wg.warning_id,  wg.is_delete,
+               w_days,gt_name,s_name,item_quantity,(item_quantity*or_price) stocktotalmoney,su.user_name oneuser,
+               wg.create_time,su2.user_name twouser,wg.update_time,wsk.unit
+               from wh_goods wg
+                 inner join wh_warning_info wwi
+                            on wg.warning_id=wwi.w_id
+                 inner join wh_goods_type wgt
+                            on wg.gt_id=wgt.gt_id
+                 left join wh_supplier ws
+                           on ws.s_id=wg.s_id
+                 left join wh_stock wsk
+                           on wsk.g_id=wg.g_id
+                 inner join sys_user su
+                            on wg.create_by=su.user_id
+                 inner join sys_user su2
+                            on wg.update_by=su2.user_id
     </sql>
 
-    <select id="selectGoodsList" parameterType="com.lingyun.wh.goods.doman.Goods" resultType="map">
+
+    <select id="selectGoodsList"  resultType="map">
         <include refid="selectGoodsVo"/>
         <where>
             <if test="gCode != null  and gCode != ''"> and g_code = #{gCode}</if>
@@ -42,81 +62,92 @@
             <if test="orPrice != null "> and or_price = #{orPrice}</if>
             <if test="wrPrice != null "> and wr_price = #{wrPrice}</if>
             <if test="hasShelfLife != null "> and has_shelf_life = #{hasShelfLife}</if>
-            <if test="warningDays != null "> and warning_days = #{warningDays}</if>
             <if test="itemLimit != null "> and item_limit = #{itemLimit}</if>
             <if test="lowerLimit != null "> and lower_limit = #{lowerLimit}</if>
-            <if test="isDelete != null  and isDelete != ''"> and is_delete = #{isDelete}</if>
+            and wg.is_delete = 0
         </where>
+        order by wg.sort asc
     </select>
 
-    <select id="selectGoodsByGId" parameterType="String" resultMap="GoodsResult">
-        <include refid="selectGoodsVo"/>
-        where g_id = #{gId}
+<!--    <select id="selectGoodsByGId" parameterType="String" resultMap="GoodsResult">-->
+<!--        <include refid="selectGoodsVo"/>-->
+<!--        where g_id = #{gId}-->
+<!--    </select>-->
+
+    <select id="selectGoodsByGname" parameterType="String" resultType="integer">
+        select count(*) from wh_goods where g_name=#{gname}
     </select>
 
-    <insert id="insertGoods" parameterType="com.lingyun.wh.goods.doman.Goods" useGeneratedKeys="true" keyProperty="gId">
+    <insert id="insertGoods" parameterType="Goods" useGeneratedKeys="true" keyProperty="gId">
         insert into wh_goods
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="gCode != null and gCode != ''">g_code,</if>
             <if test="gName != null and gName != ''">g_name,</if>
-            <if test="gtId != null and gtId != ''">gt_id,</if>
+            <if test="gtId != null">gt_id,</if>
+            <if test="sId != null">s_id,</if>
             <if test="sort != null">sort,</if>
             <if test="status != null">status,</if>
             <if test="specCode != null and specCode != ''">spec_code,</if>
             <if test="remark != null">remark,</if>
             <if test="orPrice != null">or_price,</if>
             <if test="wrPrice != null">wr_price,</if>
+            <if test="warningId != null">warning_id,</if>
             <if test="hasShelfLife != null">has_shelf_life,</if>
-            <if test="warningDays != null">warning_days,</if>
+            <if test="shelfLife != null">shelf_life,</if>
             <if test="itemLimit != null">item_limit,</if>
             <if test="lowerLimit != null">lower_limit,</if>
-            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
-            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="isDelete != null and isDelete != ''">is_delete,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="gCode != null and gCode != ''">#{gCode},</if>
             <if test="gName != null and gName != ''">#{gName},</if>
-            <if test="gtId != null and gtId != ''">#{gtId},</if>
+            <if test="gtId != null">#{gtId},</if>
+            <if test="sId != null">#{sId},</if>
             <if test="sort != null">#{sort},</if>
             <if test="status != null">#{status},</if>
             <if test="specCode != null and specCode != ''">#{specCode},</if>
             <if test="remark != null">#{remark},</if>
             <if test="orPrice != null">#{orPrice},</if>
             <if test="wrPrice != null">#{wrPrice},</if>
+            <if test="warningId != null">#{warningId},</if>
             <if test="hasShelfLife != null">#{hasShelfLife},</if>
-            <if test="warningDays != null">#{warningDays},</if>
+            <if test="shelfLife != null">#{shelfLife},</if>
             <if test="itemLimit != null">#{itemLimit},</if>
             <if test="lowerLimit != null">#{lowerLimit},</if>
-            <if test="createBy != null and createBy != ''">#{createBy},</if>
-            <if test="createTime != null">#{createTime},</if>
-            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null " >#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="isDelete != null and isDelete != ''">#{isDelete},</if>
         </trim>
     </insert>
 
-    <update id="updateGoods" parameterType="com.lingyun.wh.goods.doman.Goods">
+
+    <update id="updateGoods" parameterType="Goods">
         update wh_goods
         <trim prefix="SET" suffixOverrides=",">
             <if test="gCode != null and gCode != ''">g_code = #{gCode},</if>
             <if test="gName != null and gName != ''">g_name = #{gName},</if>
-            <if test="gtId != null and gtId != ''">gt_id = #{gtId},</if>
+            <if test="gtId != null">gt_id = #{gtId},</if>
+            <if test="sId != null">s_id = #{sId},</if>
             <if test="sort != null">sort = #{sort},</if>
             <if test="status != null">status = #{status},</if>
             <if test="specCode != null and specCode != ''">spec_code = #{specCode},</if>
             <if test="remark != null">remark = #{remark},</if>
             <if test="orPrice != null">or_price = #{orPrice},</if>
             <if test="wrPrice != null">wr_price = #{wrPrice},</if>
+            <if test="warningId != null">warning_id = #{warningId},</if>
             <if test="hasShelfLife != null">has_shelf_life = #{hasShelfLife},</if>
-            <if test="warningDays != null">warning_days = #{warningDays},</if>
+            <if test="shelfLife != null">shelf_life = #{shelfLife},</if>
             <if test="itemLimit != null">item_limit = #{itemLimit},</if>
             <if test="lowerLimit != null">lower_limit = #{lowerLimit},</if>
-            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
-            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="isDelete != null and isDelete != ''">is_delete = #{isDelete},</if>
         </trim>
@@ -124,11 +155,11 @@
     </update>
 
     <delete id="deleteGoodsByGId" parameterType="String">
-        delete from wh_goods where g_id = #{gId}
+       update  wh_goods set is_delete=1 where g_id = #{gId}
     </delete>
 
     <delete id="deleteGoodsByGIds" parameterType="String">
-        delete from wh_goods where g_id in
+        update  wh_goods set is_delete=1 where g_id  in
         <foreach item="gId" collection="array" open="(" separator="," close=")">
             #{gId}
         </foreach>

@@ -3,11 +3,23 @@ package com.lingyun.wh.goods.service.impl;
 import com.lingyun.wh.goods.doman.Goods;
 import com.lingyun.wh.goods.mapper.GoodsMapper;
 import com.lingyun.wh.goods.service.IGoodsService;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.bean.BeanValidators;
+import com.ruoyi.common.security.utils.SecurityUtils;
+import com.ruoyi.system.api.domain.SysUser;
+import com.ruoyi.system.service.ISysConfigService;
+import com.ruoyi.system.service.impl.SysUserServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Validator;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -18,8 +30,13 @@ import java.util.List;
  */
 @Service
 public class GoodsServiceImpl implements IGoodsService {
+    private static final Logger log = LoggerFactory.getLogger(SysUserServiceImpl.class);
     @Autowired
     private GoodsMapper goodsMapper;
+//    @Autowired
+//    private ISysConfigService configService;
+    @Autowired
+    protected Validator validator;
 
     /**
      * 查询货品信息
@@ -34,16 +51,26 @@ public class GoodsServiceImpl implements IGoodsService {
     }
 
     /**
+     * 根据商品名称查询是否存在
+     * @param gname
+     * @return
+     */
+    @Override
+    public int selectGoodsByGname(String gname) {
+        return goodsMapper.selectGoodsByGname(gname);
+    }
+
+    @Override
+    public List<Map<String, Object>> selectGoodsList(Map<String, Object> map) {
+        return goodsMapper.selectGoodsList(map);
+    }
+
+    /**
      * 查询货品信息列表
      *
      * @param goods 货品信息
      * @return 货品信息
      */
-    @Override
-    public List<Goods> selectGoodsList(Goods goods)
-    {
-        return goodsMapper.selectGoodsList(goods);
-    }
 
     /**
      * 新增货品信息
@@ -94,4 +121,86 @@ public class GoodsServiceImpl implements IGoodsService {
     {
         return goodsMapper.deleteGoodsByGId(gId);
     }
+
+
+
+    /**
+     * 导入商品数据
+     * @param goodsList 商品数据列表
+     * @param isUpdateSupport 是否更新支持，如果已存在，则进行更新数据
+     * @param operName 操作用户
+     * @return 结果
+     */
+    @Override
+    public String importGoods(List<Goods> goodsList, Boolean isUpdateSupport, Long operName) {
+        System.out.println("operName"+operName+"=====isUpdateSupport:"+isUpdateSupport);//1  false
+        if (StringUtils.isNull(goodsList) || goodsList.size() == 0)
+        {
+            throw new ServiceException("导入商品数据不能为空！");
+        }
+        int successNum = 0;
+        int failureNum = 0;
+        StringBuilder successMsg = new StringBuilder();
+        StringBuilder failureMsg = new StringBuilder();
+        for (Goods goods : goodsList)
+        {
+            try
+            {
+                // 验证是否存在这个商品
+                int u = goodsMapper.selectGoodsByGname(goods.getGName());
+                System.out.println("是否存在此商品："+u);
+                if (u==0)
+                {
+                    //不存在
+                    BeanValidators.validateWithException(validator, goods);
+                    goods.setCreateBy(operName.toString());
+                    goods.setCreateTime(new Date());
+                    goodsMapper.insertGoods(goods);
+                    successNum++;
+                    successMsg.append("<br/>" + successNum + "、货品 " + goods.getGName() + " 导入成功");
+                }
+                else if (isUpdateSupport)
+                {
+                    //更新已经存在的商品数据
+                    BeanValidators.validateWithException(validator, goods);
+                    goods.setUpdateBy(operName.toString());
+                    goods.setUpdateTime(new Date());
+                    int i=goodsMapper.updateGoods(goods);
+                  if (i>0){
+                      successNum++;
+                      successMsg.append("<br/>" + successNum + "、货品 " + goods.getGName() + " 更新成功");
+                  }else {
+                      failureNum++;
+                      successMsg.append("<br/>" + successNum + "、货品 " + goods.getGName() + " 更新失败");
+                  }
+
+                }
+                else
+                {
+                    failureNum++;
+                    failureMsg.append("<br/>" + failureNum + "、货品 " + goods.getGName() + " 已存在");
+                }
+            }
+            catch (Exception e)
+            {
+                failureNum++;
+                String msg = "<br/>" + failureNum + "、货品 " + goods.getGName() + " 导入失败：";
+                failureMsg.append(msg + e.getMessage());
+                log.error(msg, e);
+            }
+        }
+        if (failureNum > 0)
+        {
+
+            failureMsg.insert(0, "很抱歉，导入失败！共 " + failureNum + " 条数据格式不正确，错误如下：");
+            throw new ServiceException(failureMsg.toString());
+        }
+        else
+        {
+            successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
+        }
+        return successMsg.toString();
+    }
+
+
 }

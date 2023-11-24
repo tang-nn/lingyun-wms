@@ -1,8 +1,10 @@
 package com.lingyun.wh.goods.service;
 
 import com.lingyun.wh.goods.doman.Goods;
+import com.ruoyi.system.api.domain.SysUser;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 货品信息Service接口
@@ -20,12 +22,17 @@ public interface IGoodsService {
     public Goods selectGoodsByGId(String gId);
 
     /**
+     * 根据商品名称查询是否存在
+     * @param gname
+     * @return
+     */
+    public int selectGoodsByGname(String gname);
+    /**
      * 查询货品信息列表
      *
-     * @param goods 货品信息
      * @return 货品信息集合
      */
-    public List<Goods> selectGoodsList(Goods goods);
+    public List<Map<String,Object>> selectGoodsList(Map<String,Object>map);
 
     /**
      * 新增货品信息
@@ -58,4 +65,13 @@ public interface IGoodsService {
      * @return 结果
      */
     public int deleteGoodsByGId(String gId);
+
+    /**
+     * 导入商品数据
+     * @param goodsList 商品数据列表
+     * @param isUpdateSupport 是否更新支持，如果已存在，则进行更新数据
+     * @param operName 操作用户
+     * @return 结果
+     */
+    public String importGoods(List<Goods> goodsList, Boolean isUpdateSupport, Long operName);
 }

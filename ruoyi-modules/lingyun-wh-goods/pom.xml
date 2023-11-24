@@ -84,8 +84,14 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-common-swagger</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-modules-system</artifactId>
+            <version>3.6.3</version>
+            <scope>compile</scope>
+        </dependency>
 
-<!--        热部署-->
+        <!--        热部署-->
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->
 <!--            <artifactId>spring-boot-devtools</artifactId>-->

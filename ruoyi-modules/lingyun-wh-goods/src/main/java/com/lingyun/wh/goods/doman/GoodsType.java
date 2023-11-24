@@ -4,6 +4,9 @@ import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * 货品类型对象 wh_goods_type
@@ -38,70 +41,118 @@ public class GoodsType extends BaseEntity
     @Excel(name = "父级类型")
     private String parentId;
 
+    /** 创建人 **/
+    private String createBy;
+
+    /** 操作时间 **/
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+    /** 修改人 **/
+    private  String updateBy;
+
+    /** 修改时间 **/
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
+
     /** 逻辑删除，0：存在；1：已删除，不存在 */
     @Excel(name = "逻辑删除，0：存在；1：已删除，不存在")
-    private String isDelete;
+    private Boolean isDelete;
 
-    public void setGtId(String gtId)
-    {
+    public String getGtId() {
+        return gtId;
+    }
+
+    public void setGtId(String gtId) {
         this.gtId = gtId;
     }
 
-    public String getGtId()
-    {
-        return gtId;
+    public String getGtCode() {
+        return gtCode;
     }
-    public void setGtCode(String gtCode)
-    {
+
+    public void setGtCode(String gtCode) {
         this.gtCode = gtCode;
     }
 
-    public String getGtCode()
-    {
-        return gtCode;
+    public String getGtName() {
+        return gtName;
     }
-    public void setGtName(String gtName)
-    {
+
+    public void setGtName(String gtName) {
         this.gtName = gtName;
     }
 
-    public String getGtName()
-    {
-        return gtName;
+    public Long getSort() {
+        return sort;
     }
-    public void setSort(Long sort)
-    {
+
+    public void setSort(Long sort) {
         this.sort = sort;
     }
 
-    public Long getSort()
-    {
-        return sort;
+    public Integer getStatus() {
+        return status;
     }
-    public void setStatus(Integer status)
-    {
+
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
-    public Integer getStatus()
-    {
-        return status;
+    public String getParentId() {
+        return parentId;
     }
-    public void setParentId(String parentId)
-    {
+
+    public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 
-    public String getParentId()
-    {
-        return parentId;
+    @Override
+    public String getCreateBy() {
+        return createBy;
     }
-    public void setIsDelete(String isDelete)
+
+    @Override
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
+
+    @Override
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    @Override
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    @Override
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    @Override
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    @Override
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    @Override
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public void setIsDelete(Boolean isDelete)
     {
         this.isDelete = isDelete;
     }
 
-    public String getIsDelete()
+    public Boolean getIsDelete()
     {
         return isDelete;
     }

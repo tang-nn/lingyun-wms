@@ -11,7 +11,6 @@ import java.util.List;
  * @author Lijin
  * @date 2023-11-21
  */
-@Repository
 public interface GoodsTypeMapper
 {
     /**
