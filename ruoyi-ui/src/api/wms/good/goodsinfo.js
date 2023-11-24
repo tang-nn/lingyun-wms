@@ -2,12 +2,22 @@ import request from '@/utils/request'
 
 // 查询商品列表
 export function listGood(query) {
+  console.info(query);
   return request({
     url: '/wms/goods/gdinfo',
     method: 'get',
     params: query
   })
 }
+
+//查询商品分类
+export function TypesList(){
+  return request({
+    url: '/wms/goods/type/select',
+    method: 'get'
+  })
+}
+
 
 // 查询角色详细
 export function getRole(roleId) {

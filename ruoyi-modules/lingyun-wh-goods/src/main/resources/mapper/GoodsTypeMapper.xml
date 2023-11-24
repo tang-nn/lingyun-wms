@@ -20,7 +20,9 @@
     </resultMap>
 
     <sql id="selectGoodsTypeVo">
-        select gt_id, gt_code, gt_name, sort, status, remark, parent_id, create_by, create_time, update_by, update_time, is_delete from wh_goods_type
+        select gt_id, gt_code, gt_name, sort, status, remark,
+               parent_id, create_by, create_time, update_by,
+               update_time, is_delete from wh_goods_type
     </sql>
 
     <select id="selectGoodsTypeList" parameterType="com.lingyun.wh.goods.doman.GoodsType" resultMap="GoodsTypeResult">
@@ -38,6 +40,12 @@
     <select id="selectGoodsTypeByGtId" parameterType="String" resultMap="GoodsTypeResult">
         <include refid="selectGoodsTypeVo"/>
         where gt_id = #{gtId}
+    </select>
+
+    <select id="selectGoodsTypes" resultType="map">
+        select wgt.gt_id, wgt.gt_name son,
+               wgt.parent_id, wgt2.gt_name father from wh_goods_type wgt
+                left join wh_goods_type wgt2 on  wgt.parent_id=wgt2.gt_id where wgt.is_delete=0
     </select>
 
     <insert id="insertGoodsType" parameterType="com.lingyun.wh.goods.doman.GoodsType" useGeneratedKeys="true" keyProperty="gtId">

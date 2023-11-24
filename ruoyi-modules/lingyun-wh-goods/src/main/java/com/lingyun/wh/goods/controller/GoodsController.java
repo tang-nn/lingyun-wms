@@ -10,9 +10,6 @@ import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.annotation.RequiresPermissions;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import com.ruoyi.system.api.domain.SysUser;
-import io.swagger.models.auth.In;
-import org.apache.poi.hpsf.Decimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +19,6 @@ import java.io.Console;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +40,9 @@ public class GoodsController extends BaseController
      */
     @RequiresPermissions("gd:good:gdinfo")
     @GetMapping("/gdinfo")
-    public TableDataInfo list(Map<String,Object> map)
+    public TableDataInfo list(@RequestParam Map<String,Object> map)
     {
+        System.out.println("map==="+map);
         startPage();
         List<Map<String, Object>> list = goodsService.selectGoodsList(map);
         System.out.println("list==="+list);

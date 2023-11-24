@@ -43,9 +43,9 @@
                            on ws.s_id=wg.s_id
                  left join wh_stock wsk
                            on wsk.g_id=wg.g_id
-                 inner join sys_user su
+                 left join sys_user su
                             on wg.create_by=su.user_id
-                 inner join sys_user su2
+                 left join sys_user su2
                             on wg.update_by=su2.user_id
     </sql>
 
@@ -53,17 +53,18 @@
     <select id="selectGoodsList"  resultType="map">
         <include refid="selectGoodsVo"/>
         <where>
-            <if test="gCode != null  and gCode != ''"> and g_code = #{gCode}</if>
-            <if test="gName != null  and gName != ''"> and g_name like concat('%', #{gName}, '%')</if>
-            <if test="gtId != null  and gtId != ''"> and gt_id = #{gtId}</if>
-            <if test="sort != null "> and sort = #{sort}</if>
-            <if test="status != null "> and status = #{status}</if>
-            <if test="specCode != null  and specCode != ''"> and spec_code = #{specCode}</if>
-            <if test="orPrice != null "> and or_price = #{orPrice}</if>
-            <if test="wrPrice != null "> and wr_price = #{wrPrice}</if>
-            <if test="hasShelfLife != null "> and has_shelf_life = #{hasShelfLife}</if>
-            <if test="itemLimit != null "> and item_limit = #{itemLimit}</if>
-            <if test="lowerLimit != null "> and lower_limit = #{lowerLimit}</if>
+            <if test="g_name != null  and g_name != ''"> and wg.g_name like concat('%', #{g_name}, '%')</if>
+            <if test="status != null "> and wg.status = #{status}</if>
+            <if test="gtId != null  and gtId != ''"> and wg.gt_id = #{gtId}</if>
+            <if test="unit != null  and unit != ''"> and wsk.unit = #{unit}</if>
+<!--            <if test="gCode != null  and gCode != ''"> and wg.g_code = #{gCode}</if>-->
+<!--            <if test="sort != null "> and wg.sort = #{sort}</if>-->
+<!--            <if test="specCode != null  and specCode != ''"> and wg.spec_code = #{specCode}</if>-->
+<!--            <if test="orPrice != null "> and wg.or_price = #{orPrice}</if>-->
+<!--            <if test="wrPrice != null "> and wg.wr_price = #{wrPrice}</if>-->
+<!--            <if test="hasShelfLife != null "> and wg.has_shelf_life = #{hasShelfLife}</if>-->
+<!--            <if test="itemLimit != null "> and wg.item_limit = #{itemLimit}</if>-->
+<!--            <if test="lowerLimit != null "> and wg.lower_limit = #{lowerLimit}</if>-->
             and wg.is_delete = 0
         </where>
         order by wg.sort asc

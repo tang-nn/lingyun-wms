@@ -67,6 +67,7 @@ public class BaseController
         rspData.setRows(list);
         rspData.setMsg("查询成功");
         rspData.setTotal(new PageInfo(list).getTotal());
+        System.out.println("rspData====="+rspData.getTotal());
         return rspData;
     }
 
