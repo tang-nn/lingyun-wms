@@ -313,4 +313,5 @@ public class Goods extends BaseEntity {
                 ", isDelete=" + isDelete +
                 '}';
     }
+
 }

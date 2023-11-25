@@ -1,4 +1,4 @@
-package com.lingyun.wh.contactunits;
+package com.lingyun.wh.common;
 
 import com.ruoyi.common.security.annotation.EnableCustomConfig;
 import com.ruoyi.common.security.annotation.EnableRyFeignClients;
@@ -9,14 +9,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * @Author : Tang
  * @Description :
- * @CreateDate : 2023/11/20 9:36
+ * @CreateDate : 2023/11/20 18:47
  */
 @EnableCustomConfig
 @EnableCustomSwagger2
 @EnableRyFeignClients
 @SpringBootApplication
-public class ContactUnitsApplication {
+public class CommonApplication {
+
     public static void main(String[] args) {
-        SpringApplication.run(ContactUnitsApplication.class, args);
+        SpringApplication.run(CommonApplication.class, args);
     }
+
 }

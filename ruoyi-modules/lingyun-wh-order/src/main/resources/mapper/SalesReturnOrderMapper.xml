@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingyun.wh.order.mapper.SalesReturnOrderMapper">
+
+    <resultMap type="SalesReturnOrder" id="SalesReturnResult">
+        <result property="srId" column="sr_id"/>
+        <result property="srCode" column="sr_code"/>
+        <result property="sId" column="s_id"/>
+        <result property="status" column="status"/>
+        <result property="reasons" column="reasons"/>
+        <result property="remark" column="remark"/>
+        <result property="returnDate" column="return_date"/>
+        <result property="sPrincipal" column="s_principal"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDelete" column="is_delete"/>
+    </resultMap>
+
+    <resultMap id="SalesReturnSalesReturnDetailsResult" type="SalesReturnOrder" extends="SalesReturnResult">
+        <collection property="salesReturnDetailsList" notNullColumn="sub_srd_id" javaType="java.util.List"
+                    resultMap="SalesReturnDetailsResult"/>
+    </resultMap>
+
+    <resultMap type="SalesReturnDetails" id="SalesReturnDetailsResult">
+        <result property="srdId" column="sub_srd_id"/>
+        <result property="srId" column="sub_sr_id"/>
+        <result property="returnQuantity" column="sub_return_quantity"/>
+        <result property="sdId" column="sub_sd_id"/>
+        <result property="createBy" column="sub_create_by"/>
+        <result property="createTime" column="sub_create_time"/>
+        <result property="updateBy" column="sub_update_by"/>
+        <result property="updateTime" column="sub_update_time"/>
+        <result property="isDelete" column="sub_is_delete"/>
+    </resultMap>
+
+    <sql id="selectSalesReturnVo">
+        select sr_id,
+               sr_code,
+               s_id,
+               status,
+               reasons,
+               remark,
+               return_date,
+               s_principal,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               is_delete
+        from wh_sh_return
+    </sql>
+
+    <select id="selectSalesReturnList" parameterType="SalesReturnOrder" resultMap="SalesReturnResult">
+        <include refid="selectSalesReturnVo"/>
+        <where>
+            <if test="srCode != null  and srCode != ''">and sr_code = #{srCode}</if>
+            <if test="sId != null  and sId != ''">and s_id = #{sId}</if>
+            <if test="status != null ">and status = #{status}</if>
+            <if test="reasons != null  and reasons != ''">and reasons = #{reasons}</if>
+            <if test="returnDate != null ">and return_date = #{returnDate}</if>
+            <if test="sPrincipal != null  and sPrincipal != ''">and s_principal = #{sPrincipal}</if>
+            <if test="isDelete != null ">and is_delete = #{isDelete}</if>
+        </where>
+    </select>
+
+    <select id="selectSalesReturnBySrId" parameterType="String" resultMap="SalesReturnSalesReturnDetailsResult">
+        select a.sr_id,
+               a.sr_code,
+               a.s_id,
+               a.status,
+               a.reasons,
+               a.remark,
+               a.return_date,
+               a.s_principal,
+               a.create_by,
+               a.create_time,
+               a.update_by,
+               a.update_time,
+               a.is_delete,
+               b.srd_id          as sub_srd_id,
+               b.sr_id           as sub_sr_id,
+               b.return_quantity as sub_return_quantity,
+               b.sd_id           as sub_sd_id,
+               b.create_by       as sub_create_by,
+               b.create_time     as sub_create_time,
+               b.update_by       as sub_update_by,
+               b.update_time     as sub_update_time,
+               b.is_delete       as sub_is_delete
+        from wh_sh_return a
+                 left join wh_sd_return b on b.sr_id = a.sr_id
+        where a.sr_id = #{srId}
+    </select>
+
+    <insert id="insertSalesReturn" parameterType="SalesReturnOrder" useGeneratedKeys="true" keyProperty="srId">
+        insert into wh_sh_return
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="srCode != null">sr_code,</if>
+            <if test="sId != null and sId != ''">s_id,</if>
+            <if test="status != null">status,</if>
+            <if test="reasons != null">reasons,</if>
+            <if test="remark != null">remark,</if>
+            <if test="returnDate != null">return_date,</if>
+            <if test="sPrincipal != null">s_principal,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="isDelete != null">is_delete,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="srCode != null">#{srCode},</if>
+            <if test="sId != null and sId != ''">#{sId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="reasons != null">#{reasons},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="returnDate != null">#{returnDate},</if>
+            <if test="sPrincipal != null">#{sPrincipal},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSalesReturn" parameterType="SalesReturnOrder">
+        update wh_sh_return
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="srCode != null">sr_code = #{srCode},</if>
+            <if test="sId != null and sId != ''">s_id = #{sId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="reasons != null">reasons = #{reasons},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="returnDate != null">return_date = #{returnDate},</if>
+            <if test="sPrincipal != null">s_principal = #{sPrincipal},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="isDelete != null">is_delete = #{isDelete},</if>
+        </trim>
+        where sr_id = #{srId}
+    </update>
+
+    <delete id="deleteSalesReturnBySrId" parameterType="String">
+        delete
+        from wh_sh_return
+        where sr_id = #{srId}
+    </delete>
+
+    <delete id="deleteSalesReturnBySrIds" parameterType="String">
+        delete from wh_sh_return where sr_id in
+        <foreach item="srId" collection="array" open="(" separator="," close=")">
+            #{srId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteSalesReturnDetailsBySrIds" parameterType="String">
+        delete from wh_sd_return where sr_id in
+        <foreach item="srId" collection="array" open="(" separator="," close=")">
+            #{srId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteSalesReturnDetailsBySrId" parameterType="String">
+        delete
+        from wh_sd_return
+        where sr_id = #{srId}
+    </delete>
+
+    <insert id="batchSalesReturnDetails">
+        insert into wh_sd_return( srd_id, sr_id, return_quantity, sd_id, create_by, create_time, update_by, update_time,
+        is_delete) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.srdId}, #{item.srId}, #{item.returnQuantity}, #{item.sdId}, #{item.createBy}, #{item.createTime},
+            #{item.updateBy}, #{item.updateTime}, #{item.isDelete})
+        </foreach>
+    </insert>
+</mapper>

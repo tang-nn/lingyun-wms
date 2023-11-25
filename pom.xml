@@ -205,7 +205,6 @@
                 <artifactId>ruoyi-api-system</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -220,6 +219,7 @@
         <module>ruoyi-modules/lingyun-wh-warehouse</module>
         <module>ruoyi-modules/lingyun-wh-order</module>
         <module>ruoyi-modules/lingyun-wh-contact-units</module>
+        <module>ruoyi-modules/lingyun-wh-common</module>
     </modules>
     <packaging>pom</packaging>
 

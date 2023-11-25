@@ -10,14 +10,15 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.lingyun.wh.order</groupId>
-    <artifactId>lingyun-wh-order</artifactId>
+    <groupId>com.lingyun.wh.common</groupId>
+    <artifactId>lingyun-wh-common</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <dependencies>
 
         <!-- SpringCloud Alibaba Nacos -->

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingyun.wh.warehouse.mapper.InventoryCountMapper">
+    
+    <resultMap type="InventoryCount" id="InventoryCountResult">
+        <result property="isId"    column="is_id"    />
+        <result property="isCode"    column="is_code"    />
+        <result property="isResult"    column="is_result"    />
+        <result property="wId"    column="w_id"    />
+        <result property="isType"    column="is_type"    />
+        <result property="isStartTime"    column="is_start_time"    />
+        <result property="isEndTime"    column="is_end_time"    />
+        <result property="outStatus"    column="out_status"    />
+        <result property="inStatus"    column="in_status"    />
+        <result property="remark"    column="remark"    />
+        <result property="isManager"    column="is_manager"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="isDelete"    column="is_delete"    />
+    </resultMap>
+
+    <resultMap id="InventoryCountInventoryDetailsResult" type="InventoryCount" extends="InventoryCountResult">
+        <collection property="inventoryDetailsList" notNullColumn="sub_isd_id" javaType="java.util.List" resultMap="InventoryDetailsResult" />
+    </resultMap>
+
+    <resultMap type="InventoryDetails" id="InventoryDetailsResult">
+        <result property="isdId"    column="sub_isd_id"    />
+        <result property="isId"    column="sub_is_id"    />
+        <result property="isCode"    column="sub_is_code"    />
+        <result property="sId"    column="sub_s_id"    />
+        <result property="specCode"    column="sub_spec_code"    />
+        <result property="unit"    column="sub_unit"    />
+        <result property="countQuantity"    column="sub_count_quantity"    />
+        <result property="profitLossQuantity"    column="sub_profit_loss_quantity"    />
+        <result property="isStatus"    column="sub_is_status"    />
+        <result property="countAmount"    column="sub_count_amount"    />
+        <result property="iuPrice"    column="sub_iu_price"    />
+        <result property="remark"    column="sub_remark"    />
+        <result property="createBy"    column="sub_create_by"    />
+        <result property="createTime"    column="sub_create_time"    />
+        <result property="updateBy"    column="sub_update_by"    />
+        <result property="updateTime"    column="sub_update_time"    />
+        <result property="isDelete"    column="sub_is_delete"    />
+    </resultMap>
+
+    <sql id="selectInventoryCountVo">
+        select is_id, is_code, is_result, w_id, is_type, is_start_time, is_end_time, out_status, in_status, remark, is_manager, create_by, create_time, update_by, update_time, is_delete from wh_inventory_sheet
+    </sql>
+
+    <select id="selectInventoryCountList" parameterType="InventoryCount" resultMap="InventoryCountResult">
+        <include refid="selectInventoryCountVo"/>
+        <where>  
+            <if test="isCode != null  and isCode != ''"> and is_code = #{isCode}</if>
+            <if test="isResult != null "> and is_result = #{isResult}</if>
+            <if test="wId != null  and wId != ''"> and w_id = #{wId}</if>
+            <if test="isType != null  and isType != ''"> and is_type = #{isType}</if>
+            <if test="isStartTime != null "> and is_start_time = #{isStartTime}</if>
+            <if test="isEndTime != null "> and is_end_time = #{isEndTime}</if>
+            <if test="outStatus != null "> and out_status = #{outStatus}</if>
+            <if test="inStatus != null "> and in_status = #{inStatus}</if>
+            <if test="isManager != null  and isManager != ''"> and is_manager = #{isManager}</if>
+            <if test="isDelete != null "> and is_delete = #{isDelete}</if>
+        </where>
+    </select>
+    
+    <select id="selectInventoryCountByIsId" parameterType="String" resultMap="InventoryCountInventoryDetailsResult">
+        select a.is_id, a.is_code, a.is_result, a.w_id, a.is_type, a.is_start_time, a.is_end_time, a.out_status, a.in_status, a.remark, a.is_manager, a.create_by, a.create_time, a.update_by, a.update_time, a.is_delete,
+ b.isd_id as sub_isd_id, b.is_id as sub_is_id, b.is_code as sub_is_code, b.s_id as sub_s_id, b.spec_code as sub_spec_code, b.unit as sub_unit, b.count_quantity as sub_count_quantity, b.profit_loss_quantity as sub_profit_loss_quantity, b.is_status as sub_is_status, b.count_amount as sub_count_amount, b.iu_price as sub_iu_price, b.remark as sub_remark, b.create_by as sub_create_by, b.create_time as sub_create_time, b.update_by as sub_update_by, b.update_time as sub_update_time, b.is_delete as sub_is_delete
+        from wh_inventory_sheet a
+        left join wh_is_details b on b.is_id = a.is_id
+        where a.is_id = #{isId}
+    </select>
+        
+    <insert id="insertInventoryCount" parameterType="InventoryCount" useGeneratedKeys="true" keyProperty="isId">
+        insert into wh_inventory_sheet
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="isCode != null and isCode != ''">is_code,</if>
+            <if test="isResult != null">is_result,</if>
+            <if test="wId != null and wId != ''">w_id,</if>
+            <if test="isType != null and isType != ''">is_type,</if>
+            <if test="isStartTime != null">is_start_time,</if>
+            <if test="isEndTime != null">is_end_time,</if>
+            <if test="outStatus != null">out_status,</if>
+            <if test="inStatus != null">in_status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="isManager != null and isManager != ''">is_manager,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="isDelete != null">is_delete,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="isCode != null and isCode != ''">#{isCode},</if>
+            <if test="isResult != null">#{isResult},</if>
+            <if test="wId != null and wId != ''">#{wId},</if>
+            <if test="isType != null and isType != ''">#{isType},</if>
+            <if test="isStartTime != null">#{isStartTime},</if>
+            <if test="isEndTime != null">#{isEndTime},</if>
+            <if test="outStatus != null">#{outStatus},</if>
+            <if test="inStatus != null">#{inStatus},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="isManager != null and isManager != ''">#{isManager},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+         </trim>
+    </insert>
+
+    <update id="updateInventoryCount" parameterType="InventoryCount">
+        update wh_inventory_sheet
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="isCode != null and isCode != ''">is_code = #{isCode},</if>
+            <if test="isResult != null">is_result = #{isResult},</if>
+            <if test="wId != null and wId != ''">w_id = #{wId},</if>
+            <if test="isType != null and isType != ''">is_type = #{isType},</if>
+            <if test="isStartTime != null">is_start_time = #{isStartTime},</if>
+            <if test="isEndTime != null">is_end_time = #{isEndTime},</if>
+            <if test="outStatus != null">out_status = #{outStatus},</if>
+            <if test="inStatus != null">in_status = #{inStatus},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="isManager != null and isManager != ''">is_manager = #{isManager},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="isDelete != null">is_delete = #{isDelete},</if>
+        </trim>
+        where is_id = #{isId}
+    </update>
+
+    <delete id="deleteInventoryCountByIsId" parameterType="String">
+        delete from wh_inventory_sheet where is_id = #{isId}
+    </delete>
+
+    <delete id="deleteInventoryCountByIsIds" parameterType="String">
+        delete from wh_inventory_sheet where is_id in 
+        <foreach item="isId" collection="array" open="(" separator="," close=")">
+            #{isId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteInventoryDetailsByIsIds" parameterType="String">
+        delete from wh_is_details where is_id in 
+        <foreach item="isId" collection="array" open="(" separator="," close=")">
+            #{isId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteInventoryDetailsByIsId" parameterType="String">
+        delete from wh_is_details where is_id = #{isId}
+    </delete>
+
+    <insert id="batchInventoryDetails">
+        insert into wh_is_details( isd_id, is_id, is_code, s_id, spec_code, unit, count_quantity, profit_loss_quantity, is_status, count_amount, iu_price, remark, create_by, create_time, update_by, update_time, is_delete) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.isdId}, #{item.isId}, #{item.isCode}, #{item.sId}, #{item.specCode}, #{item.unit}, #{item.countQuantity}, #{item.profitLossQuantity}, #{item.isStatus}, #{item.countAmount}, #{item.iuPrice}, #{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime}, #{item.isDelete})
+        </foreach>
+    </insert>
+</mapper>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingyun.wh.contactunits.mapper.FinanceMapper">
+
+    <resultMap type="Finance" id="FinanceResult">
+        <result property="fId" column="f_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="tiNumber" column="ti_Number"/>
+        <result property="bankAccount" column="bank_account"/>
+        <result property="bankDeposit" column="bank_deposit"/>
+        <result property="aobAddress" column="aob_address"/>
+    </resultMap>
+
+    <sql id="selectFinanceVo">
+        select f_id, account_name, ti_Number, bank_account, bank_deposit, aob_address
+        from wh_finance
+    </sql>
+
+    <select id="selectFinanceList" parameterType="Finance" resultMap="FinanceResult">
+        <include refid="selectFinanceVo"/>
+        <where>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="tiNumber != null  and tiNumber != ''">and ti_Number = #{tiNumber}</if>
+            <if test="bankAccount != null  and bankAccount != ''">and bank_account = #{bankAccount}</if>
+            <if test="bankDeposit != null  and bankDeposit != ''">and bank_deposit = #{bankDeposit}</if>
+            <if test="aobAddress != null  and aobAddress != ''">and aob_address = #{aobAddress}</if>
+        </where>
+    </select>
+
+    <select id="selectFinanceByFId" parameterType="String" resultMap="FinanceResult">
+        <include refid="selectFinanceVo"/>
+        where f_id = #{fId}
+    </select>
+
+    <insert id="insertFinance" parameterType="Finance" useGeneratedKeys="true" keyProperty="fId">
+        insert into wh_finance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountName != null and accountName != ''">account_name,</if>
+            <if test="tiNumber != null and tiNumber != ''">ti_Number,</if>
+            <if test="bankAccount != null and bankAccount != ''">bank_account,</if>
+            <if test="bankDeposit != null and bankDeposit != ''">bank_deposit,</if>
+            <if test="aobAddress != null and aobAddress != ''">aob_address,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountName != null and accountName != ''">#{accountName},</if>
+            <if test="tiNumber != null and tiNumber != ''">#{tiNumber},</if>
+            <if test="bankAccount != null and bankAccount != ''">#{bankAccount},</if>
+            <if test="bankDeposit != null and bankDeposit != ''">#{bankDeposit},</if>
+            <if test="aobAddress != null and aobAddress != ''">#{aobAddress},</if>
+        </trim>
+    </insert>
+
+    <update id="updateFinance" parameterType="Finance">
+        update wh_finance
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountName != null and accountName != ''">account_name = #{accountName},</if>
+            <if test="tiNumber != null and tiNumber != ''">ti_Number = #{tiNumber},</if>
+            <if test="bankAccount != null and bankAccount != ''">bank_account = #{bankAccount},</if>
+            <if test="bankDeposit != null and bankDeposit != ''">bank_deposit = #{bankDeposit},</if>
+            <if test="aobAddress != null and aobAddress != ''">aob_address = #{aobAddress},</if>
+        </trim>
+        where f_id = #{fId}
+    </update>
+
+    <delete id="deleteFinanceByFId" parameterType="String">
+        delete
+        from wh_finance
+        where f_id = #{fId}
+    </delete>
+
+    <delete id="deleteFinanceByFIds" parameterType="String">
+        delete from wh_finance where f_id in
+        <foreach item="fId" collection="array" open="(" separator="," close=")">
+            #{fId}
+        </foreach>
+    </delete>
+</mapper>
