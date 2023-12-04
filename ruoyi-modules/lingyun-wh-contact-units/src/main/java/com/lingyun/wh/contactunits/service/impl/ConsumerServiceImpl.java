@@ -2,6 +2,7 @@ package com.lingyun.wh.contactunits.service.impl;
 
 import com.lingyun.wh.contactunits.domain.Consumer;
 import com.lingyun.wh.contactunits.mapper.ConsumerMapper;
+import com.lingyun.wh.contactunits.pojo.vo.ConsumerVo;
 import com.lingyun.wh.contactunits.service.IConsumerService;
 import com.ruoyi.common.core.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,5 +88,14 @@ public class ConsumerServiceImpl implements IConsumerService {
     public int deleteConsumerByCId(String cId) {
         return consumerMapper.deleteConsumerByCId(cId);
     }
+    @Override
+    public List<ConsumerVo> consumerQurey(){
+        return consumerMapper.consumerQurey();
+    };
 
+    @Override
+    public List<ConsumerVo> conUpdate(){
+
+        return consumerMapper.conUpdate();
+    }
 }

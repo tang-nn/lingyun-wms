@@ -1,6 +1,7 @@
 package com.lingyun.wh.contactunits.mapper;
 
 import com.lingyun.wh.contactunits.domain.Consumer;
+import com.lingyun.wh.contactunits.pojo.vo.ConsumerVo;
 
 import java.util.List;
 
@@ -59,4 +60,10 @@ public interface ConsumerMapper {
      */
     public int deleteConsumerByCIds(String[] cIds);
 
+    /**
+     * 客户表单查询
+     */
+    List<ConsumerVo> consumerQurey();
+
+    List<ConsumerVo> conUpdate();
 }

@@ -1,7 +1,8 @@
 # Tomcat
 server:
   port: 9207
-
+  servlet:
+    context-path: /cu
 # Spring
 spring:
   application:
