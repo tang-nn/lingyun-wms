@@ -1,6 +1,7 @@
 package com.lingyun.wh.contactunits.service;
 
 import com.lingyun.wh.contactunits.domain.Consumer;
+import com.lingyun.wh.contactunits.pojo.vo.ConsumerVo;
 
 import java.util.List;
 
@@ -58,5 +59,11 @@ public interface IConsumerService {
      * @return 结果
      */
     public int deleteConsumerByCId(String cId);
+    /**
+     * 客户表单查询
+     */
+    List<ConsumerVo> consumerQurey();
+
+    boolean conUpdate(String cid);
 
 }

@@ -4,11 +4,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lingyun.wh.contactunits.mapper.ConsumerMapper">
 
-    <resultMap type="Consumer" id="ConsumerResult">
+    <resultMap type="com.lingyun.wh.contactunits.pojo.vo.ConsumerVo" id="ConsumerResult">
         <result property="cId" column="c_id"/>
         <result property="fId" column="f_id"/>
         <result property="cCode" column="c_code"/>
         <result property="cName" column="c_name"/>
+        <result property="industry" column="industry"/>
         <result property="contactPerson" column="contact_person"/>
         <result property="contactNumber" column="contact_number"/>
         <result property="email" column="email"/>
@@ -21,6 +22,16 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="isDelete" column="is_delete"/>
+        <result property="deptName" column="sale_dept"/>
+        <result property="saleManager" column="sale_manager"/>
+        <association property="finance" javaType="finance">
+            <id property="fId" column="f_id"/>
+            <result property="accountName" column="account_name"/>
+            <result property="tiNumber" column="ti_number"/>
+            <result property="bankAccount" column="bank_account"/>
+            <result property="bankDeposit" column="bank_deposit"/>
+            <result property="aobAddress" column="aob_address"/>
+        </association>
     </resultMap>
 
     <sql id="selectConsumerVo">
@@ -136,4 +147,16 @@
             #{cId}
         </foreach>
     </delete>
+
+    <select id="consumerQurey" resultMap="ConsumerResult">
+        select c_id,c.f_id,f.f_id finance_id,c_code,c_name,industry,c_source,contact_person,
+               contact_number,email,sale_dept,sale_manager,`status`,update_time,
+               c_address,account_name,ti_number,bank_account,
+               bank_deposit,aob_address from wh_consumer c,wh_finance f where c.f_id=f.f_id and c.is_delete = b'0'
+
+    </select>
+
+    <update id="conUpdate">
+        UPDATE `lingyun_wms_db`.`wh_consumer` SET `is_delete` = b'1' WHERE `c_id` = #{cid}
+    </update>
 </mapper>

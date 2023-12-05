@@ -1,7 +1,10 @@
 package com.lingyun.wh.contactunits.controller;
 
 import com.lingyun.wh.contactunits.domain.Consumer;
+import com.lingyun.wh.contactunits.pojo.vo.ConsumerVo;
 import com.lingyun.wh.contactunits.service.IConsumerService;
+import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -26,17 +29,6 @@ public class ConsumerController extends BaseController {
 
     @Autowired
     private IConsumerService consumerService;
-
-    /**
-     * 查询客户列表
-     */
-    @RequiresPermissions("consumer:consumer:list")
-    @GetMapping("/list")
-    public TableDataInfo list(Consumer consumer) {
-        startPage();
-        List<Consumer> list = consumerService.selectConsumerList(consumer);
-        return getDataTable(list);
-    }
 
     /**
      * 导出客户列表
@@ -65,7 +57,8 @@ public class ConsumerController extends BaseController {
     @RequiresPermissions("consumer:consumer:add")
     @Log(title = "客户", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Consumer consumer) {
+    public AjaxResult add(@RequestBody Consumer consumer)
+    {
         return toAjax(consumerService.insertConsumer(consumer));
     }
 
@@ -87,6 +80,30 @@ public class ConsumerController extends BaseController {
     @DeleteMapping("/{cIds}")
     public AjaxResult remove(@PathVariable String[] cIds) {
         return toAjax(consumerService.deleteConsumerByCIds(cIds));
+    }
+
+    /**
+     * 查询客户列表
+     */
+    @RequiresPermissions("consumer:consumer:list")
+    @RequestMapping("/list")
+    public TableDataInfo consumerQuery() {
+        startPage();
+        List<ConsumerVo> csm = consumerService.consumerQurey();
+        return getDataTable(csm);
+    }
+
+
+    /**
+     * 修改is_delete字段，达到删除效果
+     * @return
+     */
+    @PutMapping("/del/{cid}")
+    public AjaxResult conUpdate(@PathVariable String cid){
+        if(StringUtils.isEmpty(cid) || !StringUtils.isNumericSpace(cid)){
+            return error("参数错误");
+        }
+        return toAjax(consumerService.conUpdate(cid));
     }
 
 }
