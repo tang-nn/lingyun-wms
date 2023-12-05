@@ -5,17 +5,17 @@
         <span
           v-if="(item.raw.listClass == 'default' || item.raw.listClass == '') && (item.raw.cssClass == '' || item.raw.cssClass == null)"
           :key="item.value"
-          :index="index"
           :class="item.raw.cssClass"
+          :index="index"
           >{{ item.label + " " }}</span
         >
         <el-tag
           v-else
-          :disable-transitions="true"
           :key="item.value"
+          :class="item.raw.cssClass"
+          :disable-transitions="true"
           :index="index"
           :type="item.raw.listClass == 'primary' ? '' : item.raw.listClass"
-          :class="item.raw.cssClass"
         >
           {{ item.label + " " }}
         </el-tag>
@@ -60,7 +60,6 @@ export default {
       if (this.value !== null && typeof this.value !== "undefined") {
         // 传入值为非数组
         if (!Array.isArray(this.value)) {
-          console.log("this.options: ", this.options)
           if (this.options.some((v) => v.value == this.value)) return false;
           this.unmatchArray.push(this.value);
           return true;

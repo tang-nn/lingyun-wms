@@ -3,15 +3,22 @@ package com.lingyun.wh.order.service.impl;
 import com.lingyun.wh.order.domain.PurchaseDetails;
 import com.lingyun.wh.order.domain.PurchaseOrder;
 import com.lingyun.wh.order.mapper.PurchaseOrderMapper;
+import com.lingyun.wh.order.pojo.vo.PurchaseOrderVo;
 import com.lingyun.wh.order.service.IPurchaseOrderService;
+import com.ruoyi.common.core.constant.OrderType;
+import com.ruoyi.common.core.constant.SecurityConstants;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
+import com.ruoyi.system.api.RemoteEncodeRuleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author : Tang
@@ -20,9 +27,14 @@ import java.util.List;
  */
 @Service
 public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
+    private static final Logger log = LoggerFactory.getLogger(PurchaseOrderServiceImpl.class);
 
     @Autowired
+    RemoteEncodeRuleService remoteEncodeRuleService;
+    @Autowired
     private PurchaseOrderMapper purchaseOrderMapper;
+    // @Autowired
+    // private RemoteGoodsService remoteGoodsService;
 
     /**
      * 查询进货订单
@@ -38,12 +50,16 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     /**
      * 查询进货订单列表
      *
-     * @param purchaseOrder 进货订单
+     * @param params 进货订单
      * @return 进货订单
      */
     @Override
-    public List<PurchaseOrder> selectPurchaseOrderList(PurchaseOrder purchaseOrder) {
-        return purchaseOrderMapper.selectPurchaseOrderList(purchaseOrder);
+    public List<PurchaseOrderVo> selectPurchaseOrderList(Map<String, Object> params) {
+        List<PurchaseOrderVo> purchaseOrders = purchaseOrderMapper.selectPurchaseDetailsList(params);
+        // purchaseOrders.forEach(e -> {
+        //     remoteGoodsService.getInfo();
+        // });
+        return purchaseOrders;
     }
 
     /**
@@ -55,10 +71,31 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     @Transactional
     @Override
     public int insertPurchaseOrder(PurchaseOrder purchaseOrder) {
-        purchaseOrder.setCreateTime(DateUtils.getNowDate());
+        Date nowDate = DateUtils.getNowDate();
+        String userId = String.valueOf(SecurityUtils.getUserId());
+        //
+        R<String> res = remoteEncodeRuleService.genSpecifyEncoding(OrderType.PURCHASE_ORDER, SecurityConstants.INNER);
+        // System.out.println("res: " + res);
+        if (res == null || res.getCode() != 200) {
+            log.error("insertPurchaseOrder 获取编码失败");
+            throw new RuntimeException("获取编码失败");
+        } else {
+            purchaseOrder.setPoCode(res.getData());
+        }
+        purchaseOrder.setCreateTime(nowDate);
+        purchaseOrder.setUpdateTime(nowDate);
+        purchaseOrder.setCreateBy(userId);
+        purchaseOrder.setUpdateBy(userId);
+        System.out.println("purchaseOrder: " + purchaseOrder);
         int rows = purchaseOrderMapper.insertPurchaseOrder(purchaseOrder);
         insertPurchaseDetails(purchaseOrder);
-        return rows;
+        res = remoteEncodeRuleService.increaseCurrentSerialNumber(OrderType.PURCHASE_ORDER, SecurityConstants.INNER);
+        if (res == null || res.getCode() != 200) {
+            log.error("insertPurchaseOrder 流水号迭代失败");
+            throw new RuntimeException("进货数据插入失败");
+        } else {
+            purchaseOrder.setPoCode(res.getData());
+        }return rows;
     }
 
     /**
@@ -114,9 +151,16 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
             List<PurchaseDetails> list = new ArrayList<PurchaseDetails>();
             for (PurchaseDetails purchaseDetails : purchaseDetailsList) {
                 purchaseDetails.setPoId(poId);
+                String createBy = purchaseOrder.getCreateBy();
+                Date createTime = purchaseOrder.getCreateTime();
+                purchaseDetails.setCreateBy(createBy);
+                purchaseDetails.setCreateTime(createTime);
+                purchaseDetails.setUpdateBy(createBy);
+                purchaseDetails.setUpdateTime(createTime);
+                System.out.println("purchaseDetails = " + purchaseDetails);
                 list.add(purchaseDetails);
             }
-            if (list.size() > 0) {
+            if (!list.isEmpty()) {
                 purchaseOrderMapper.batchPurchaseDetails(list);
             }
         }

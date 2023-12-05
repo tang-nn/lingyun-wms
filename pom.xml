@@ -217,9 +217,9 @@
         <module>ruoyi-common</module>
         <module>ruoyi-modules/lingyun-wh-goods</module>
         <module>ruoyi-modules/lingyun-wh-warehouse</module>
-        <module>ruoyi-modules/lingyun-wh-order</module>
         <module>ruoyi-modules/lingyun-wh-contact-units</module>
         <module>ruoyi-modules/lingyun-wh-common</module>
+        <module>ruoyi-modules/lingyun-wh-order</module>
     </modules>
     <packaging>pom</packaging>
 

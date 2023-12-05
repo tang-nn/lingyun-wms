@@ -1,6 +1,6 @@
 <template>
   <section class="app-main">
-    <transition name="fade-transform" mode="out-in">
+    <transition mode="out-in" name="fade-transform">
       <keep-alive :include="cachedViews">
         <router-view v-if="!$route.meta.link" :key="key" />
       </keep-alive>
@@ -33,6 +33,7 @@ export default {
   width: 100%;
   position: relative;
   overflow: hidden;
+  background: #f3f6f8;
 }
 
 .fixed-header + .app-main {

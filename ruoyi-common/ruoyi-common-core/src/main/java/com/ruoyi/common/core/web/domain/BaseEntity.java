@@ -115,4 +115,17 @@ public class BaseEntity implements Serializable
     {
         this.params = params;
     }
+
+    @Override
+    public String toString() {
+        return "BaseEntity{" +
+                "searchValue='" + searchValue + '\'' +
+                ", createBy='" + createBy + '\'' +
+                ", createTime=" + createTime +
+                ", updateBy='" + updateBy + '\'' +
+                ", updateTime=" + updateTime +
+                ", remark='" + remark + '\'' +
+                ", params=" + params +
+                '}';
+    }
 }

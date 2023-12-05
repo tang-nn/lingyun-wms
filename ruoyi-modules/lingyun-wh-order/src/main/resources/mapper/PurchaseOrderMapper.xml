@@ -40,8 +40,39 @@
         <result property="updateBy" column="sub_update_by"/>
         <result property="updateTime" column="sub_update_time"/>
         <result property="isDelete" column="sub_is_delete"/>
+        <association property="goods" javaType="com.lingyun.wh.goods.doman.Goods"/>
     </resultMap>
 
+    <resultMap id="PurchaseOrderList" type="com.lingyun.wh.order.pojo.vo.PurchaseOrderVo">
+        <result property="poId" column="po_id"/>
+        <result property="poCode" column="po_code"/>
+        <result property="status" column="po_status"/>
+        <result property="purchaseDate" column="po_purchase_date"/>
+        <result property="sId" column="s_id"/>
+        <result property="purchaserId" column="purchaser_id"/>
+        <result property="purNickName" column="pu_nick_name"/>
+        <result property="purDeptId" column="pu_dept_id"/>
+        <result property="purDeptName" column="pdt_dept_name"/>
+        <result property="reviewer" column="reviewer"/>
+        <result property="reviewComments" column="review_comments"/>
+        <result property="reviewerUname" column="ru_nick_name"/>
+        <result property="reviewerDate" column="reviewer_date"/>
+        <result property="cuid" column="cu_user_id"/>
+        <result property="cuname" column="cu_nick_name"/>
+        <result property="cudeptId" column="cu_dept_id"/>
+        <result property="cudeptName" column="cdt_dept_name"/>
+        <result property="cudate" column="po_create_time"/>
+        <result property="supplName" column="s_name"/>
+        <result property="contactPerson" column="contact_person"/>
+        <result property="contactNumber" column="contact_number"/>
+        <collection property="purchaseDetails" ofType="com.lingyun.wh.order.pojo.vo.PurchaseDetailVo">
+            <id property="pdId" column="pod_pd_id"/>
+            <result property="goodsId" column="pod_goods_id"/>
+            <result property="purchaseQuantity" column="pod_purchase_quantity"/>
+            <result property="puPrice" column="pod_pu_price"/>
+            <result property="goodsName" column="goodsName"/>
+        </collection>
+    </resultMap>
     <sql id="selectPurchaseOrderVo">
         select po_id,
                po_code,
@@ -60,20 +91,100 @@
         from wh_purchase_order
     </sql>
 
-    <select id="selectPurchaseOrderList" parameterType="PurchaseOrder" resultMap="PurchaseOrderResult">
-        <include refid="selectPurchaseOrderVo"/>
+    <select id="selectPurchaseDetailsList" resultMap="PurchaseOrderList">
+        SELECT
+        po.po_id,po.po_code,po.status po_status,po.purchase_date po_purchase_date,po.s_id,po.purchaser_id,po.reviewer,po.review_comments,po.reviewer_date,po.create_by po_create_by,po.create_time po_create_time,po.update_by po_update_by,po.update_time po_update_time,
+        pod.pd_id pod_pd_id,pod.goods_id pod_goods_id,pod.purchase_quantity pod_purchase_quantity,pod.pu_price pod_pu_price,
+        g.g_name goodsName,
+        pu.dept_id pu_dept_id,pu.nick_name pu_nick_name,
+        pdt.dept_id pdt_dept_id,pdt.dept_name pdt_dept_name,
+        cu.user_id cu_user_id,cu.dept_id cu_dept_id,cu.nick_name cu_nick_name,
+        cdt.dept_id cdt_dept_id,cdt.dept_name cdt_dept_name,
+        ru.user_id ru_user_id,ru.dept_id ru_dept_id,ru.nick_name ru_nick_name,
+        s.s_name,s.contact_person,s.contact_number
+        FROM wh_purchase_order po
+        # 订单明细
+        INNER JOIN wh_purchase_details pod on pod.po_id = po.po_id
+        # 供应商
+        INNER JOIN wh_supplier s on s.s_id = po.s_id
+        # 货品信息
+        INNER JOIN wh_goods g on g.g_id = pod.goods_id
+        # 进货人和进货部门
+        INNER JOIN sys_user pu on pu.user_id = po.purchaser_id
+        INNER JOIN sys_dept pdt on pdt.dept_id = pu.dept_id
+        # 制单人和所在部门
+        INNER JOIN sys_user cu on cu.user_id = po.create_by
+        INNER JOIN sys_dept cdt on cdt.dept_id = cu.dept_id
+        # 供应商
+        INNER JOIN wh_supplier on s.s_id = po.s_id
+        # 审核人
+        LEFT JOIN sys_user ru on ru.user_id = po.reviewer
         <where>
-            <if test="poCode != null  and poCode != ''">and po_code = #{poCode}</if>
-            <if test="status != null  and status != ''">and status = #{status}</if>
-            <if test="purchaseDate != null ">and purchase_date = #{purchaseDate}</if>
-            <if test="sId != null  and sId != ''">and s_id = #{sId}</if>
-            <if test="purchaserId != null  and purchaserId != ''">and purchaser_id = #{purchaserId}</if>
-            <if test="reviewer != null  and reviewer != ''">and reviewer = #{reviewer}</if>
-            <if test="reviewerDate != null ">and reviewer_date = #{reviewerDate}</if>
-            <if test="isDelete != null  and isDelete != ''">and is_delete = #{isDelete}</if>
+            po.is_delete = 0
+            <if test="params != null">
+                <if test="params.purOrderSn != null and params.purOrderSn != ''">
+                    and po.po_code like concat('%',#{params.purOrderSn},'%')
+                </if>
+                <if test="params.orderStatus != null and params.orderStatus != ''">
+                    and po.status =  #{params.orderStatus}
+                </if>
+                <if test="params.supplierName != null and params.supplierName != ''">
+                    and s.supplier_name like concat('%',#{params.supplierName},'%')
+                </if>
+                <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                    AND date_format(po.purchase_date,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+                </if>
+                <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                    AND date_format(po.purchase_date,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+                </if>
+            </if>
         </where>
     </select>
-
+    <select id="selectPurchaseDetailsList_COUNT" resultType="Long">
+        select count(0) from (
+        SELECT
+        po.po_id,
+        pu.dept_id pu_dept_id,
+        pdt.dept_id pdt_dept_id,
+        cu.user_id cu_user_id,
+        cdt.dept_id cdt_dept_id,
+        ru.user_id ru_user_id,
+        s.s_name
+        FROM wh_purchase_order po
+        # 供应商
+        INNER JOIN wh_supplier s on s.s_id = po.s_id
+        # 进货人和进货部门
+        INNER JOIN sys_user pu on pu.user_id = po.purchaser_id
+        INNER JOIN sys_dept pdt on pdt.dept_id = pu.dept_id
+        # 制单人和所在部门
+        INNER JOIN sys_user cu on cu.user_id = po.create_by
+        INNER JOIN sys_dept cdt on cdt.dept_id = cu.dept_id
+        # 供应商
+        INNER JOIN wh_supplier on s.s_id = po.s_id
+        # 审核人
+        LEFT JOIN sys_user ru on ru.user_id = po.reviewer
+        <where>
+            po.is_delete = 0
+            <if test="params != null">
+                <if test="params.purOrderSn != null and params.purOrderSn != ''">
+                    and po.po_code like concat('%',#{params.purOrderSn},'%')
+                </if>
+                <if test="params.orderStatus != null and params.orderStatus != ''">
+                    and po.status =  #{params.orderStatus}
+                </if>
+                <if test="params.supplierName != null and params.supplierName != ''">
+                    and s.supplier_name like concat('%',#{params.supplierName},'%')
+                </if>
+                <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                    AND date_format(po.purchase_date,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+                </if>
+                <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                    AND date_format(po.purchase_date,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+                </if>
+            </if>
+        </where>
+        ) tmp_count
+    </select>
     <select id="selectPurchaseOrderByPoId" parameterType="String" resultMap="PurchaseOrderPurchaseDetailsResult">
         select a.po_id,
                a.po_code,
@@ -116,13 +227,11 @@
             <if test="sId != null and sId != ''">s_id,</if>
             <if test="purchaserId != null and purchaserId != ''">purchaser_id,</if>
             <if test="remark != null and remark != ''">remark,</if>
-            <if test="reviewer != null and reviewer != ''">reviewer,</if>
-            <if test="reviewerDate != null">reviewer_date,</if>
             <if test="createBy != null and createBy != ''">create_by,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null and updateBy != ''">update_by,</if>
             <if test="updateTime != null">update_time,</if>
-            <if test="isDelete != null and isDelete != ''">is_delete,</if>
+            is_delete
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="poCode != null and poCode != ''">#{poCode},</if>
@@ -131,13 +240,11 @@
             <if test="sId != null and sId != ''">#{sId},</if>
             <if test="purchaserId != null and purchaserId != ''">#{purchaserId},</if>
             <if test="remark != null and remark != ''">#{remark},</if>
-            <if test="reviewer != null and reviewer != ''">#{reviewer},</if>
-            <if test="reviewerDate != null">#{reviewerDate},</if>
             <if test="createBy != null and createBy != ''">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
-            <if test="isDelete != null and isDelete != ''">#{isDelete},</if>
+            b'0'
         </trim>
     </insert>
 
@@ -193,7 +300,7 @@
         <foreach item="item" index="index" collection="list" separator=",">
             ( #{item.pdId}, #{item.poId}, #{item.goodsId}, #{item.specCode}, #{item.unit}, #{item.purchaseQuantity},
             #{item.puPrice}, #{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime},
-            #{item.isDelete})
+            b'0')
         </foreach>
     </insert>
 </mapper>

@@ -64,7 +64,7 @@ public class SalesDetails extends BaseEntity {
      * 逻辑删除,0：存在；1：已删除，不存在
      */
     @Excel(name = "逻辑删除,0：存在；1：已删除，不存在")
-    private String isDelete;
+    private Boolean isDelete;
 
     public String getSdId() {
         return sdId;
@@ -130,11 +130,11 @@ public class SalesDetails extends BaseEntity {
         this.salesVolume = salesVolume;
     }
 
-    public String getIsDelete() {
+    public Boolean getIsDelete() {
         return isDelete;
     }
 
-    public void setIsDelete(String isDelete) {
+    public void setIsDelete(Boolean isDelete) {
         this.isDelete = isDelete;
     }
 

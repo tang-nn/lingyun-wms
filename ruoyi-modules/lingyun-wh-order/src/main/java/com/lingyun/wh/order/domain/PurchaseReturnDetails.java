@@ -54,7 +54,7 @@ public class PurchaseReturnDetails extends BaseEntity {
      * 逻辑删除,0：存在；1：已删除，不存在
      */
     @Excel(name = "逻辑删除,0：存在；1：已删除，不存在")
-    private String isDelete;
+    private Boolean isDelete;
 
     public String getPrdId() {
         return prdId;
@@ -104,11 +104,11 @@ public class PurchaseReturnDetails extends BaseEntity {
         this.returnQuantity = returnQuantity;
     }
 
-    public String getIsDelete() {
+    public Boolean getIsDelete() {
         return isDelete;
     }
 
-    public void setIsDelete(String isDelete) {
+    public void setIsDelete(Boolean isDelete) {
         this.isDelete = isDelete;
     }
 

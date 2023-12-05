@@ -1,17 +1,21 @@
 package com.lingyun.wh.order.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.lingyun.wh.goods.doman.Goods;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @Author : Tang
  * @Description : 进货明细
  * @CreateDate : 2023/11/21 19:47
  */
+// @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PurchaseDetails extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -60,7 +64,43 @@ public class PurchaseDetails extends BaseEntity {
      * 0：存在；1：已删除，不存在
      */
     @Excel(name = "0：存在；1：已删除，不存在")
-    private String isDelete;
+    private Boolean isDelete;
+
+    /**
+     * 货品信息
+     */
+    private Goods goods;
+
+    public PurchaseDetails() {
+    }
+
+    public PurchaseDetails(String pdId, String poId, String goodsId, String specCode, String unit, BigDecimal purchaseQuantity, BigDecimal puPrice, Boolean isDelete, Goods goods) {
+        this.pdId = pdId;
+        this.poId = poId;
+        this.goodsId = goodsId;
+        this.specCode = specCode;
+        this.unit = unit;
+        this.purchaseQuantity = purchaseQuantity;
+        this.puPrice = puPrice;
+        this.isDelete = isDelete;
+        this.goods = goods;
+    }
+
+    public Boolean getDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(Boolean delete) {
+        isDelete = delete;
+    }
+
+    public Goods getGoods() {
+        return goods;
+    }
+
+    public void setGoods(Goods goods) {
+        this.goods = goods;
+    }
 
     public String getPdId() {
         return pdId;
@@ -118,11 +158,11 @@ public class PurchaseDetails extends BaseEntity {
         this.puPrice = puPrice;
     }
 
-    public String getIsDelete() {
+    public Boolean getIsDelete() {
         return isDelete;
     }
 
-    public void setIsDelete(String isDelete) {
+    public void setIsDelete(Boolean isDelete) {
         this.isDelete = isDelete;
     }
 
@@ -142,6 +182,7 @@ public class PurchaseDetails extends BaseEntity {
                 .append("updateBy", getUpdateBy())
                 .append("updateTime", getUpdateTime())
                 .append("isDelete", getIsDelete())
+                .append("goods", getGoods())
                 .toString();
     }
 }

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingyun.wh.common.mapper.EncodingRulesMapper">
+
+    <resultMap type="EncodingRules" id="EncodingRulesResult">
+        <result property="erId"    column="er_id"    />
+        <result property="targetForm"    column="target_form"    />
+        <result property="numberPrefix"    column="number_prefix"    />
+        <result property="timeRules"    column="time_rules"    />
+        <result property="serialNumber"    column="serial_number"    />
+        <result property="currentSerialNumber" column="current_serial_number" />
+        <result property="stepLength"    column="step_length"    />
+        <result property="numberingRules"    column="numbering_rules"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectEncodingRulesVo">
+        select er_id, target_form, number_prefix, time_rules, serial_number, step_length, numbering_rules, current_serial_number, create_by, create_time, update_by, update_time from wh_encoding_rules
+    </sql>
+
+    <select id="selectEncodingRulesList" parameterType="EncodingRules" resultMap="EncodingRulesResult">
+        <include refid="selectEncodingRulesVo"/>
+        <where>
+            <if test="targetForm != null  and targetForm != ''"> and target_form = #{targetForm}</if>
+            <if test="numberPrefix != null  and numberPrefix != ''"> and number_prefix = #{numberPrefix}</if>
+            <if test="timeRules != null  and timeRules != ''"> and time_rules = #{timeRules}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                AND date_format(update_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                AND date_format(update_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectEncodingRules" parameterType="String" resultMap="EncodingRulesResult">
+        <include refid="selectEncodingRulesVo"/>
+        <where>
+            <if test="erId != null and erId != 0">
+                and er_id = #{erId}
+            </if>
+            <if test="targetForm != null and targetForm != ''">
+                and target_form = #{targetForm}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertEncodingRules" parameterType="EncodingRules" useGeneratedKeys="true" keyProperty="erId">
+        insert into wh_encoding_rules
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="targetForm != null and targetForm != ''">target_form,</if>
+            <if test="numberPrefix != null and numberPrefix != ''">number_prefix,</if>
+            <if test="timeRules != null and timeRules != ''">time_rules,</if>
+            <if test="serialNumber != null">serial_number,</if>
+            <if test="stepLength != null">step_length,</if>
+            <if test="numberingRules != null and numberingRules != ''">numbering_rules,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="targetForm != null and targetForm != ''">#{targetForm},</if>
+            <if test="numberPrefix != null and numberPrefix != ''">#{numberPrefix},</if>
+            <if test="timeRules != null and timeRules != ''">#{timeRules},</if>
+            <if test="serialNumber != null">#{serialNumber},</if>
+            <if test="stepLength != null">#{stepLength},</if>
+            <if test="numberingRules != null and numberingRules != ''">#{numberingRules},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateEncodingRules" parameterType="EncodingRules">
+        update wh_encoding_rules
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="numberPrefix != null and numberPrefix != ''">number_prefix = #{numberPrefix},</if>
+            <if test="timeRules != null and timeRules != ''">time_rules = #{timeRules},</if>
+            <if test="serialNumber != null">serial_number = #{serialNumber},</if>
+            <if test="stepLength != null">step_length = #{stepLength},</if>
+            <if test="numberingRules != null and numberingRules != ''">numbering_rules = #{numberingRules},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="currentSerialNumber != null and currentSerialNumber > 1">
+                current_serial_number = #{currentSerialNumber}
+            </if>
+        </trim>
+        where er_id = #{erId}
+    </update>
+
+    <delete id="deleteEncodingRulesByErId" parameterType="String">
+        delete from wh_encoding_rules where er_id = #{erId}
+    </delete>
+
+    <delete id="deleteEncodingRulesByErIds" parameterType="String">
+        delete from wh_encoding_rules where er_id in
+        <foreach item="erId" collection="array" open="(" separator="," close=")">
+            #{erId}
+        </foreach>
+    </delete>
+</mapper>

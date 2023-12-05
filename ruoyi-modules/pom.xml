@@ -13,6 +13,10 @@
         <module>ruoyi-gen</module>
         <module>ruoyi-job</module>
         <module>ruoyi-file</module>
+        <module>lingyun-wh-common</module>
+        <module>lingyun-wh-contact-units</module>
+        <module>lingyun-wh-goods</module>
+        <module>lingyun-wh-warehouse</module>
     </modules>
 
     <artifactId>ruoyi-modules</artifactId>

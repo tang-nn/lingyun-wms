@@ -65,7 +65,7 @@ public class SalesOrder extends BaseEntity {
      * 逻辑删除,0：存在；1：已删除，不存在
      */
     @Excel(name = "逻辑删除,0：存在；1：已删除，不存在")
-    private String isDelete;
+    private Boolean isDelete;
 
     /**
      * 销售明细信息
@@ -128,11 +128,11 @@ public class SalesOrder extends BaseEntity {
         this.reviewDate = reviewDate;
     }
 
-    public String getIsDelete() {
+    public Boolean getIsDelete() {
         return isDelete;
     }
 
-    public void setIsDelete(String isDelete) {
+    public void setIsDelete(Boolean isDelete) {
         this.isDelete = isDelete;
     }
 

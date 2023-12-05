@@ -1,6 +1,8 @@
 # Tomcat
 server:
   port: 9208
+  servlet:
+    context-path: /whcomm
 
 # Spring
 spring:
@@ -27,3 +29,10 @@ spring:
 mybatis:
   mapperLocations: classpath:mapper/**/*.xml
   type-aliases-package: com.lingyun.wh.common.domain
+
+feign:
+  client:
+    config:
+      # 全局配置
+      default:
+        logger-level: FULL

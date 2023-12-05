@@ -59,23 +59,56 @@ public class PurchaseOrder extends BaseEntity {
     @Excel(name = "审核人")
     private String reviewer;
 
+    @Excel(name = "审核意见")
+    private String reviewComments;
     /**
      * 审核时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Excel(name = "审核时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date reviewerDate;
-
     /**
      * 0：存在；1：已删除，不存在
      */
     @Excel(name = "0：存在；1：已删除，不存在")
-    private String isDelete;
-
+    private Boolean isDelete;
     /**
      * 进货明细信息
      */
     private List<PurchaseDetails> purchaseDetailsList;
+
+    public PurchaseOrder() {
+    }
+
+    public PurchaseOrder(String poId, String poCode, String status, Date purchaseDate, String sId, String purchaserId, String reviewer, String reviewComments, Date reviewerDate, Boolean isDelete, List<PurchaseDetails> purchaseDetailsList) {
+        this.poId = poId;
+        this.poCode = poCode;
+        this.status = status;
+        this.purchaseDate = purchaseDate;
+        this.sId = sId;
+        this.purchaserId = purchaserId;
+        this.reviewer = reviewer;
+        this.reviewComments = reviewComments;
+        this.reviewerDate = reviewerDate;
+        this.isDelete = isDelete;
+        this.purchaseDetailsList = purchaseDetailsList;
+    }
+
+    public String getReviewComments() {
+        return reviewComments;
+    }
+
+    public void setReviewComments(String reviewComments) {
+        this.reviewComments = reviewComments;
+    }
+
+    public Boolean getDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(Boolean delete) {
+        isDelete = delete;
+    }
 
     public String getPoId() {
         return poId;
@@ -141,11 +174,11 @@ public class PurchaseOrder extends BaseEntity {
         this.reviewerDate = reviewerDate;
     }
 
-    public String getIsDelete() {
+    public Boolean getIsDelete() {
         return isDelete;
     }
 
-    public void setIsDelete(String isDelete) {
+    public void setIsDelete(Boolean isDelete) {
         this.isDelete = isDelete;
     }
 
@@ -168,13 +201,16 @@ public class PurchaseOrder extends BaseEntity {
                 .append("purchaserId", getPurchaserId())
                 .append("remark", getRemark())
                 .append("reviewer", getReviewer())
+                .append("reviewComments", getReviewComments())
                 .append("reviewerDate", getReviewerDate())
                 .append("createBy", getCreateBy())
                 .append("createTime", getCreateTime())
                 .append("updateBy", getUpdateBy())
                 .append("updateTime", getUpdateTime())
-                .append("isDelete", getIsDelete())
+                .append("isDelete", getDelete())
                 .append("purchaseDetailsList", getPurchaseDetailsList())
+                .append("BaseEntity", super.toString())
                 .toString();
     }
+
 }

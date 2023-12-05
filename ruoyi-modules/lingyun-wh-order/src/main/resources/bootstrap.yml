@@ -1,11 +1,11 @@
 # Tomcat
 server:
   port: 9206
-
+  servlet:
+    context-path: /order
 # Spring
 spring:
   application:
-    # 应用名称
     name: lingyun-wh-order
   profiles:
     # 环境配置
@@ -15,7 +15,6 @@ spring:
       discovery:
         # 服务注册地址
         server-addr: 127.0.0.1:8848
-        ephemeral: false
       config:
         # 配置中心地址
         server-addr: 127.0.0.1:8848
@@ -26,7 +25,14 @@ spring:
           - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
         # 允许nacos服务端向本地同步配置
         enable-remote-sync-config: true
-
-#mybatis:
-#  mapperLocations: classpath:mapper/**/*.xml
-#  type-aliases-package: com.lingyun.wh.order.domain
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.lingyun.wh.order.domain
+  mapper-locations: classpath:mapper/*.xml
+feign:
+  client:
+    config:
+      # 全局配置
+      default:
+        logger-level: FULL

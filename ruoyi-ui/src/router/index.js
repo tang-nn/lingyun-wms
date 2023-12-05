@@ -161,6 +161,20 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
+  },
+  {
+    path: '/order/purchase/add',
+    component: Layout,
+    hidden: true,
+    permissions: ['order:purchase:add'],
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/wms/order/purchasingOrder/add.vue'),
+        name: '添加进货单据',
+        meta: { title: '添加进货信息', activeMenu: '/order/purchase/add' }
+      }
+    ]
   }
 ]
 

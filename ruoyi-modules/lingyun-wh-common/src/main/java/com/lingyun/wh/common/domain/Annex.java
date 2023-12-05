@@ -17,7 +17,7 @@ public class Annex extends BaseEntity {
     /**
      * 附件ID
      */
-    private Long aId;
+    private String aId;
 
     /**
      * 附件类型，来之数据字典
@@ -31,11 +31,11 @@ public class Annex extends BaseEntity {
     @Excel(name = "附件内容，文件路径")
     private String aContent;
 
-    public Long getaId() {
+    public String getaId() {
         return aId;
     }
 
-    public void setaId(Long aId) {
+    public void setaId(String aId) {
         this.aId = aId;
     }
 

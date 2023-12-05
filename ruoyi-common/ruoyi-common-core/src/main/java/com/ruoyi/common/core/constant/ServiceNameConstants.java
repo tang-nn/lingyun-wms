@@ -21,4 +21,9 @@ public class ServiceNameConstants
      * 文件服务的serviceid
      */
     public static final String FILE_SERVICE = "ruoyi-file";
+
+    /**
+     * 仓库-公共服务的serviceid
+     */
+    public static final String WH_COMM_SERVICE = "lingyun-wh-common";
 }

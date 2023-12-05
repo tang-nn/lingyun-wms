@@ -1,8 +1,10 @@
 package com.lingyun.wh.order.service;
 
 import com.lingyun.wh.order.domain.PurchaseOrder;
+import com.lingyun.wh.order.pojo.vo.PurchaseOrderVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author : Tang
@@ -21,10 +23,10 @@ public interface IPurchaseOrderService {
     /**
      * 查询进货订单列表
      *
-     * @param purchaseOrder 进货订单
+     * @param params 进货订单
      * @return 进货订单集合
      */
-    public List<PurchaseOrder> selectPurchaseOrderList(PurchaseOrder purchaseOrder);
+    public List<PurchaseOrderVo> selectPurchaseOrderList(Map<String, Object> params);
 
     /**
      * 新增进货订单
