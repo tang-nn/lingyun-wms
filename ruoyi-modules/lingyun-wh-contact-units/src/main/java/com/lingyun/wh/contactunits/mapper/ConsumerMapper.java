@@ -65,5 +65,5 @@ public interface ConsumerMapper {
      */
     List<ConsumerVo> consumerQurey();
 
-    List<ConsumerVo> conUpdate();
+    int conUpdate(String cid);
 }

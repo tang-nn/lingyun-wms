@@ -94,8 +94,8 @@ public class ConsumerServiceImpl implements IConsumerService {
     };
 
     @Override
-    public List<ConsumerVo> conUpdate(){
+    public boolean conUpdate(String cid){
 
-        return consumerMapper.conUpdate();
+        return consumerMapper.conUpdate(cid) > 0;
     }
 }

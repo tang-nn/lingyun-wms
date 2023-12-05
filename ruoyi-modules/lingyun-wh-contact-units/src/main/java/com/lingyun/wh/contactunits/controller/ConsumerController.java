@@ -4,6 +4,7 @@ import com.lingyun.wh.contactunits.domain.Consumer;
 import com.lingyun.wh.contactunits.pojo.vo.ConsumerVo;
 import com.lingyun.wh.contactunits.service.IConsumerService;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -97,12 +98,12 @@ public class ConsumerController extends BaseController {
      * 修改is_delete字段，达到删除效果
      * @return
      */
-    @PutMapping("/conUpdate")
-    public AjaxResult conUpdate(){
-
-        List<ConsumerVo> csm =consumerService.conUpdate();
-
-        return AjaxResult.success();
+    @PutMapping("/del/{cid}")
+    public AjaxResult conUpdate(@PathVariable String cid){
+        if(StringUtils.isEmpty(cid) || !StringUtils.isNumericSpace(cid)){
+            return error("参数错误");
+        }
+        return toAjax(consumerService.conUpdate(cid));
     }
 
 }

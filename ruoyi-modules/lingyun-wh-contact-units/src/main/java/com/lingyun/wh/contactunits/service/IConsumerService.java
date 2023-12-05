@@ -64,6 +64,6 @@ public interface IConsumerService {
      */
     List<ConsumerVo> consumerQurey();
 
-    List<ConsumerVo> conUpdate();
+    boolean conUpdate(String cid);
 
 }

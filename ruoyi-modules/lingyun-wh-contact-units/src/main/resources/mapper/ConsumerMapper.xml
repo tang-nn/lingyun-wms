@@ -157,6 +157,6 @@
     </select>
 
     <update id="conUpdate">
-        UPDATE `lingyun_wms_db`.`wh_consumer` SET `is_delete` = b'1' WHERE `c_id` = #{cId}
+        UPDATE `lingyun_wms_db`.`wh_consumer` SET `is_delete` = b'1' WHERE `c_id` = #{cid}
     </update>
 </mapper>
