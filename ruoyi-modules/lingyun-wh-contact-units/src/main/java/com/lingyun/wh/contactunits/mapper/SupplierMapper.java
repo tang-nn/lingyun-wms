@@ -1,6 +1,7 @@
 package com.lingyun.wh.contactunits.mapper;
 
 import com.lingyun.wh.contactunits.domain.Supplier;
+import com.lingyun.wh.contactunits.pojo.vo.ConsumerVo;
 
 import java.util.List;
 
@@ -58,5 +59,9 @@ public interface SupplierMapper {
      * @return 结果
      */
     public int deleteSupplierBySIds(String[] sIds);
+
+    List<Supplier> supplierQurey();
+
+    int supUpdate(String sid);
 
 }

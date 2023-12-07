@@ -1,6 +1,7 @@
 package com.lingyun.wh.contactunits.service;
 
 import com.lingyun.wh.contactunits.domain.Supplier;
+import com.lingyun.wh.contactunits.pojo.vo.ConsumerVo;
 
 import java.util.List;
 
@@ -57,4 +58,11 @@ public interface ISupplierService {
      * @return 结果
      */
     public int deleteSupplierBySId(String sId);
+
+    /**
+     * 供应商表单查询
+     */
+    List<Supplier> supplierQurey();
+
+    boolean supUpdate(String sid);
 }

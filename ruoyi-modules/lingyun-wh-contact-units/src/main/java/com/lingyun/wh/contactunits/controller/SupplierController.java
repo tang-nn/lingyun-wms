@@ -1,7 +1,9 @@
 package com.lingyun.wh.contactunits.controller;
 
 import com.lingyun.wh.contactunits.domain.Supplier;
+import com.lingyun.wh.contactunits.pojo.vo.ConsumerVo;
 import com.lingyun.wh.contactunits.service.ISupplierService;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -88,4 +90,30 @@ public class SupplierController extends BaseController {
     public AjaxResult remove(@PathVariable String[] sIds) {
         return toAjax(supplierService.deleteSupplierBySIds(sIds));
     }
+
+    /**
+     * 查询供应商信息
+     * @return
+     */
+    @RequiresPermissions("consumer:consumer:list")
+    @RequestMapping("/list")
+    public TableDataInfo consumerQuery() {
+        startPage();
+        List<Supplier> csm = supplierService.supplierQurey();
+        return getDataTable(csm);
+    }
+
+
+    /**
+     * 修改is_delete字段，达到删除效果
+     * @return
+     */
+    @PutMapping("/del/{cid}")
+    public AjaxResult conUpdate(@PathVariable String cid){
+        if(StringUtils.isEmpty(cid) || !StringUtils.isNumericSpace(cid)){
+            return error("参数错误");
+        }
+        return toAjax(supplierService.supUpdate(cid));
+    }
+
 }

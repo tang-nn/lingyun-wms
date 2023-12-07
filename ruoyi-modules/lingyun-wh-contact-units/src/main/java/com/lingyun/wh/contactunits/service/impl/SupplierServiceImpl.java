@@ -88,4 +88,14 @@ public class SupplierServiceImpl implements ISupplierService {
         return supplierMapper.deleteSupplierBySId(sId);
     }
 
+    @Override
+    public List<Supplier> supplierQurey() {
+        return null;
+    }
+
+    @Override
+    public boolean supUpdate(String sid) {
+        return supplierMapper.supUpdate(sid) >0;
+    }
+
 }

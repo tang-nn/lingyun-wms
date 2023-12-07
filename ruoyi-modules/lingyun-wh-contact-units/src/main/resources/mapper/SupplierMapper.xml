@@ -130,8 +130,7 @@
             <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
-            <if test="isDelete != null and isDelete != ''">is_delete = #{isDelete},</if>
+            <if test="updateTime 0elete != null and isDelete != ''">is_delete = #{isDelete},</if>
         </trim>
         where s_id = #{sId}
     </update>
@@ -148,4 +147,16 @@
             #{sId}
         </foreach>
     </delete>
+
+    <select id="supplierQurey" resultMap="SupplierResult">
+        select s_id,c.f_id,f.f_id finance_id,s_code,s_name,industry,supplier_type,contact_person,
+               contact_number,email,principal_id,`status`,remark,
+               s_address,create_by,create_time,update_by,update_time,is_delete
+        from wh_supplier c,wh_finance f where c.f_id=f.f_id and c.is_delete = b'0'
+
+    </select>
+
+    <update id="supUpdate">
+        UPDATE `lingyun_wms_db`.`wh_supplier` SET `is_delete` = b'1' WHERE `c_id` = #{cid}
+    </update>
 </mapper>
