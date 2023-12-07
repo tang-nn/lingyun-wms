@@ -15,7 +15,7 @@ import java.util.List;
  * @Description : 进货明细
  * @CreateDate : 2023/11/21 19:47
  */
-// @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PurchaseDetails extends BaseEntity {
     private static final long serialVersionUID = 1L;
 

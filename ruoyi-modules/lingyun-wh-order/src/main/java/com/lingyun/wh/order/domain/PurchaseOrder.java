@@ -3,6 +3,7 @@ package com.lingyun.wh.order.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import com.ruoyi.system.api.model.Annex;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -77,21 +78,20 @@ public class PurchaseOrder extends BaseEntity {
      */
     private List<PurchaseDetails> purchaseDetailsList;
 
+    /**
+     * 附件列表
+     */
+    private List<Annex> annexes;
     public PurchaseOrder() {
     }
 
-    public PurchaseOrder(String poId, String poCode, String status, Date purchaseDate, String sId, String purchaserId, String reviewer, String reviewComments, Date reviewerDate, Boolean isDelete, List<PurchaseDetails> purchaseDetailsList) {
-        this.poId = poId;
-        this.poCode = poCode;
-        this.status = status;
-        this.purchaseDate = purchaseDate;
-        this.sId = sId;
-        this.purchaserId = purchaserId;
-        this.reviewer = reviewer;
-        this.reviewComments = reviewComments;
-        this.reviewerDate = reviewerDate;
-        this.isDelete = isDelete;
-        this.purchaseDetailsList = purchaseDetailsList;
+
+    public List<Annex> getAnnexes() {
+        return annexes;
+    }
+
+    public void setAnnexes(List<Annex> annexes) {
+        this.annexes = annexes;
     }
 
     public String getReviewComments() {
@@ -209,6 +209,7 @@ public class PurchaseOrder extends BaseEntity {
                 .append("updateTime", getUpdateTime())
                 .append("isDelete", getDelete())
                 .append("purchaseDetailsList", getPurchaseDetailsList())
+                .append("Annexes", getAnnexes())
                 .append("BaseEntity", super.toString())
                 .toString();
     }

@@ -2,7 +2,6 @@ import request from '@/utils/request'
 
 // 查询商品列表
 export function listGood(query) {
-  console.info(query);
   return request({
     url: '/wms/goods/gdinfo',
     method: 'get',

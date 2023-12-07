@@ -3,18 +3,28 @@ package com.lingyun.wh.order.controller;
 import com.lingyun.wh.order.domain.PurchaseOrder;
 import com.lingyun.wh.order.pojo.vo.PurchaseOrderVo;
 import com.lingyun.wh.order.service.IPurchaseOrderService;
+import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.file.FileTypeUtils;
+import com.ruoyi.common.core.utils.file.MimeTypeUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.core.web.page.TableDataInfo;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.annotation.RequiresPermissions;
+import com.ruoyi.common.security.utils.SecurityUtils;
+import com.ruoyi.system.api.RemoteFileService;
+import com.ruoyi.system.api.domain.SysFile;
+import com.ruoyi.system.api.model.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +43,8 @@ public class PurchaseOrderController extends BaseController {
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
 
+    @Autowired
+    private RemoteFileService remoteFileService;
     private String content;
 
 

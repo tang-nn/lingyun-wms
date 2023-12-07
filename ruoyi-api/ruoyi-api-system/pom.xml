@@ -22,7 +22,7 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-common-core</artifactId>
         </dependency>
-        
+
     </dependencies>
 
 </project>

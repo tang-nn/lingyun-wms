@@ -57,7 +57,7 @@
             <if test="status != null "> and wg.status = #{status}</if>
             <if test="gtId != null  and gtId != ''"> and wg.gt_id = #{gtId}</if>
             <if test="unit != null  and unit != ''"> and wsk.unit = #{unit}</if>
-<!--            <if test="gCode != null  and gCode != ''"> and wg.g_code = #{gCode}</if>-->
+           <if test="gCode != null  and gCode != ''"> and wg.g_code like concat('%', #{gCode}, '%')</if>
 <!--            <if test="sort != null "> and wg.sort = #{sort}</if>-->
 <!--            <if test="specCode != null  and specCode != ''"> and wg.spec_code = #{specCode}</if>-->
 <!--            <if test="orPrice != null "> and wg.or_price = #{orPrice}</if>-->
