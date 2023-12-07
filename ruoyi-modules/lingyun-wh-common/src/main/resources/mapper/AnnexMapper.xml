@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingyun.wh.common.mapper.AnnexMapper">
+
+    <resultMap type="com.ruoyi.system.api.model.Annex" id="AnnexResult">
+        <result property="aid"    column="a_id"    />
+        <result property="type"    column="a_type"    />
+        <result property="formId"    column="form_id"    />
+        <result property="content"    column="a_content"    />
+    </resultMap>
+
+    <sql id="selectAnnexVo">
+        select a_id, a_type, form_id, a_content from wh_annex
+    </sql>
+
+    <select id="selectAnnexList" parameterType="com.ruoyi.system.api.model.Annex" resultMap="AnnexResult">
+        <include refid="selectAnnexVo"/>
+        <where>
+            <if test="type != null  and type != ''"> and a_type = #{type}</if>
+            <if test="formId != null  and formId != ''"> and form_id = #{formId}</if>
+            <if test="content != null  and content != ''"> and a_content = #{content}</if>
+        </where>
+    </select>
+
+    <select id="selectAnnexByAid" parameterType="String" resultMap="AnnexResult">
+        <include refid="selectAnnexVo"/>
+        where a_id = #{aid}
+    </select>
+
+    <insert id="insertAnnex" useGeneratedKeys="true" keyProperty="aid">
+        insert into wh_annex(a_type, form_id, a_content)
+        <foreach collection="annexes" item="a" open=" values (" close=")" separator=",">
+            #{type},#{formId},#{content}
+        </foreach>
+    </insert>
+    <update id="updateAnnex" parameterType="com.ruoyi.system.api.model.Annex">
+        update wh_annex
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null and type != ''">a_type = #{type},</if>
+            <if test="formId != null and formId != ''">form_id = #{formId},</if>
+            <if test="content != null and content != ''">a_content = #{content},</if>
+        </trim>
+        where a_id = #{aid}
+    </update>
+
+    <delete id="deleteAnnexByAid" parameterType="String">
+        delete from wh_annex where a_id = #{aid}
+    </delete>
+
+    <delete id="deleteAnnexByAids" parameterType="String">
+        delete from wh_annex where a_id in
+        <foreach item="aid" collection="array" open="(" separator="," close=")">
+            #{aid}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,16 +1,16 @@
-package com.lingyun.wh.common.mapper;
+package com.lingyun.wh.common.service;
 
 import com.ruoyi.system.api.model.Annex;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 /**
  * @Author : Tang
- * @Description : 附件Mapper接口
- * @CreateDate : 2023/11/20 18:33
+ * @Description : 附件Service接口
+ * @CreateDate : 2023/12/7 19:34
  */
-public interface AnnexMapper {
-
+public interface IAnnexService {
     /**
      * 查询附件
      *
@@ -33,6 +33,7 @@ public interface AnnexMapper {
      * @param annexes 附件
      * @return 结果
      */
+    @Transactional
     public int insertAnnex(List<Annex> annexes);
 
     /**
@@ -44,19 +45,18 @@ public interface AnnexMapper {
     public int updateAnnex(Annex annex);
 
     /**
-     * 删除附件
+     * 批量删除附件
+     *
+     * @param aIds 需要删除的附件主键集合
+     * @return 结果
+     */
+    public int deleteAnnexByAIds(Long[] aIds);
+
+    /**
+     * 删除附件信息
      *
      * @param aId 附件主键
      * @return 结果
      */
     public int deleteAnnexByAId(Long aId);
-
-    /**
-     * 批量删除附件
-     *
-     * @param aIds 需要删除的数据主键集合
-     * @return 结果
-     */
-    public int deleteAnnexByAIds(Long[] aIds);
-
 }

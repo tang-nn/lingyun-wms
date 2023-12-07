@@ -11,6 +11,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import com.ruoyi.system.api.RemoteAnnexService;
 import com.ruoyi.system.api.RemoteEncodeRuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +34,8 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     RemoteEncodeRuleService remoteEncodeRuleService;
     @Autowired
     private PurchaseOrderMapper purchaseOrderMapper;
-    // @Autowired
-    // private RemoteGoodsService remoteGoodsService;
+    @Autowired
+    private RemoteAnnexService remoteAnnexService;
 
     /**
      * 查询进货订单
@@ -89,13 +90,14 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         System.out.println("purchaseOrder: " + purchaseOrder);
         int rows = purchaseOrderMapper.insertPurchaseOrder(purchaseOrder);
         insertPurchaseDetails(purchaseOrder);
+        purchaseOrder.getAnnexes().forEach(e->e.setFormId(purchaseOrder.getPoId()));
+        remoteAnnexService.add(purchaseOrder.getAnnexes());
         res = remoteEncodeRuleService.increaseCurrentSerialNumber(OrderType.PURCHASE_ORDER, SecurityConstants.INNER);
-        if (res == null || res.getCode() != 200) {
+        if (rows <= 0 || res == null || res.getCode() != 200) {
             log.error("insertPurchaseOrder 流水号迭代失败");
             throw new RuntimeException("进货数据插入失败");
-        } else {
-            purchaseOrder.setPoCode(res.getData());
-        }return rows;
+        }
+        return rows;
     }
 
     /**
