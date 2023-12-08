@@ -1,9 +1,10 @@
 package com.lingyun.wh.goods.mapper;
 
 import com.lingyun.wh.goods.doman.GoodsType;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 货品类型Mapper接口
@@ -21,10 +22,17 @@ public interface GoodsTypeMapper
      */
     public GoodsType selectGoodsTypeByGtId(String gtId);
 
+
+    /**
+     * 根据商品类型名称查询是否存在
+     * @param gtname
+     * @return
+     */
+    public int selectGoodsTypeByGname(String gtname);
+
     /**
      * 查询货品类型列表
      *
-     * @param goodsType 货品类型
      * @return 货品类型集合
      */
     public List<GoodsType> selectGoodsTypeList(GoodsType goodsType);
@@ -33,7 +41,7 @@ public interface GoodsTypeMapper
      * 查询货品类型下拉框
      */
 
-    public List<GoodsType>selectGoodsTypes();
+    public List<GoodsType> selectGoodsTypes();
 
     /**
      * 新增货品类型
@@ -51,13 +59,9 @@ public interface GoodsTypeMapper
      */
     public int updateGoodsType(GoodsType goodsType);
 
-    /**
-     * 删除货品类型
-     *
-     * @param gtId 货品类型主键
-     * @return 结果
-     */
-    public int deleteGoodsTypeByGtId(String gtId);
+
+
+    public int countByIsDelete(@Param("gtId") String [] gtId);
 
     /**
      * 批量删除货品类型
@@ -65,6 +69,9 @@ public interface GoodsTypeMapper
      * @param gtIds 需要删除的数据主键集合
      * @return 结果
      */
-    public int deleteGoodsTypeByGtIds(String[] gtIds);
+    public int deleteGoodsTypeByGtIds(@Param("gtIds") String[] gtIds);
+
+    //子类
+    public int deleteGoodsTypeByParentGtIds(@Param("gtIds") String[] gtIds);
 }
 

@@ -107,6 +107,7 @@ public class GoodsServiceImpl implements IGoodsService {
     @Override
     public int deleteGoodsByGIds(String[] gIds)
     {
+
         return goodsMapper.deleteGoodsByGIds(gIds);
     }
 

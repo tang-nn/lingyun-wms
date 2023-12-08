@@ -12,6 +12,7 @@
         <result property="status"    column="status"    />
         <result property="remark"    column="remark"    />
         <result property="parentId"    column="parent_id"    />
+        <result property="creater" column="creater"/>
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
         <result property="updateBy"    column="update_by"    />
@@ -20,20 +21,24 @@
     </resultMap>
 
     <sql id="selectGoodsTypeVo">
-        select gt_id, gt_code, gt_name, sort, status, remark,
-               parent_id, create_by, create_time, update_by,
-               update_time, is_delete from wh_goods_type
+        select gt_id, gt_code, gt_name, sort, wgt.`status`, wgt.remark,
+               parent_id, wgt.create_by, wgt.create_time, wgt.update_by,
+               wgt.update_time, wgt.is_delete ,su.user_name creater
+        from wh_goods_type  wgt
+        left join sys_user su on wgt.create_by=su.user_id
     </sql>
 
     <select id="selectGoodsTypeList" parameterType="com.lingyun.wh.goods.doman.GoodsType" resultMap="GoodsTypeResult">
         <include refid="selectGoodsTypeVo"/>
         <where>
-            <if test="gtCode != null  and gtCode != ''"> and gt_code = #{gtCode}</if>
-            <if test="gtName != null  and gtName != ''"> and gt_name like concat('%', #{gtName}, '%')</if>
-            <if test="sort != null "> and sort = #{sort}</if>
-            <if test="status != null "> and status = #{status}</if>
-            <if test="parentId != null  and parentId != ''"> and parent_id = #{parentId}</if>
-            <if test="isDelete != null  and isDelete != ''"> and is_delete = #{isDelete}</if>
+            <if test="gtCode != null  and gtCode != ''"> and wgt.gt_code = #{gtCode}</if>
+            <if test="gtName != null  and gtName != ''"> and wgt.gt_name like concat('%', #{gtName}, '%')</if>
+            <if test="status != null "> and wgt.status = #{status}</if>
+            <if test="creater != null  and creater != ''"> and su.user_name like concat('%', #{creater}, '%')</if>
+            <if test="createTimes != null and createTimes.size() > 0">
+                and wgt.create_time BETWEEN #{createTimes[0]} AND #{createTimes[1]}
+            </if>
+            and wgt.is_delete = 0
         </where>
     </select>
 
@@ -42,11 +47,23 @@
         where gt_id = #{gtId}
     </select>
 
-    <select id="selectGoodsTypes" resultType="map">
-        select wgt.gt_id, wgt.gt_name son,
-               wgt.parent_id, wgt2.gt_name father from wh_goods_type wgt
-                left join wh_goods_type wgt2 on  wgt.parent_id=wgt2.gt_id where wgt.is_delete=0
+<!--    <select id="selectGoodsTypes" resultType="map">-->
+<!--        select wgt.gt_id, wgt.gt_name son,-->
+<!--               wgt.parent_id, wgt2.gt_name father from wh_goods_type wgt-->
+<!--                left join wh_goods_type wgt2 on  wgt.parent_id=wgt2.gt_id where wgt.is_delete=0-->
+<!--    </select>-->
+
+    <select id="selectGoodsTypes" resultMap="GoodsTypeResult">
+        select gt_id,gt_code,gt_name,sort,status,parent_id
+        from wh_goods_type
+        where is_delete=0
     </select>
+
+
+    <select id="selectGoodsTypeByGname" parameterType="String" resultType="integer">
+        select count(*) from wh_goods_type where gt_name=#{gtname}
+    </select>
+
 
     <insert id="insertGoodsType" parameterType="com.lingyun.wh.goods.doman.GoodsType" useGeneratedKeys="true" keyProperty="gtId">
         insert into wh_goods_type
@@ -96,14 +113,26 @@
         where gt_id = #{gtId}
     </update>
 
-    <delete id="deleteGoodsTypeByGtId" parameterType="String">
-        delete from wh_goods_type where gt_id = #{gtId}
-    </delete>
 
-    <delete id="deleteGoodsTypeByGtIds" parameterType="String">
-        delete from wh_goods_type where gt_id in
-        <foreach item="gtId" collection="array" open="(" separator="," close=")">
+
+    <select id="countByIsDelete" parameterType="String" resultType="int">
+        select count(*) from wh_goods_type where  parent_id in
+        <foreach item="id" collection="gtId" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <update id="deleteGoodsTypeByGtIds" parameterType="String">
+        update  wh_goods_type set is_delete=1 where gt_id  in
+        <foreach item="gtId" collection="gtIds" open="(" separator="," close=")">
             #{gtId}
         </foreach>
-    </delete>
+    </update>
+
+    <update id="deleteGoodsTypeByParentGtIds" parameterType="String">
+        update  wh_goods_type set is_delete=1 where parent_id  in
+        <foreach item="gtId" collection="gtIds" open="(" separator="," close=")">
+            #{gtId}
+        </foreach>
+    </update>
 </mapper>

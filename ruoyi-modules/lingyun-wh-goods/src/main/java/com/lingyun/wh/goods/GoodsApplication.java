@@ -6,6 +6,8 @@ import com.ruoyi.common.swagger.annotation.EnableCustomSwagger2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.Arrays;
+
 /**
  * @Author : Tang
  * @Description :
@@ -19,6 +21,7 @@ public class GoodsApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(GoodsApplication.class, args);
+
     }
 
 }

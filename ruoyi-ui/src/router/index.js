@@ -52,6 +52,32 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/gdsadd',
+        component: () => import('@/views/wms/goodsmanager/goodsinfo/goodsadd'),
+        name: 'goodsadd',
+        meta: { title: '商品管理 / 新增货品信息', icon: 'dashboard'}
+      }
+    ]
+  },
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/gdsedit',
+        component: () => import('@/views/wms/goodsmanager/goodsinfo/goodsedit'),
+        name: 'goodsadd',
+        meta: { title: '商品管理 / 编辑货品信息', icon: 'dashboard' }
+      }
+    ]
+  },
+  {
     path: '/404',
     component: () => import('@/views/error/404'),
     hidden: true

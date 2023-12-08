@@ -91,6 +91,11 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- 分布式事务 -->
+<!--        <dependency>-->
+<!--            <groupId>com.ruoyi</groupId>-->
+<!--            <artifactId>ruoyi-common-seata</artifactId>-->
+<!--        </dependency>-->
         <!--        热部署-->
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->

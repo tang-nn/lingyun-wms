@@ -93,9 +93,8 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         if (res == null || res.getCode() != 200) {
             log.error("insertPurchaseOrder 流水号迭代失败");
             throw new RuntimeException("进货数据插入失败");
-        } else {
-            purchaseOrder.setPoCode(res.getData());
-        }return rows;
+        }
+        return rows;
     }
 
     /**
