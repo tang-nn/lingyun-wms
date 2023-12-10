@@ -10,6 +10,7 @@
         <result property="status" column="status"/>
         <result property="purchaseDate" column="purchase_date"/>
         <result property="sId" column="s_id"/>
+        <result property="purchasingDept" column="purchasing_dept"/>
         <result property="purchaserId" column="purchaser_id"/>
         <result property="remark" column="remark"/>
         <result property="reviewer" column="reviewer"/>
@@ -79,6 +80,7 @@
                status,
                purchase_date,
                s_id,
+               purchasing_dept,
                purchaser_id,
                remark,
                reviewer,
@@ -111,7 +113,7 @@
         INNER JOIN wh_goods g on g.g_id = pod.goods_id
         # 进货人和进货部门
         INNER JOIN sys_user pu on pu.user_id = po.purchaser_id
-        INNER JOIN sys_dept pdt on pdt.dept_id = pu.dept_id
+        INNER JOIN sys_dept pdt on pdt.dept_id = po.purchasing_dept
         # 制单人和所在部门
         INNER JOIN sys_user cu on cu.user_id = po.create_by
         INNER JOIN sys_dept cdt on cdt.dept_id = cu.dept_id
@@ -158,7 +160,7 @@
         INNER JOIN sys_dept pdt on pdt.dept_id = pu.dept_id
         # 制单人和所在部门
         INNER JOIN sys_user cu on cu.user_id = po.create_by
-        INNER JOIN sys_dept cdt on cdt.dept_id = cu.dept_id
+        INNER JOIN sys_dept cdt on cdt.dept_id = po.purchasing_dept
         # 供应商
         INNER JOIN wh_supplier on s.s_id = po.s_id
         # 审核人
@@ -191,6 +193,7 @@
                a.status,
                a.purchase_date,
                a.s_id,
+               a.purchasing_dept,
                a.purchaser_id,
                a.remark,
                a.reviewer,
@@ -215,7 +218,7 @@
                b.is_delete         as sub_is_delete
         from wh_purchase_order a
                  left join wh_purchase_details b on b.po_id = a.po_id
-        where a.po_id = #{poId}
+        where a.po_id = #{poId} and a.is_delete = b'0'
     </select>
 
     <insert id="insertPurchaseOrder" parameterType="PurchaseOrder" useGeneratedKeys="true" keyProperty="poId">
@@ -225,6 +228,7 @@
             <if test="status != null and status != ''">status,</if>
             <if test="purchaseDate != null">purchase_date,</if>
             <if test="sId != null and sId != ''">s_id,</if>
+            <if test="purchasingDept != null and purchasingDept != ''">purchasing_dept,</if>
             <if test="purchaserId != null and purchaserId != ''">purchaser_id,</if>
             <if test="remark != null and remark != ''">remark,</if>
             <if test="createBy != null and createBy != ''">create_by,</if>
@@ -238,8 +242,10 @@
             <if test="status != null and status != ''">#{status},</if>
             <if test="purchaseDate != null">#{purchaseDate},</if>
             <if test="sId != null and sId != ''">#{sId},</if>
+            <if test="purchasingDept != null and purchasingDept != ''">#{purchasingDept},</if>
             <if test="purchaserId != null and purchaserId != ''">#{purchaserId},</if>
-            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="remark == null">'',</if>
             <if test="createBy != null and createBy != ''">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null and updateBy != ''">#{updateBy},</if>

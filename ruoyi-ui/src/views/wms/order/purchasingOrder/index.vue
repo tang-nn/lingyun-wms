@@ -331,6 +331,7 @@ export default {
         this.$tab.openPage("添加进货单据", '/order/purchase/add');
     },
     handleUpdate() {
+      this.$tab.openPage("编辑进货单据", '/order/purchase/edit/' + this.ids?.[0]);
     },
     handleDelete() {
     },
@@ -346,7 +347,10 @@ export default {
     },
     handleExport() {
     },
-    handleSelectionChange() {
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.poId);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
     },
   }
 };

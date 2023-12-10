@@ -9,9 +9,9 @@ public class AttachmentType {
     /**
      * 进货附件
      */
-    private static final int PURCHASE_ANNEX = 1;
+    public static final String PURCHASE_ANNEX = "at_purchase_annex";
     /**
      * 货品附件
      */
-    private static final int PRODUCT_ANNEX = 1;
+    public static final String PRODUCT_ANNEX = "at_product_annex";
 }

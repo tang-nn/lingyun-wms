@@ -49,6 +49,11 @@ public class PurchaseOrder extends BaseEntity {
     private String sId;
 
     /**
+     * 进货部门 ID
+     */
+    @Excel(name = "进货部门 ID")
+    private String purchasingDept;
+    /**
      * 进货人
      */
     @Excel(name = "进货人")
@@ -85,12 +90,20 @@ public class PurchaseOrder extends BaseEntity {
     public PurchaseOrder() {
     }
 
+    public String getPurchasingDept() {
+        return purchasingDept;
+    }
+
+    public void setPurchasingDept(String purchasingDept) {
+        this.purchasingDept = purchasingDept;
+    }
 
     public List<Annex> getAnnexes() {
         return annexes;
     }
 
-    public void setAnnexes(List<Annex> annexes) {
+    public void
+    setAnnexes(List<Annex> annexes) {
         this.annexes = annexes;
     }
 
@@ -192,26 +205,20 @@ public class PurchaseOrder extends BaseEntity {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("poId", getPoId())
-                .append("poCode", getPoCode())
-                .append("status", getStatus())
-                .append("purchaseDate", getPurchaseDate())
-                .append("sId", getsId())
-                .append("purchaserId", getPurchaserId())
-                .append("remark", getRemark())
-                .append("reviewer", getReviewer())
-                .append("reviewComments", getReviewComments())
-                .append("reviewerDate", getReviewerDate())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .append("isDelete", getDelete())
-                .append("purchaseDetailsList", getPurchaseDetailsList())
-                .append("Annexes", getAnnexes())
-                .append("BaseEntity", super.toString())
-                .toString();
+        return "PurchaseOrder{" +
+                "poId='" + poId + '\'' +
+                ", poCode='" + poCode + '\'' +
+                ", status='" + status + '\'' +
+                ", purchaseDate=" + purchaseDate +
+                ", sId='" + sId + '\'' +
+                ", purchasingDept='" + purchasingDept + '\'' +
+                ", purchaserId='" + purchaserId + '\'' +
+                ", reviewer='" + reviewer + '\'' +
+                ", reviewComments='" + reviewComments + '\'' +
+                ", reviewerDate=" + reviewerDate +
+                ", isDelete=" + isDelete +
+                ", purchaseDetailsList=" + purchaseDetailsList +
+                ", annexes=" + annexes +
+                '}';
     }
-
 }

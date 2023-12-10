@@ -66,6 +66,9 @@ public class AnnexController extends BaseController {
     @Log(title = "附件", businessType = BusinessType.INSERT)
     @PostMapping
     public R<?> add(@RequestBody List<Annex> annexes) {
+        if(annexes == null || annexes.isEmpty()){
+            return R.ok("附件为空");
+        }
         return annexService.insertAnnex(annexes) == annexes.size() ? R.ok() : R.fail();
     }
 

@@ -4,7 +4,7 @@
 
 <script>
 import PurchaseFrom from '@/views/wms/order/purchasingOrder/PurchaseFrom.vue'
-import {addPurchase} from "@/api/wms/order/purchase";
+import {getPurchaseInf} from "@/api/wms/order/purchase";
 
 export default {
   name: 'addPurchaseFrom',
@@ -14,14 +14,16 @@ export default {
   methods:{
     async submitForm(data) {
       console.log("purchaseOrderInf: ", data)
-      let {code, message} = (await addPurchase(data));
-      if (code === 200) {
-        this.$message.success(message);
-        this.$tab.closeOpenPage({path: '/order/purchase'});
-      } else {
-        this.$message.error(message);
-      }
     }
+  },
+  async created() {
+    let poId = this.$route?.params?.poId;
+    if (!poId){
+      this.$tab.openPage("添加进货单据", '/order/purchase/add');
+    }
+    let {data:purchaseInf} = (await getPurchaseInf(poId));
+    console.log("purchaseInf: ", purchaseInf)
+    console.log("route: ", this.$route)
   }
 
 }

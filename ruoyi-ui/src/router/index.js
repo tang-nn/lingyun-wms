@@ -163,19 +163,27 @@ export const dynamicRoutes = [
     ]
   },
   {
-    path: '/order/purchase/add',
+    path: '/order',
     component: Layout,
     hidden: true,
-    permissions: ['order:purchase:add'],
+    permissions: ['order:purchase'],
     children: [
       {
-        path: '',
+        path: 'purchase/add',
+        permissions: ['order:purchase:add'],
         component: () => import('@/views/wms/order/purchasingOrder/add.vue'),
         name: '添加进货单据',
         meta: { title: '添加进货信息', activeMenu: '/order/purchase/add' }
+      },
+      {
+        path: 'purchase/edit/:poId(\\d+)',
+        permissions: ['order:purchase:exit'],
+        component: () => import('@/views/wms/order/purchasingOrder/edit.vue'),
+        name: '编辑进货单据',
+        meta: { title: '编辑进货信息', activeMenu: '/order/purchase/edit' }
       }
     ]
-  }
+  },
 ]
 
 // 防止连续点击多次路由报错

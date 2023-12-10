@@ -1,7 +1,10 @@
 package com.ruoyi.system.api.factory;
 
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.core.constant.HttpStatus;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.web.domain.AjaxResult;
+import com.ruoyi.common.core.web.page.TableDataInfo;
 import com.ruoyi.system.api.RemoteAnnexService;
 import com.ruoyi.system.api.RemoteFileService;
 import com.ruoyi.system.api.domain.SysFile;
@@ -11,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * @Author : Tang
@@ -25,6 +30,20 @@ public class RemoteAnnexFallbackFactory implements FallbackFactory<RemoteAnnexSe
     @Override
     public RemoteAnnexService create(Throwable throwable) {
         log.error("附件服务调用失败: {}", throwable.getMessage());
-        return annexes -> R.fail("编码生成失败:" + throwable.getMessage());
+        return new RemoteAnnexService() {
+            @Override
+            public R<?> add(List<Annex> annexes) {
+                return R.fail("附件插入失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public TableDataInfo list(Annex annex) {
+                TableDataInfo rspData = new TableDataInfo();
+                rspData.setCode(HttpStatus.ERROR);
+                rspData.setMsg("查询错误");
+                rspData.setTotal(0);
+                return rspData;
+            }
+        };
     }
 }

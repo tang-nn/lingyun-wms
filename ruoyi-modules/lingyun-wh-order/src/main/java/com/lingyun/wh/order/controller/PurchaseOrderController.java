@@ -88,6 +88,7 @@ public class PurchaseOrderController extends BaseController {
     @Log(title = "进货订单", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult add(@RequestBody PurchaseOrder purchaseOrder) {
+        System.out.println("purchaseOrder: " + purchaseOrder);
         return toAjax(purchaseOrderService.insertPurchaseOrder(purchaseOrder));
     }
 

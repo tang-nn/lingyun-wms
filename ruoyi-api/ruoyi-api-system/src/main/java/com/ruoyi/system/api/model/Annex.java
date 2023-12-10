@@ -1,5 +1,6 @@
 package com.ruoyi.system.api.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author Tang
  * @date 2023-11-20
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Annex extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -28,6 +30,15 @@ public class Annex extends BaseEntity {
     /** 附件内容，文件路径 */
     @Excel(name = "附件内容，文件路径")
     private String content;
+
+    public Annex() {
+    }
+
+    public Annex(String type, String formId, String content) {
+        this.type = type;
+        this.formId = formId;
+        this.content = content;
+    }
 
     public String getAid()
     {

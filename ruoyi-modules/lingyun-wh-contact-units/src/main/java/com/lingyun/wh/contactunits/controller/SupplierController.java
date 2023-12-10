@@ -91,17 +91,17 @@ public class SupplierController extends BaseController {
         return toAjax(supplierService.deleteSupplierBySIds(sIds));
     }
 
-    /**
-     * 查询供应商信息
-     * @return
-     */
-    @RequiresPermissions("consumer:consumer:list")
-    @RequestMapping("/list")
-    public TableDataInfo consumerQuery() {
-        startPage();
-        List<Supplier> csm = supplierService.supplierQurey();
-        return getDataTable(csm);
-    }
+    // /**
+    //  * 查询供应商信息
+    //  * @return
+    //  */
+    // @RequiresPermissions("consumer:consumer:list")
+    // @RequestMapping("/list")
+    // public TableDataInfo supplierQuery() {
+    //     startPage();
+    //     List<Supplier> csm = supplierService.supplierQurey();
+    //     return getDataTable(csm);
+    // }
 
 
     /**

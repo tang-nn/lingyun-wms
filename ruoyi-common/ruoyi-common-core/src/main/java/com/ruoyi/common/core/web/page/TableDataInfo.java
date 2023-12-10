@@ -53,16 +53,6 @@ public class TableDataInfo implements Serializable
         this.total = total;
     }
 
-    public List<?> getRows()
-    {
-        return rows;
-    }
-
-    public void setRows(List<?> rows)
-    {
-        this.rows = rows;
-    }
-
     public int getCode()
     {
         return code;
@@ -81,5 +71,24 @@ public class TableDataInfo implements Serializable
     public void setMsg(String msg)
     {
         this.msg = msg;
+    }
+
+    public List<?> getRows() {
+        return rows;
+    }
+
+    public void setRows(List<?> rows)
+    {
+        this.rows = rows;
+    }
+
+    @Override
+    public String toString() {
+        return "TableDataInfo{" +
+                "total=" + total +
+                ", rows=" + rows +
+                ", code=" + code +
+                ", msg='" + msg + '\'' +
+                '}';
     }
 }

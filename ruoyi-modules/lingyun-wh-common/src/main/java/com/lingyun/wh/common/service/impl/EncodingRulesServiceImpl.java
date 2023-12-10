@@ -114,7 +114,7 @@ public class EncodingRulesServiceImpl implements IEncodingRulesService {
         System.out.println("rules = " + rules);
         int csn = rules.getCurrentSerialNumber() + rules.getStepLength();
         // 当前流水号超过规定位数，抛出异常
-        if (rules.getSerialNumber() < csn) {
+        if (rules.getSerialNumber() < String.valueOf(csn).length()) {
             throw new RuntimeException("前流水号超过规定位数，请重新指定编码的流水好长度");
         }
 

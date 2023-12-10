@@ -5,14 +5,17 @@ import com.lingyun.wh.order.domain.PurchaseOrder;
 import com.lingyun.wh.order.mapper.PurchaseOrderMapper;
 import com.lingyun.wh.order.pojo.vo.PurchaseOrderVo;
 import com.lingyun.wh.order.service.IPurchaseOrderService;
+import com.ruoyi.common.core.constant.AttachmentType;
 import com.ruoyi.common.core.constant.OrderType;
 import com.ruoyi.common.core.constant.SecurityConstants;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.web.page.TableDataInfo;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import com.ruoyi.system.api.RemoteAnnexService;
 import com.ruoyi.system.api.RemoteEncodeRuleService;
+import com.ruoyi.system.api.model.Annex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +48,15 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
      */
     @Override
     public PurchaseOrder selectPurchaseOrderByPoId(String poId) {
-        return purchaseOrderMapper.selectPurchaseOrderByPoId(poId);
+        PurchaseOrder purchaseOrder = purchaseOrderMapper.selectPurchaseOrderByPoId(poId);
+        TableDataInfo list = remoteAnnexService.list(new Annex(AttachmentType.PURCHASE_ANNEX, poId, null));
+        System.out.println("remoteAnnexService list: " + list);
+        if(list != null && list.getCode() == 200){
+            purchaseOrder.setAnnexes((List<Annex>) list.getRows());
+        }else {
+            log.error("进货 ID：{}，查询附件失败", poId);
+        }
+        return purchaseOrder;
     }
 
     /**
@@ -87,11 +98,23 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         purchaseOrder.setUpdateTime(nowDate);
         purchaseOrder.setCreateBy(userId);
         purchaseOrder.setUpdateBy(userId);
+        purchaseOrder.setStatus("pending_review");
         System.out.println("purchaseOrder: " + purchaseOrder);
         int rows = purchaseOrderMapper.insertPurchaseOrder(purchaseOrder);
         insertPurchaseDetails(purchaseOrder);
-        purchaseOrder.getAnnexes().forEach(e->e.setFormId(purchaseOrder.getPoId()));
-        remoteAnnexService.add(purchaseOrder.getAnnexes());
+        purchaseOrder.getAnnexes().forEach(e -> {
+            e.setFormId(purchaseOrder.getPoId());
+            e.setType(AttachmentType.PURCHASE_ANNEX);
+        });
+        List<Annex> annexeList = purchaseOrder.getAnnexes();
+        if (annexeList != null && !annexeList.isEmpty()) {
+            R<?> add = remoteAnnexService.add(annexeList);
+            if (add == null || add.getCode() != 200) {
+                log.error("insertPurchaseOrder 附件信息插入失败");
+                throw new RuntimeException("附件信息插入失败");
+            }
+            System.out.println("remoteAnnexService add: " + add);
+        }
         res = remoteEncodeRuleService.increaseCurrentSerialNumber(OrderType.PURCHASE_ORDER, SecurityConstants.INNER);
         if (rows <= 0 || res == null || res.getCode() != 200) {
             log.error("insertPurchaseOrder 流水号迭代失败");
@@ -159,6 +182,9 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
                 purchaseDetails.setCreateTime(createTime);
                 purchaseDetails.setUpdateBy(createBy);
                 purchaseDetails.setUpdateTime(createTime);
+                if (StringUtils.isEmpty(purchaseDetails.getRemark())) {
+                    purchaseDetails.setRemark("");
+                }
                 System.out.println("purchaseDetails = " + purchaseDetails);
                 list.add(purchaseDetails);
             }

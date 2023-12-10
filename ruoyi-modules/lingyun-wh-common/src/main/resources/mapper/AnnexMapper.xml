@@ -31,8 +31,8 @@
 
     <insert id="insertAnnex" useGeneratedKeys="true" keyProperty="aid">
         insert into wh_annex(a_type, form_id, a_content)
-        <foreach collection="annexes" item="a" open=" values (" close=")" separator=",">
-            #{type},#{formId},#{content}
+        <foreach collection="arg0" item="i" open=" values " separator=",">
+            (#{i.type},#{i.formId},#{i.content})
         </foreach>
     </insert>
     <update id="updateAnnex" parameterType="com.ruoyi.system.api.model.Annex">
