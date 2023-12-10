@@ -1,11 +1,9 @@
 package com.lingyun.wh.goods.service;
 
-import com.lingyun.wh.goods.doman.Goods;
-import com.lingyun.wh.goods.doman.GoodsType;
+import com.lingyun.wh.goods.api.domain.GoodsType;
 import com.lingyun.wh.goods.doman.vo.TreeSelect;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 货品类型Service接口

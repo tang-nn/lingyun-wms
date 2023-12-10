@@ -23,6 +23,8 @@ spring:
         # 共享配置
         shared-configs:
           - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+  jackson:
+    date-format: YYYY-MM-dd HH:mm:ss
 #mybatis:
 #  type-aliases-package: com.lingyun.wh.goods.doman
 #  mapper-locations: classpath*:mapper/*Mapper.xml

@@ -1,5 +1,6 @@
 package com.lingyun.wh.order.controller;
 
+import com.lingyun.wh.goods.api.RemoteGoodsService;
 import com.lingyun.wh.order.domain.PurchaseOrder;
 import com.lingyun.wh.order.pojo.vo.PurchaseOrderVo;
 import com.lingyun.wh.order.service.IPurchaseOrderService;
@@ -42,11 +43,6 @@ import java.util.Map;
 public class PurchaseOrderController extends BaseController {
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
-
-    @Autowired
-    private RemoteFileService remoteFileService;
-    private String content;
-
 
     /**
      * 查询进货订单列表

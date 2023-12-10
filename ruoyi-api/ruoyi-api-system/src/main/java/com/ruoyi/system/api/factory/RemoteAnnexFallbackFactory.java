@@ -1,19 +1,14 @@
 package com.ruoyi.system.api.factory;
 
-import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.constant.HttpStatus;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.core.web.page.TableDataInfo;
 import com.ruoyi.system.api.RemoteAnnexService;
-import com.ruoyi.system.api.RemoteFileService;
-import com.ruoyi.system.api.domain.SysFile;
-import com.ruoyi.system.api.model.Annex;
+import com.ruoyi.system.api.domain.Annex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

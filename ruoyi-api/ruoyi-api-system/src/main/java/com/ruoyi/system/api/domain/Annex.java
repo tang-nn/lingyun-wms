@@ -1,4 +1,4 @@
-package com.ruoyi.system.api.model;
+package com.ruoyi.system.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.common.core.annotation.Excel;

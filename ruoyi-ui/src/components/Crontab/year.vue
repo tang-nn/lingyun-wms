@@ -1,39 +1,39 @@
 <template>
 	<el-form size="small">
 		<el-form-item>
-			<el-radio :label="1" v-model='radioValue'>
+			<el-radio v-model='radioValue' :label="1">
 				不填，允许的通配符[, - * /]
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
-			<el-radio :label="2" v-model='radioValue'>
+			<el-radio v-model='radioValue' :label="2">
 				每年
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
-			<el-radio :label="3" v-model='radioValue'>
+			<el-radio v-model='radioValue' :label="3">
 				周期从
-				<el-input-number v-model='cycle01' :min='fullYear' :max="2098" /> -
-				<el-input-number v-model='cycle02' :min="cycle01 ? cycle01 + 1 : fullYear + 1" :max="2099" />
+				<el-input-number v-model='cycle01' :max="2098" :min='fullYear' /> -
+				<el-input-number v-model='cycle02' :max="2099" :min="cycle01 ? cycle01 + 1 : fullYear + 1" />
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
-			<el-radio :label="4" v-model='radioValue'>
+			<el-radio v-model='radioValue' :label="4">
 				从
-				<el-input-number v-model='average01' :min='fullYear' :max="2098"/> 年开始，每
-				<el-input-number v-model='average02' :min="1" :max="2099 - average01 || fullYear" /> 年执行一次
+				<el-input-number v-model='average01' :max="2098" :min='fullYear'/> 年开始，每
+				<el-input-number v-model='average02' :max="2099 - average01 || fullYear" :min="1" /> 年执行一次
 			</el-radio>
 
 		</el-form-item>
 
 		<el-form-item>
-			<el-radio :label="5" v-model='radioValue'>
+			<el-radio v-model='radioValue' :label="5">
 				指定
-				<el-select clearable v-model="checkboxList" placeholder="可多选" multiple>
-					<el-option v-for="item in 9" :key="item" :value="item - 1 + fullYear" :label="item -1 + fullYear" />
+				<el-select v-model="checkboxList" clearable multiple placeholder="可多选">
+					<el-option v-for="item in 9" :key="item" :label="item -1 + fullYear" :value="item - 1 + fullYear" />
 				</el-select>
 			</el-radio>
 		</el-form-item>

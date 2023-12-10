@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
+    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" :inline="true" size="small">
       <el-form-item label="货品类型">
         <el-input
           v-model="queryParams.gtName"
-          placeholder="请输入货品类型名称"
           clearable
+          placeholder="请输入货品类型名称"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
@@ -13,8 +13,8 @@
       <el-form-item label="状态" >
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择"
           clearable
+          placeholder="请选择"
           style="width: 240px"
         >
           <el-option
@@ -31,8 +31,8 @@
       <el-form-item label="操作人">
         <el-input
           v-model="queryParams.creater"
-          placeholder="请输入"
           clearable
+          placeholder="请输入"
           style="width: 240px"
         />
       </el-form-item>
@@ -42,83 +42,83 @@
       <el-form-item label="操作时间" prop="createTimes">
         <el-date-picker
           v-model="queryParams.createTimes"
-          format="yyyy-MM-dd" value-format="yyyy-MM-dd"
-          type="daterange"
+          end-placeholder="结束日期" format="yyyy-MM-dd"
           range-separator="至"
           start-placeholder="开始日期"
-          end-placeholder="结束日期">
+          type="daterange"
+          value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
 
 
       <el-form-item>
           <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-          <el-button type="primary"  size="mini" @click="handleQuery">查询</el-button>
+          <el-button size="mini"  type="primary" @click="handleQuery">查询</el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
           v-hasPermi="['gd:goodtype:add']"
+          icon="el-icon-plus"
+          plain
+          size="mini"
+          type="primary"
+          @click="handleAdd"
         >新增</el-button>
       </el-col>
 
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-minus"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
           v-hasPermi="['gd:goodtype:delete']"
+          :disabled="multiple"
+          icon="el-icon-minus"
+          plain
+          size="mini"
+          type="danger"
+          @click="handleDelete"
         >删除</el-button>
       </el-col>
 
       <el-col :span="1.5">
         <el-button
-          type="info"
-          plain
-          icon="el-icon-upload2"
-          size="mini"
-          @click="handleImport"
           v-hasPermi="['gd:goodtype:import']"
+          icon="el-icon-upload2"
+          plain
+          size="mini"
+          type="info"
+          @click="handleImport"
         >导入</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
           v-hasPermi="['gd:goodtype:export']"
+          icon="el-icon-download"
+          plain
+          size="mini"
+          type="warning"
+          @click="handleExport"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table   max-height="520" v-loading="loading" :data="goodList" @selection-change="handleSelectionChange">
+    <el-table   v-loading="loading" :data="goodList" max-height="520" @selection-change="handleSelectionChange">
 
-      <el-table-column type="selection" fixed width="55" align="center" />
-      <el-table-column label="货品类型编号" fixed="left" prop="gtCode" :show-overflow-tooltip="true" width="150" />
-      <el-table-column label='序号' fixed="left" prop="gtId" width="100"/>
+      <el-table-column align="center" fixed type="selection" width="55" />
+      <el-table-column :show-overflow-tooltip="true" fixed="left" label="货品类型编号" prop="gtCode" width="150" />
+      <el-table-column fixed="left" label='序号' prop="gtId" width="100"/>
 
 
-      <el-table-column label="货品类型名称" fixed="left"
-                       :show-overflow-tooltip="true" width="150" >
+      <el-table-column :show-overflow-tooltip="true" fixed="left"
+                       label="货品类型名称" width="150" >
         <template slot-scope="scope">
          <span :style="getStyle(scope.row)"> {{scope.row.gtName}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="状态"  fixed="left" align="center" width="100">
+      <el-table-column align="center"  fixed="left" label="状态" width="100">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -130,7 +130,7 @@
         </template>
       </el-table-column>
       <el-table-column label="排序" prop="sort" width="100" />
-      <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" width="250" />
+      <el-table-column :show-overflow-tooltip="true" label="备注" prop="remark" width="250" />
 
       <el-table-column label="操作人" prop="creater" width="100" />
       <el-table-column label="操作时间" prop="createTime" width="150" >
@@ -138,21 +138,21 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作"  fixed="right" align="center" class-name="small-padding fixed-width">
+      <el-table-column align="center"  class-name="small-padding fixed-width" fixed="right" label="操作">
         <template slot-scope="scope" >
           <el-button
+            v-hasPermi="['gd:goodtype:edit']"
+            icon="el-icon-edit"
             size="mini"
             type="text"
-            icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['gd:goodtype:edit']"
           >编辑</el-button>
           <el-button
+            v-hasPermi="['gd:goodtype:delete']"
+            icon="el-icon-delete"
             size="mini"
             type="text"
-            icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['gd:goodtype:delete']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -170,27 +170,27 @@
 
 
     <!-- 商品类型导入对话框 -->
-    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+    <el-dialog :title="upload.title" :visible.sync="upload.open" append-to-body width="400px">
       <el-upload
         ref="upload"
-        :limit="1"
-        accept=".xlsx, .xls"
-        :headers="upload.headers"
         :action="upload.url + '?updateSupport=' + upload.updateSupport"
+        :auto-upload="false"
         :disabled="upload.isUploading"
+        :headers="upload.headers"
+        :limit="1"
         :on-progress="handleFileUploadProgress"
         :on-success="handleFileSuccess"
-        :auto-upload="false"
+        accept=".xlsx, .xls"
         drag
       >
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip text-center" slot="tip">
-          <div class="el-upload__tip" slot="tip">
+        <div slot="tip" class="el-upload__tip text-center">
+          <div slot="tip" class="el-upload__tip">
             <el-checkbox v-model="upload.updateSupport" /> 是否更新已经存在的商品类型数据
           </div>
           <span>仅允许导入xls、xlsx格式文件。</span>
-          <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>
+          <el-link :underline="false" style="font-size:12px;vertical-align: baseline;" type="primary" @click="importTemplate">下载模板</el-link>
         </div>
       </el-upload>
       <div slot="footer" class="dialog-footer">
@@ -204,36 +204,36 @@
     <!-- 添加或修改商品类别对话框 -->
 
     <el-drawer
-      :title="title"
-
-      :visible.sync="dialog"
-      direction="rtl"
-      custom-class="demo-drawer"
       ref="drawer"
+
+      :title="title"
+      :visible.sync="dialog"
+      custom-class="demo-drawer"
+      direction="rtl"
     >
       <div class="demo-drawer__content" style="border-top: 1px solid #eeeeee;padding-top: 20px">
         <div style="margin: 20px;"></div>
-        <el-form :inline="true"  :model="form" :rules="rules" ref="form"
-                 :label-position="labelPosition" label-width="80px" >
+        <el-form ref="form"  :model="form" :inline="true" :label-position="labelPosition"
+                 :rules="rules" label-width="80px" >
           <el-form-item label="上级分类" prop="parentId">
             <treeselect v-model="selectedParentId"
+                        :defaultExpandLevel="Infinity"
                         :options="goodsTypes"
                         :show-count="false"
                         placeholder="请选择"
-                        :defaultExpandLevel="Infinity"
                         style="width: 240px"/>
           </el-form-item>
 
           <el-form-item label="货品类型编号"  prop="gtCode">
-            <el-input placeholder="自动获取系统编号" v-model="form.gtCode" readonly></el-input>
+            <el-input v-model="form.gtCode" placeholder="自动获取系统编号" readonly></el-input>
           </el-form-item>
 
           <el-form-item label="货品类型名称" prop="gtName">
-            <el-input placeholder="请输入" v-model="form.gtName"></el-input>
+            <el-input v-model="form.gtName" placeholder="请输入"></el-input>
           </el-form-item>
 
           <el-form-item label="排序" prop="sort">
-            <el-input placeholder="请输入"v-model="form.sort"></el-input>
+            <el-input v-model="form.sort"placeholder="请输入"></el-input>
           </el-form-item>
 
           <br/>
@@ -252,13 +252,13 @@
 
           <br/>
           <el-form-item label="备注" prop="remark">
-            <el-input type="textarea"placeholder="请输入" v-model="form.remark" ></el-input>
+            <el-input v-model="form.remark"placeholder="请输入" type="textarea" ></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer" style="margin-top:320px;border-top: 1px solid #eeeeee;padding-top: 20px">
           <div style="margin-left: 360px;">
             <el-button @click="cancelForm">取 消</el-button>
-            <el-button  type="primary" @click="handleClose()" :loading="loading">{{ loading ? '提交中...' : '确 定' }}</el-button>
+            <el-button  :loading="loading" type="primary" @click="handleClose()">{{ loading ? '提交中...' : '确 定' }}</el-button>
           </div>
         </div>
       </div>

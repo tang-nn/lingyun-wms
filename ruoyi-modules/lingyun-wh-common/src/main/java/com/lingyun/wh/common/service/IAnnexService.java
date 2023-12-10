@@ -1,6 +1,6 @@
 package com.lingyun.wh.common.service;
 
-import com.ruoyi.system.api.model.Annex;
+import com.ruoyi.system.api.domain.Annex;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;

@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
+    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" :inline="true" size="small">
       <el-form-item label="客户" prop="consumerName">
         <el-input
           v-model="queryParams.consumerName"
-          placeholder="请输入客户名称/编号"
           clearable
+          placeholder="请输入客户名称/编号"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
@@ -13,8 +13,8 @@
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择"
           clearable
+          placeholder="请选择"
           style="width: 240px"
         >
           <el-option
@@ -28,8 +28,8 @@
       <el-form-item label="所属行业" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择"
           clearable
+          placeholder="请选择"
           style="width: 240px"
         >
           <el-option
@@ -43,16 +43,16 @@
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="dateRange"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
+          end-placeholder="结束日期"
           range-separator="-"
           start-placeholder="开始日期"
-          end-placeholder="结束日期"
+          style="width: 240px"
+          type="daterange"
+          value-format="yyyy-MM-dd"
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -60,69 +60,69 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
           v-hasPermi="['system:role:add']"
+          icon="el-icon-plus"
+          plain
+          size="mini"
+          type="primary"
+          @click="handleAdd"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
           v-hasPermi="['system:role:edit']"
+          :disabled="single"
+          icon="el-icon-edit"
+          plain
+          size="mini"
+          type="success"
+          @click="handleUpdate"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
           v-hasPermi="['system:role:remove']"
+          :disabled="multiple"
+          icon="el-icon-delete"
+          plain
+          size="mini"
+          type="danger"
+          @click="handleDelete"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
           v-hasPermi="['system:role:export']"
+          icon="el-icon-download"
+          plain
+          size="mini"
+          type="warning"
+          @click="handleExport"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="consumerList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="客户编码" prop="cCode" width="120" align="center" />
-      <el-table-column label="客户名称" prop="cName" width="120" align="center" />
-      <el-table-column label="所属行业" prop="industry" width="120" align="center" />
-      <el-table-column label="客户来源" prop="source" width="120" align="center" />
-      <el-table-column label="联系人" prop="contactPerson" width="120" align="center" />
-      <el-table-column label="联系电话" prop="contactNumber" width="120" align="center" />
-      <el-table-column label="电子邮箱" prop="email" width="220" align="center" />
-      <el-table-column label="销售部门" prop="dept" width="120" align="center" />
-      <el-table-column label="销售负责人" prop="saleManager" width="120" align="center" />
-      <el-table-column label="状态" prop="status" width="120" align="center" />
-      <el-table-column label="客户地址" prop="address" width="120" align="center" />
-      <el-table-column label="账户名称" prop="finance.accountName" width="120" align="center" />
-      <el-table-column label="纳税人识别号" prop="finance.tiNumber" width="220" align="center" />
-      <el-table-column label="银行账户" prop="finance.bankAccount" :show-overflow-tooltip="true" width="220" align="center" />
-      <el-table-column label="开户银行" prop="finance.bankDeposit" :show-overflow-tooltip="true" width="150" align="center" />
-      <el-table-column label="开户行地址" prop="finance.aobAddress" :show-overflow-tooltip="true" width="150" align="center" />
+      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" label="客户编码" prop="cCode" width="120" />
+      <el-table-column align="center" label="客户名称" prop="cName" width="120" />
+      <el-table-column align="center" label="所属行业" prop="industry" width="120" />
+      <el-table-column align="center" label="客户来源" prop="source" width="120" />
+      <el-table-column align="center" label="联系人" prop="contactPerson" width="120" />
+      <el-table-column align="center" label="联系电话" prop="contactNumber" width="120" />
+      <el-table-column align="center" label="电子邮箱" prop="email" width="220" />
+      <el-table-column align="center" label="销售部门" prop="dept" width="120" />
+      <el-table-column align="center" label="销售负责人" prop="saleManager" width="120" />
+      <el-table-column align="center" label="状态" prop="status" width="120" />
+      <el-table-column align="center" label="客户地址" prop="address" width="120" />
+      <el-table-column align="center" label="账户名称" prop="finance.accountName" width="120" />
+      <el-table-column align="center" label="纳税人识别号" prop="finance.tiNumber" width="220" />
+      <el-table-column :show-overflow-tooltip="true" align="center" label="银行账户" prop="finance.bankAccount" width="220" />
+      <el-table-column :show-overflow-tooltip="true" align="center" label="开户银行" prop="finance.bankDeposit" width="150" />
+      <el-table-column :show-overflow-tooltip="true" align="center" label="开户行地址" prop="finance.aobAddress" width="150" />
       <el-table-column label="操作人" prop="operName" width="100" />
-      <el-table-column label="操作时间" prop="updateTime" width="100" align="center"/>
+      <el-table-column align="center" label="操作时间" prop="updateTime" width="100"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template v-if="scope.row.roleId !== 1" slot-scope="scope">
           <el-button
@@ -148,9 +148,9 @@
 
     <pagination
       v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
+      :page.sync="queryParams.pageNum"
+      :total="total"
       @pagination="getList"
     />
 

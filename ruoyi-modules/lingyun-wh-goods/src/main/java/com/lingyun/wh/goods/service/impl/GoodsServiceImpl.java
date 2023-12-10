@@ -1,15 +1,12 @@
 package com.lingyun.wh.goods.service.impl;
 
-import com.lingyun.wh.goods.doman.Goods;
+import com.lingyun.wh.goods.api.domain.Goods;
 import com.lingyun.wh.goods.mapper.GoodsMapper;
 import com.lingyun.wh.goods.service.IGoodsService;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanValidators;
-import com.ruoyi.common.security.utils.SecurityUtils;
-import com.ruoyi.system.api.domain.SysUser;
-import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.impl.SysUserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.Validator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,12 +29,12 @@ import java.util.Map;
 @Service
 public class GoodsServiceImpl implements IGoodsService {
     private static final Logger log = LoggerFactory.getLogger(SysUserServiceImpl.class);
-    @Autowired
-    private GoodsMapper goodsMapper;
 //    @Autowired
 //    private ISysConfigService configService;
     @Autowired
     protected Validator validator;
+    @Autowired
+    private GoodsMapper goodsMapper;
 
     /**
      * 查询货品信息
@@ -48,6 +46,19 @@ public class GoodsServiceImpl implements IGoodsService {
     public Goods selectGoodsByGId(String gId)
     {
         return goodsMapper.selectGoodsByGId(gId);
+    }
+
+    /**
+     * 根据多个 ID 获取多个货品信息详细信息
+     * @param ids 货品 ID 数组
+     * @return
+     */
+    @Override
+    public List<HashMap<String, Object>>  queryGoodsByIds(String[] ids) {
+        if(ids == null|| ids.length == 0){
+            return null;
+        }
+        return goodsMapper.selectGoodsByIds(ids);
     }
 
     /**

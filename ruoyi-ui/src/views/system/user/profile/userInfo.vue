@@ -2,7 +2,7 @@
   <el-form ref="form" :model="user" :rules="rules" label-width="80px">
     <el-form-item label="用户昵称" prop="nickName">
       <el-input v-model="user.nickName" maxlength="30" />
-    </el-form-item> 
+    </el-form-item>
     <el-form-item label="手机号码" prop="phonenumber">
       <el-input v-model="user.phonenumber" maxlength="11" />
     </el-form-item>
@@ -16,8 +16,8 @@
       </el-radio-group>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" size="mini" @click="submit">保存</el-button>
-      <el-button type="danger" size="mini" @click="close">关闭</el-button>
+      <el-button size="mini" type="primary" @click="submit">保存</el-button>
+      <el-button size="mini" type="danger" @click="close">关闭</el-button>
     </el-form-item>
   </el-form>
 </template>

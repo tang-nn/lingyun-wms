@@ -1,14 +1,13 @@
 package com.lingyun.wh.order.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.lingyun.wh.goods.doman.Goods;
+import com.lingyun.wh.goods.api.domain.Goods;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * @Author : Tang

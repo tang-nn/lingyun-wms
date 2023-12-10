@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lingyun.wh.common.mapper.AnnexMapper">
 
-    <resultMap type="com.ruoyi.system.api.model.Annex" id="AnnexResult">
+    <resultMap type="com.ruoyi.system.api.domain.Annex" id="AnnexResult">
         <result property="aid"    column="a_id"    />
         <result property="type"    column="a_type"    />
         <result property="formId"    column="form_id"    />
@@ -15,7 +15,7 @@
         select a_id, a_type, form_id, a_content from wh_annex
     </sql>
 
-    <select id="selectAnnexList" parameterType="com.ruoyi.system.api.model.Annex" resultMap="AnnexResult">
+    <select id="selectAnnexList" parameterType="com.ruoyi.system.api.domain.Annex" resultMap="AnnexResult">
         <include refid="selectAnnexVo"/>
         <where>
             <if test="type != null  and type != ''"> and a_type = #{type}</if>
@@ -35,7 +35,7 @@
             (#{i.type},#{i.formId},#{i.content})
         </foreach>
     </insert>
-    <update id="updateAnnex" parameterType="com.ruoyi.system.api.model.Annex">
+    <update id="updateAnnex" parameterType="com.ruoyi.system.api.domain.Annex">
         update wh_annex
         <trim prefix="SET" suffixOverrides=",">
             <if test="type != null and type != ''">a_type = #{type},</if>

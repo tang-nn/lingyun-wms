@@ -1,6 +1,6 @@
 package com.lingyun.wh.goods.controller;
 
-import com.lingyun.wh.goods.doman.Goods;
+import com.lingyun.wh.goods.api.domain.Goods;
 import com.lingyun.wh.goods.service.IGoodsService;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -124,6 +125,18 @@ public class GoodsController extends BaseController
     public AjaxResult getInfo(@PathVariable("gId") String gId)
     {
         return success(goodsService.selectGoodsByGId(gId));
+    }
+
+    /**
+     * 根据多个 ID 获取多个货品信息详细信息
+     */
+    @RequiresPermissions("lingyun-wh-goods:goods:query")
+    @GetMapping(value = "/infos")
+    public AjaxResult getInfoByIds(@RequestParam String[] ids)
+    {
+        List<HashMap<String, Object>> goodsList = goodsService.queryGoodsByIds(ids);
+        goodsList.forEach(System.out::println);
+        return success(goodsList);
     }
 
     /**

@@ -41,7 +41,7 @@
         <result property="updateBy" column="sub_update_by"/>
         <result property="updateTime" column="sub_update_time"/>
         <result property="isDelete" column="sub_is_delete"/>
-        <association property="goods" javaType="com.lingyun.wh.goods.doman.Goods"/>
+        <association property="goods" javaType="com.lingyun.wh.goods.api.domain.Goods"/>
     </resultMap>
 
     <resultMap id="PurchaseOrderList" type="com.lingyun.wh.order.pojo.vo.PurchaseOrderVo">

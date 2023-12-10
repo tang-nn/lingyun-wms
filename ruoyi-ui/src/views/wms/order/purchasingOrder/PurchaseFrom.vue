@@ -30,7 +30,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="供应商" prop="sid">
-              <el-select v-model="purchaseOrderInf.sid"
+              <el-select v-model="purchaseOrderInf.supplier"
                          placeholder="请选择供应商" @change="handlerSupplierChange">
                 <el-option
                   v-for="item in supplierList"
@@ -43,12 +43,12 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="联系人">
-              <el-input v-model="supplier.contactPerson" :readonly="true"/>
+              <el-input v-model="purchaseOrderInf.supplier.contactPerson" :readonly="true" disabled/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item label="联系方式">
-          <el-input v-model="supplier.contactNumber" :readonly="true"/>
+          <el-input v-model="purchaseOrderInf.supplier.contactNumber" :readonly="true" disabled/>
         </el-form-item>
         <el-row>
           <el-col :span="12">
@@ -182,6 +182,7 @@
           ref="upload"
           :action="baseApi + '/file/upload'"
           :auto-upload="false"
+          :file-list="purchaseOrderInf.selectAnnex"
           :headers="token"
           :multiple="true"
           :on-error="handlerUploadError"
@@ -325,6 +326,7 @@ export default {
       purchaseOrderInf: {
         selectGoods: [],
         selectAnnex: [],
+        supplier:{}
       },
       purchaseDetails: [],
       goodsTotal: 0,
@@ -343,9 +345,19 @@ export default {
   async created() {
     this.getDeptTree();
     this.supplierList = (await listSupplier()).rows;
-    let selectAnnex = this.purchaseInf.annexes?.map(e=>({name: e.content.replace(/.*\/(.*)_.*/,"$1"), url: e.content}))
-    let selectGoods = this.purchaseInf.purchaseDetailsList.map(e=>({
-
+    let selectAnnex = this.purchaseInf?.annexes?.map(e => ({
+      name: e.content.split("/")[-1].split("_")[0] + "." + e.content.split("/")[-1].split(".")[-1],
+      url: e.content
+    }))
+    let selectGoods = this.purchaseInf?.purchaseDetailsList?.map(e => ({
+      g_name: e.goods.g_name,
+      g_code: e.goods.g_code,
+      spec_code: e.specCode,
+      unit: e.unit,
+      gt_name: e.goods.gt_name,
+      purchaseQuantity: e.purchaseQuantity,
+      wr_price: e.puPrice,
+      remark: e.goods.remark,
     }));
     this.purchaseOrderInf = {
       poCode: this.purchaseInf.poCode,
@@ -354,9 +366,11 @@ export default {
       purDeptId: this.purchaseInf.purchasingDept,
       purchaser: this.purchaseInf.purchaserId,
       remark: this.purchaseInf.remark,
-      selectAnnex,selectGoods
+      selectAnnex, selectGoods
     }
-  },
+    this.supplierList.forEach(e => (e.sId === this.purchaseInf.sId) ? this.purchaseOrderInf.supplier = e : this.purchaseOrderInf.supplier = {});
+    console.log("this.purchaseOrderInf", this.purchaseOrderInf)
+    },
   computed: {
     token() {
       return {
@@ -475,7 +489,7 @@ export default {
           }))
           let purchaseOrderInf = {
             purchaseDate: this.purchaseOrderInf.purchaseDate,
-            "sId": this.purchaseOrderInf.sid.sId,
+            "sId": this.purchaseOrderInf.supplier.sId,
             purchaserId: this.purchaseOrderInf.purchaser,
             purchasingDept: this.purchaseOrderInf.purDeptId,
             purchaseDetailsList,

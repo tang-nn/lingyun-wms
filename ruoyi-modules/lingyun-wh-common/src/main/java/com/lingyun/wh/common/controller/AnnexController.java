@@ -1,7 +1,7 @@
 package com.lingyun.wh.common.controller;
 
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.system.api.model.Annex;
+import com.ruoyi.system.api.domain.Annex;
 import com.lingyun.wh.common.service.IAnnexService;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;

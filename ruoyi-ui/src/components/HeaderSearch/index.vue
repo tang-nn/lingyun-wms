@@ -5,14 +5,14 @@
       ref="headerSearchSelect"
       v-model="search"
       :remote-method="querySearch"
-      filterable
-      default-first-option
-      remote
-      placeholder="Search"
       class="header-search-select"
+      default-first-option
+      filterable
+      placeholder="Search"
+      remote
       @change="change"
     >
-      <el-option v-for="option in options" :key="option.item.path" :value="option.item" :label="option.item.title.join(' > ')" />
+      <el-option v-for="option in options" :key="option.item.path" :label="option.item.title.join(' > ')" :value="option.item" />
     </el-select>
   </div>
 </template>

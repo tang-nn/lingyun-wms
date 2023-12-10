@@ -1,10 +1,9 @@
-package com.lingyun.wh.goods.doman;
+package com.lingyun.wh.goods.api.domain;
 
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -17,52 +16,44 @@ import java.util.List;
 public class GoodsType extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
-
+    @Excel(name = "备注")
+    public String remark;
     /** 货品类型 ID */
     @Excel(name = "货品类型ID")
     private String gtId;
-
     /** 货品类型编号 */
     @Excel(name = "货品类型编号")
     private String gtCode;
-
     /** 货品类型名称 */
     @Excel(name = "货品类型名称")
     private String gtName;
-
     /** 排序 */
     @Excel(name = "排序")
     private Long sort;
-
     /** 货品状态 */
     @Excel(name = "货品状态")
     private Integer status;
-
     /** 父级类型 */
     @Excel(name = "父级类型")
     private String parentId;
-
     /** 创建人 **/
     @Excel(name = "操作人")
     private String createBy;
-
-
     private String creater;
-
     /** 操作时间 **/
     @Excel(name = "操作时间",dateFormat = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
-
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private List<Date> createTimes;
-
     /** 修改人 **/
     private  String updateBy;
-
     /** 修改时间 **/
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
+    /** 逻辑删除，0：存在；1：已删除，不存在 */
+    private Boolean isDelete;
+    private List<GoodsType> children;
 
     public String getCreater() {
         return creater;
@@ -71,9 +62,6 @@ public class GoodsType extends BaseEntity
     public void setCreater(String creater) {
         this.creater = creater;
     }
-
-    @Excel(name = "备注")
-    public String remark;
 
     @Override
     public String getRemark() {
@@ -84,11 +72,6 @@ public class GoodsType extends BaseEntity
     public void setRemark(String remark) {
         this.remark = remark;
     }
-
-    /** 逻辑删除，0：存在；1：已删除，不存在 */
-    private Boolean isDelete;
-
-    private List<GoodsType> children;
 
     public String getGtId() {
         return gtId;

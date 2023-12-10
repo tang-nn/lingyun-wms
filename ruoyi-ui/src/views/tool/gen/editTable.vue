@@ -5,13 +5,13 @@
         <basic-info-form ref="basicInfo" :info="info" />
       </el-tab-pane>
       <el-tab-pane label="字段信息" name="columnInfo">
-        <el-table ref="dragTable" :data="columns" row-key="columnId" :max-height="tableHeight">
-          <el-table-column label="序号" type="index" min-width="5%" class-name="allowDrag" />
+        <el-table ref="dragTable" :data="columns" :max-height="tableHeight" row-key="columnId">
+          <el-table-column class-name="allowDrag" label="序号" min-width="5%" type="index" />
           <el-table-column
-            label="字段列名"
-            prop="columnName"
-            min-width="10%"
             :show-overflow-tooltip="true"
+            label="字段列名"
+            min-width="10%"
+            prop="columnName"
           />
           <el-table-column label="字段描述" min-width="10%">
             <template slot-scope="scope">
@@ -19,10 +19,10 @@
             </template>
           </el-table-column>
           <el-table-column
-            label="物理类型"
-            prop="columnType"
-            min-width="10%"
             :show-overflow-tooltip="true"
+            label="物理类型"
+            min-width="10%"
+            prop="columnType"
           />
           <el-table-column label="Java类型" min-width="11%">
             <template slot-scope="scope">
@@ -45,22 +45,22 @@
 
           <el-table-column label="插入" min-width="5%">
             <template slot-scope="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isInsert"></el-checkbox>
+              <el-checkbox v-model="scope.row.isInsert" false-label="0" true-label="1"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="编辑" min-width="5%">
             <template slot-scope="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isEdit"></el-checkbox>
+              <el-checkbox v-model="scope.row.isEdit" false-label="0" true-label="1"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="列表" min-width="5%">
             <template slot-scope="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isList"></el-checkbox>
+              <el-checkbox v-model="scope.row.isList" false-label="0" true-label="1"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="查询" min-width="5%">
             <template slot-scope="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isQuery"></el-checkbox>
+              <el-checkbox v-model="scope.row.isQuery" false-label="0" true-label="1"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="查询方式" min-width="10%">
@@ -79,7 +79,7 @@
           </el-table-column>
           <el-table-column label="必填" min-width="5%">
             <template slot-scope="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isRequired"></el-checkbox>
+              <el-checkbox v-model="scope.row.isRequired" false-label="0" true-label="1"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="显示类型" min-width="12%">
@@ -114,7 +114,7 @@
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="生成信息" name="genInfo">
-        <gen-info-form ref="genInfo" :info="info" :tables="tables" :menus="menus"/>
+        <gen-info-form ref="genInfo" :info="info" :menus="menus" :tables="tables"/>
       </el-tab-pane>
     </el-tabs>
     <el-form label-width="100px">

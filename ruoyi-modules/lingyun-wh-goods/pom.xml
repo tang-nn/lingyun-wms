@@ -90,6 +90,12 @@
             <version>3.6.3</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.itcast.getaway</groupId>
+            <artifactId>lingyun-wms-api-goods</artifactId>
+            <version>3.6.3</version>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- 分布式事务 -->
 <!--        <dependency>-->

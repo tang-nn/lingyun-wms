@@ -68,10 +68,10 @@
             </el-tooltip>
           </span>
           <treeselect
-            :append-to-body="true"
             v-model="info.parentMenuId"
-            :options="menus"
+            :append-to-body="true"
             :normalizer="normalizer"
+            :options="menus"
             :show-count="true"
             placeholder="请选择系统菜单"
           />
@@ -91,7 +91,7 @@
         </el-form-item>
       </el-col>
 
-      <el-col :span="24" v-if="info.genType == '1'">
+      <el-col v-if="info.genType == '1'" :span="24">
         <el-form-item prop="genPath">
           <span slot="label">
             自定义路径

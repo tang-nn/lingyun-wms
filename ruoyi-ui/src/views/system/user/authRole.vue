@@ -3,12 +3,12 @@
     <h4 class="form-header h4">基本信息</h4>
     <el-form ref="form" :model="form" label-width="80px">
       <el-row>
-        <el-col :span="8" :offset="2">
+        <el-col :offset="2" :span="8">
           <el-form-item label="用户昵称" prop="nickName">
             <el-input v-model="form.nickName" disabled />
           </el-form-item>
         </el-col>
-        <el-col :span="8" :offset="2">
+        <el-col :offset="2" :span="8">
           <el-form-item label="登录账号" prop="userName">
             <el-input  v-model="form.userName" disabled />
           </el-form-item>
@@ -17,24 +17,24 @@
     </el-form>
 
     <h4 class="form-header h4">角色信息</h4>
-    <el-table v-loading="loading" :row-key="getRowKey" @row-click="clickRow" ref="table" @selection-change="handleSelectionChange" :data="roles.slice((pageNum-1)*pageSize,pageNum*pageSize)">
-      <el-table-column label="序号" type="index" align="center">
+    <el-table ref="table" v-loading="loading" :data="roles.slice((pageNum-1)*pageSize,pageNum*pageSize)" :row-key="getRowKey" @row-click="clickRow" @selection-change="handleSelectionChange">
+      <el-table-column align="center" label="序号" type="index">
         <template slot-scope="scope">
           <span>{{(pageNum - 1) * pageSize + scope.$index + 1}}</span>
         </template>
       </el-table-column>
-      <el-table-column type="selection" :reserve-selection="true" width="55"></el-table-column>
-      <el-table-column label="角色编号" align="center" prop="roleId" />
-      <el-table-column label="角色名称" align="center" prop="roleName" />
-      <el-table-column label="权限字符" align="center" prop="roleKey" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column :reserve-selection="true" type="selection" width="55"></el-table-column>
+      <el-table-column align="center" label="角色编号" prop="roleId" />
+      <el-table-column align="center" label="角色名称" prop="roleName" />
+      <el-table-column align="center" label="权限字符" prop="roleKey" />
+      <el-table-column align="center" label="创建时间" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
     </el-table>
-    
-    <pagination v-show="total>0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" />
+
+    <pagination v-show="total>0" :limit.sync="pageSize" :page.sync="pageNum" :total="total" />
 
     <el-form label-width="100px">
       <el-form-item style="text-align: center;margin-left:-120px;margin-top:30px;">

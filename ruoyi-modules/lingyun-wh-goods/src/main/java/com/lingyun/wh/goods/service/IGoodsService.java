@@ -1,8 +1,9 @@
 package com.lingyun.wh.goods.service;
 
-import com.lingyun.wh.goods.doman.Goods;
-import com.ruoyi.system.api.domain.SysUser;
 
+import com.lingyun.wh.goods.api.domain.Goods;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,13 @@ public interface IGoodsService {
      * @return 货品信息
      */
     public Goods selectGoodsByGId(String gId);
+
+    /**
+     * 根据多个 ID 获取多个货品信息详细信息
+     * @param ids 货品 ID 数组
+     * @return
+     */
+    List<HashMap<String, Object>> queryGoodsByIds(String[] ids);
 
     /**
      * 根据商品名称查询是否存在

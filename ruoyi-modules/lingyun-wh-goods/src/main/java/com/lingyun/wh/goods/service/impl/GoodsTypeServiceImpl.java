@@ -1,7 +1,7 @@
 package com.lingyun.wh.goods.service.impl;
 
 
-import com.lingyun.wh.goods.doman.GoodsType;
+import com.lingyun.wh.goods.api.domain.GoodsType;
 import com.lingyun.wh.goods.mapper.GoodsTypeMapper;
 import com.lingyun.wh.goods.service.IGoodsTypeService;
 import com.ruoyi.common.core.constant.OrderType;

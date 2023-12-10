@@ -1,6 +1,6 @@
 package com.lingyun.wh.common.mapper;
 
-import com.ruoyi.system.api.model.Annex;
+import com.ruoyi.system.api.domain.Annex;
 
 import java.util.List;
 

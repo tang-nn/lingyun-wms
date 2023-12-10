@@ -1,8 +1,7 @@
 package com.lingyun.wh.goods.controller;
 
-import com.lingyun.wh.goods.doman.GoodsType;
+import com.lingyun.wh.goods.api.domain.GoodsType;
 import com.lingyun.wh.goods.service.IGoodsTypeService;
-import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -18,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 

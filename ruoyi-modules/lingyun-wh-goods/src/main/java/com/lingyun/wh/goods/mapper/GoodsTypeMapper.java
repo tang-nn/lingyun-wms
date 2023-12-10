@@ -1,10 +1,9 @@
 package com.lingyun.wh.goods.mapper;
 
-import com.lingyun.wh.goods.doman.GoodsType;
+import com.lingyun.wh.goods.api.domain.GoodsType;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 货品类型Mapper接口

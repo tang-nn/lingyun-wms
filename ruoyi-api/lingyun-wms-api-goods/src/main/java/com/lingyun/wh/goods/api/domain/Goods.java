@@ -1,4 +1,4 @@
-package com.lingyun.wh.goods.doman;
+package com.lingyun.wh.goods.api.domain;
 
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;

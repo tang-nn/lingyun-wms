@@ -1,5 +1,11 @@
 package com.lingyun.wh.order.service.impl;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lingyun.wh.goods.api.RemoteGoodsService;
+import com.lingyun.wh.goods.api.domain.Goods;
 import com.lingyun.wh.order.domain.PurchaseDetails;
 import com.lingyun.wh.order.domain.PurchaseOrder;
 import com.lingyun.wh.order.mapper.PurchaseOrderMapper;
@@ -11,11 +17,12 @@ import com.ruoyi.common.core.constant.SecurityConstants;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.core.web.page.TableDataInfo;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import com.ruoyi.system.api.RemoteAnnexService;
 import com.ruoyi.system.api.RemoteEncodeRuleService;
-import com.ruoyi.system.api.model.Annex;
+import com.ruoyi.system.api.domain.Annex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author : Tang
@@ -40,6 +48,9 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     @Autowired
     private RemoteAnnexService remoteAnnexService;
 
+    @Autowired
+    private RemoteGoodsService remoteGoodsService;
+
     /**
      * 查询进货订单
      *
@@ -47,16 +58,54 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
      * @return 进货订单
      */
     @Override
-    public PurchaseOrder selectPurchaseOrderByPoId(String poId) {
+    public JSONObject selectPurchaseOrderByPoId(String poId) {
         PurchaseOrder purchaseOrder = purchaseOrderMapper.selectPurchaseOrderByPoId(poId);
+        JSONObject po = JSONObject.from(purchaseOrder);
+        List<PurchaseDetails> detailsList = purchaseOrder.getPurchaseDetailsList();
+        String[] ids = detailsList.stream().map(PurchaseDetails::getGoodsId).toArray(String[]::new);
+        if (ids.length > 0) {
+            AjaxResult infoByIds = remoteGoodsService.getInfoByIds(ids);
+            System.out.println("获取货物数据：" + infoByIds);
+            if ("200".equals(String.valueOf(infoByIds.get(AjaxResult.CODE_TAG)))) {
+                // List<Goods> goodsList = JSONArray.from(infoByIds.get(AjaxResult.DATA_TAG)).toList(Goods.class);
+                // detailsList.forEach(e -> {
+                //     System.out.println("e.getGoodsId(): " + e.getGoodsId());
+                //     goodsList.forEach(g -> {
+                //         System.out.println("g.getGId(): " + g.getGId());
+                //         if (e.getGoodsId().equals(g.getGId())) {
+                //             System.out.println("进货订单 ID：" + e.getPoId() + "商品id：" + g.getGId() + "商品名称：" + g.getGName());
+                //             e.setGoods(g);
+                //         }
+                //     });
+                // });
+                JSONArray goodsList = JSONArray.from(infoByIds.get(AjaxResult.DATA_TAG));
+                JSONArray dl = JSONArray.from(detailsList);
+                dl.forEach(e -> {
+                    JSONObject d = (JSONObject) e;
+                    goodsList.forEach(i -> {
+                        JSONObject g = (JSONObject) i;
+                        // System.out.println("d.get('goodsId'): " + d.get("goodsId"));
+                        // System.out.println("g.get('g_id'): " + g.get("g_id"));
+                        if (d.get("goodsId").equals(String.valueOf(g.get("g_id")))) {
+                            d.put("goods", g);
+                            // System.out.println("g: " + g);
+                        }
+                    });
+                });
+                po.put("purchaseDetailsList", dl);
+                System.out.println("goodsList: " + goodsList);
+                System.out.println("dl: "+ dl);
+            }
+        }
         TableDataInfo list = remoteAnnexService.list(new Annex(AttachmentType.PURCHASE_ANNEX, poId, null));
         System.out.println("remoteAnnexService list: " + list);
-        if(list != null && list.getCode() == 200){
-            purchaseOrder.setAnnexes((List<Annex>) list.getRows());
-        }else {
+        if (list != null && list.getCode() == 200) {
+            // purchaseOrder.setAnnexes((List<Annex>) list.getRows());
+            po.put("annexes", list.getRows());
+        } else {
             log.error("进货 ID：{}，查询附件失败", poId);
         }
-        return purchaseOrder;
+        return po;
     }
 
     /**

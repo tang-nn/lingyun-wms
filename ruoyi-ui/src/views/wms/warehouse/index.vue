@@ -1,19 +1,19 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="68px" size="small">
       <el-form-item label="仓库" prop="w_name">
         <el-input
           v-model="queryParams.w_name"
-          placeholder="请输入仓库名称"
           clearable
+          placeholder="请输入仓库名称"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="仓库状态" >
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择"
           clearable
+          placeholder="请选择"
           style="width: 240px"
         >
           <el-option
@@ -27,10 +27,10 @@
       <el-form-item label="仓库部门" prop="deptName">
         <el-input
           v-model="queryParams.deptName"
-          placeholder="请输入"
           clearable
-          @focus="handledept"
+          placeholder="请输入"
           suffix-icon="el-icon-more"
+          @focus="handledept"
          />
 
       </el-form-item>
@@ -38,14 +38,14 @@
       <el-form-item label="仓库主管" prop="w_supervisor">
         <el-input
           v-model="queryParams.w_supervisor"
-          placeholder="请输入"
           clearable
-          @keyup.enter.native="handleQuery"
+          placeholder="请输入"
           suffix-icon="el-icon-more"
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -53,101 +53,101 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
           v-hasPermi="['system:warehouse:add']"
+          icon="el-icon-plus"
+          plain
+          size="mini"
+          type="primary"
+          @click="handleAdd"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
           v-hasPermi="['wh:house:delete']"
+          :disabled="multiple"
+          icon="el-icon-delete"
+          plain
+          size="mini"
+          type="danger"
+          @click="handleDelete"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          plain
-          icon="el-icon-circle-check"
-          size="mini"
+          v-hasPermi="['wh:house:start']"
           :button-value="buttonValuez"
           :disabled="multiple"
+          icon="el-icon-circle-check"
+          plain
+          size="mini"
+          type="success"
           @click="changeWareHouseStatusz"
-          v-hasPermi="['wh:house:start']"
         >启用</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          icon="el-icon-circle-close"
-          size="mini"
+          v-hasPermi="['wh:house:disadble']"
           :button-value="buttonValueo"
           :disabled="multiple"
+          icon="el-icon-circle-close"
+          plain
+          size="mini"
+          type="warning"
           @click="changeWareHouseStatuso"
-          v-hasPermi="['wh:house:disadble']"
         >停用</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="info"
-          plain
-          icon="el-icon-remove-outline"
-          size="mini"
+          v-hasPermi="['wh:house:lock']"
           :button-value="buttonValuet"
           :disabled="multiple"
+          icon="el-icon-remove-outline"
+          plain
+          size="mini"
+          type="info"
           @click="changeWareHouseStatust"
-          v-hasPermi="['wh:house:lock']"
         >锁定</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" max-height="520px" :data="warehouseList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="序号" align="center" prop="w_id" />
-      <el-table-column label="仓库编号" align="center" prop="w_code" />
-      <el-table-column label="仓库名称" align="center" prop="w_name" />
-      <el-table-column label="仓库容量/m³" align="center" prop="w_capacity" />
-      <el-table-column label="仓库地址" align="center" prop="w_address" width="300px"/>
-      <el-table-column label="库管部门" align="center" prop="deptName" />
-      <el-table-column label="仓库主管" align="center" prop="threeuser" />
-      <el-table-column label="库位数量" align="center" prop="storageNum" />
-      <el-table-column label="仓库状态" align="center"  width="180">
+    <el-table v-loading="loading" :data="warehouseList" max-height="520px" @selection-change="handleSelectionChange">
+      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" label="序号" prop="w_id" />
+      <el-table-column align="center" label="仓库编号" prop="w_code" />
+      <el-table-column align="center" label="仓库名称" prop="w_name" />
+      <el-table-column align="center" label="仓库容量/m³" prop="w_capacity" />
+      <el-table-column align="center" label="仓库地址" prop="w_address" width="300px"/>
+      <el-table-column align="center" label="库管部门" prop="deptName" />
+      <el-table-column align="center" label="仓库主管" prop="threeuser" />
+      <el-table-column align="center" label="库位数量" prop="storageNum" />
+      <el-table-column align="center" label="仓库状态"  width="180">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.wh_status" :value="scope.row.status" />
         </template>
       </el-table-column>
 
-      <el-table-column label="操作人" align="center" prop="oneuser" />
+      <el-table-column align="center" label="操作人" prop="oneuser" />
       <el-table-column label="操作时间" prop="create_time" width="200" >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.create_time) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作"  align="center" class-name="small-padding fixed-width">
+      <el-table-column align="center"  class-name="small-padding fixed-width" label="操作">
         <template slot-scope="scope">
           <el-button
+            v-hasPermi="['system:warehouse:edit']"
+            icon="el-icon-edit"
             size="mini"
             type="text"
-            icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:warehouse:edit']"
           >修改</el-button>
           <el-button
+            v-hasPermi="['system:warehouse:remove']"
+            icon="el-icon-delete"
             size="mini"
             type="text"
-            icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:warehouse:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -155,35 +155,35 @@
 
     <pagination
       v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
+      :page.sync="queryParams.pageNum"
+      :total="total"
       @pagination="getList"
     />
 
     <!--    仓库部门对话框-->
-    <el-dialog :title="title" :visible.sync="opendept" width="420px" append-to-body>
+    <el-dialog :title="title" :visible.sync="opendept" append-to-body width="420px">
     <div class="head-container">
       <el-input
         v-model="queryParams.deptName"
-        placeholder="请搜索"
         clearable
+        placeholder="请搜索"
         size="small"
-        suffix-icon="el-icon-search"
         style="margin-bottom: 20px"
+        suffix-icon="el-icon-search"
       />
     </div>
     <div class="head-container">
       <el-tree
-        :data="deptOptions"
-        :props="defaultProps"
-        :expand-on-click-node="false"
         ref="tree"
-        node-key="id"
+        :data="deptOptions"
+        :expand-on-click-node="false"
+        :filter-node-method="filterNode"
+        :props="defaultProps"
         default-expand-all
         highlight-current
+        node-key="id"
         @node-click="handleNodeClick"
-        :filter-node-method="filterNode"
       />
     </div>
       <div slot="footer" class="dialog-footer">
@@ -193,7 +193,7 @@
     </el-dialog>
 
     <!-- 添加或修改仓库对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="仓库编号" prop="wCode">
           <el-input v-model="form.wCode" placeholder="请输入仓库编号" />
@@ -219,15 +219,15 @@
         <el-divider content-position="center">库位信息信息</el-divider>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddStorageLocation">添加</el-button>
+            <el-button icon="el-icon-plus" size="mini" type="primary" @click="handleAddStorageLocation">添加</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteStorageLocation">删除</el-button>
+            <el-button icon="el-icon-delete" size="mini" type="danger" @click="handleDeleteStorageLocation">删除</el-button>
           </el-col>
         </el-row>
-        <el-table :data="storageLocationList" :row-class-name="rowStorageLocationIndex" @selection-change="handleStorageLocationSelectionChange" ref="storageLocation">
-          <el-table-column type="selection" width="50" align="center" />
-          <el-table-column label="序号" align="center" prop="index" width="50"/>
+        <el-table ref="storageLocation" :data="storageLocationList" :row-class-name="rowStorageLocationIndex" @selection-change="handleStorageLocationSelectionChange">
+          <el-table-column align="center" type="selection" width="50" />
+          <el-table-column align="center" label="序号" prop="index" width="50"/>
           <el-table-column label="库位编号" prop="slCode" width="150">
             <template slot-scope="scope">
               <el-input v-model="scope.row.slCode" placeholder="请输入库位编号" />

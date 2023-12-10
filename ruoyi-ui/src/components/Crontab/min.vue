@@ -9,23 +9,23 @@
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="2">
 				周期从
-				<el-input-number v-model='cycle01' :min="0" :max="58" /> -
-				<el-input-number v-model='cycle02' :min="cycle01 ? cycle01 + 1 : 1" :max="59" /> 分钟
+				<el-input-number v-model='cycle01' :max="58" :min="0" /> -
+				<el-input-number v-model='cycle02' :max="59" :min="cycle01 ? cycle01 + 1 : 1" /> 分钟
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="3">
 				从
-				<el-input-number v-model='average01' :min="0" :max="58" /> 分钟开始，每
-				<el-input-number v-model='average02' :min="1" :max="59 - average01 || 0" /> 分钟执行一次
+				<el-input-number v-model='average01' :max="58" :min="0" /> 分钟开始，每
+				<el-input-number v-model='average02' :max="59 - average01 || 0" :min="1" /> 分钟执行一次
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="4">
 				指定
-				<el-select clearable v-model="checkboxList" placeholder="可多选" multiple style="width:100%">
+				<el-select v-model="checkboxList" clearable multiple placeholder="可多选" style="width:100%">
 					<el-option v-for="item in 60" :key="item" :value="item-1">{{item-1}}</el-option>
 				</el-select>
 			</el-radio>

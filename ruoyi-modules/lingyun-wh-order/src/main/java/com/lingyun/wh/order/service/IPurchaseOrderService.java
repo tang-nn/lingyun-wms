@@ -1,5 +1,6 @@
 package com.lingyun.wh.order.service;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.lingyun.wh.order.domain.PurchaseOrder;
 import com.lingyun.wh.order.pojo.vo.PurchaseOrderVo;
 
@@ -18,7 +19,7 @@ public interface IPurchaseOrderService {
      * @param poId 进货订单主键
      * @return 进货订单
      */
-    public PurchaseOrder selectPurchaseOrderByPoId(String poId);
+    public JSONObject selectPurchaseOrderByPoId(String poId);
 
     /**
      * 查询进货订单列表

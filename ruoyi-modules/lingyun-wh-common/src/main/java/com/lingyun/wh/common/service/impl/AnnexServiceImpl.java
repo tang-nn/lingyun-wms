@@ -1,6 +1,6 @@
 package com.lingyun.wh.common.service.impl;
 
-import com.ruoyi.system.api.model.Annex;
+import com.ruoyi.system.api.domain.Annex;
 import com.lingyun.wh.common.mapper.AnnexMapper;
 import com.lingyun.wh.common.service.IAnnexService;
 import org.springframework.beans.factory.annotation.Autowired;

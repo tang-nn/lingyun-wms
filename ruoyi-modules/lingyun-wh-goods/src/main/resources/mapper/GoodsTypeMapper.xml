@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lingyun.wh.goods.mapper.GoodsTypeMapper">
 
-    <resultMap type="com.lingyun.wh.goods.doman.GoodsType" id="GoodsTypeResult">
+    <resultMap type="com.lingyun.wh.goods.api.domain.GoodsType" id="GoodsTypeResult">
         <result property="gtId"    column="gt_id"    />
         <result property="gtCode"    column="gt_code"    />
         <result property="gtName"    column="gt_name"    />
@@ -28,7 +28,7 @@
         left join sys_user su on wgt.create_by=su.user_id
     </sql>
 
-    <select id="selectGoodsTypeList" parameterType="com.lingyun.wh.goods.doman.GoodsType" resultMap="GoodsTypeResult">
+    <select id="selectGoodsTypeList" parameterType="com.lingyun.wh.goods.api.domain.GoodsType" resultMap="GoodsTypeResult">
         <include refid="selectGoodsTypeVo"/>
         <where>
             <if test="gtCode != null  and gtCode != ''"> and wgt.gt_code = #{gtCode}</if>
@@ -65,7 +65,7 @@
     </select>
 
 
-    <insert id="insertGoodsType" parameterType="com.lingyun.wh.goods.doman.GoodsType" useGeneratedKeys="true" keyProperty="gtId">
+    <insert id="insertGoodsType" parameterType="com.lingyun.wh.goods.api.domain.GoodsType" useGeneratedKeys="true" keyProperty="gtId">
         insert into wh_goods_type
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="gtCode != null and gtCode != ''">gt_code,</if>
@@ -95,7 +95,7 @@
         </trim>
     </insert>
 
-    <update id="updateGoodsType" parameterType="com.lingyun.wh.goods.doman.GoodsType">
+    <update id="updateGoodsType" parameterType="com.lingyun.wh.goods.api.domain.GoodsType">
         update wh_goods_type
         <trim prefix="SET" suffixOverrides=",">
             <if test="gtCode != null and gtCode != ''">gt_code = #{gtCode},</if>

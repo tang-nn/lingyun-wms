@@ -220,6 +220,7 @@
         <module>ruoyi-modules/lingyun-wh-contact-units</module>
         <module>ruoyi-modules/lingyun-wh-common</module>
         <module>ruoyi-modules/lingyun-wh-order</module>
+        <module>ruoyi-api/lingyun-wms-api-goods</module>
     </modules>
     <packaging>pom</packaging>
 

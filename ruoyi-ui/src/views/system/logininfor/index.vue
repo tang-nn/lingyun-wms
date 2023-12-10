@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" :inline="true" label-width="68px" size="small">
       <el-form-item label="登录地址" prop="ipaddr">
         <el-input
           v-model="queryParams.ipaddr"
-          placeholder="请输入登录地址"
           clearable
+          placeholder="请输入登录地址"
           style="width: 240px;"
           @keyup.enter.native="handleQuery"
         />
@@ -13,8 +13,8 @@
       <el-form-item label="用户名称" prop="userName">
         <el-input
           v-model="queryParams.userName"
-          placeholder="请输入用户名称"
           clearable
+          placeholder="请输入用户名称"
           style="width: 240px;"
           @keyup.enter.native="handleQuery"
         />
@@ -22,8 +22,8 @@
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="登录状态"
           clearable
+          placeholder="登录状态"
           style="width: 240px"
         >
           <el-option
@@ -37,17 +37,17 @@
       <el-form-item label="登录时间">
         <el-date-picker
           v-model="dateRange"
-          style="width: 240px"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          type="daterange"
+          :default-time="['00:00:00', '23:59:59']"
+          end-placeholder="结束日期"
           range-separator="-"
           start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="['00:00:00', '23:59:59']"
+          style="width: 240px"
+          type="daterange"
+          value-format="yyyy-MM-dd HH:mm:ss"
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -55,61 +55,61 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
           v-hasPermi="['system:logininfor:remove']"
+          :disabled="multiple"
+          icon="el-icon-delete"
+          plain
+          size="mini"
+          type="danger"
+          @click="handleDelete"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          @click="handleClean"
           v-hasPermi="['system:logininfor:remove']"
+          icon="el-icon-delete"
+          plain
+          size="mini"
+          type="danger"
+          @click="handleClean"
         >清空</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-unlock"
-          size="mini"
-          :disabled="single"
-          @click="handleUnlock"
           v-hasPermi="['system:logininfor:unlock']"
+          :disabled="single"
+          icon="el-icon-unlock"
+          plain
+          size="mini"
+          type="primary"
+          @click="handleUnlock"
         >解锁</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
           v-hasPermi="['system:logininfor:export']"
+          icon="el-icon-download"
+          plain
+          size="mini"
+          type="warning"
+          @click="handleExport"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table ref="tables" v-loading="loading" :data="list" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="访问编号" align="center" prop="infoId" />
-      <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']" />
-      <el-table-column label="地址" align="center" prop="ipaddr" width="130" :show-overflow-tooltip="true" />
-      <el-table-column label="登录状态" align="center" prop="status">
+    <el-table ref="tables" v-loading="loading" :data="list" :default-sort="defaultSort" @selection-change="handleSelectionChange" @sort-change="handleSortChange">
+      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" label="访问编号" prop="infoId" />
+      <el-table-column :show-overflow-tooltip="true" :sort-orders="['descending', 'ascending']" align="center" label="用户名称" prop="userName" sortable="custom" />
+      <el-table-column :show-overflow-tooltip="true" align="center" label="地址" prop="ipaddr" width="130" />
+      <el-table-column align="center" label="登录状态" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_common_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column label="描述" align="center" prop="msg" :show-overflow-tooltip="true" />
-      <el-table-column label="访问时间" align="center" prop="accessTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
+      <el-table-column :show-overflow-tooltip="true" align="center" label="描述" prop="msg" />
+      <el-table-column :sort-orders="['descending', 'ascending']" align="center" label="访问时间" prop="accessTime" sortable="custom" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.accessTime) }}</span>
         </template>
@@ -118,9 +118,9 @@
 
     <pagination
       v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
+      :page.sync="queryParams.pageNum"
+      :total="total"
       @pagination="getList"
     />
   </div>

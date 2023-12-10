@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
+    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" :inline="true" size="small">
       <el-form-item label="货品">
         <el-input
           v-model="queryParams.g_name"
-          placeholder="请输入货品名称"
           clearable
+          placeholder="请输入货品名称"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
@@ -13,8 +13,8 @@
       <el-form-item label="状态">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择"
           clearable
+          placeholder="请选择"
           style="width: 240px"
         >
           <el-option
@@ -28,10 +28,10 @@
 
       <el-form-item label="货品类型">
         <treeselect v-model="queryParams.gt_id"
+                    :defaultExpandLevel="Infinity"
                     :options="goodsTypes"
                     :show-count="false"
                     placeholder="请选择"
-                    :defaultExpandLevel="Infinity"
                     style="width: 240px"/>
       </el-form-item>
 
@@ -41,10 +41,10 @@
       <!--      :label属性来指定在页面上显示的文本    :value属性来指定选项的值。-->
       <el-form-item label="单位"  >
           <el-select
-            filterable
             v-model="queryParams.unit"
-            placeholder="请选择"
             clearable
+            filterable
+            placeholder="请选择"
             style="width: 240px"
           >
             <el-option
@@ -58,75 +58,75 @@
       </el-form-item>
       <el-form-item>
           <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-          <el-button type="primary"  size="mini" @click="handleQuery">查询</el-button>
+          <el-button size="mini"  type="primary" @click="handleQuery">查询</el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
           v-hasPermi="['gd:good:add']"
+          icon="el-icon-plus"
+          plain
+          size="mini"
+          type="primary"
+          @click="handleAdd"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          plain
-          icon="el-icon-edit-outline"
-          size="mini"
-          :disabled="single"
-          @click="handleEdit"
           v-hasPermi="['gd:good:edit']"
+          :disabled="single"
+          icon="el-icon-edit-outline"
+          plain
+          size="mini"
+          type="success"
+          @click="handleEdit"
         >编辑</el-button>
       </el-col>
       <el-col :span="1.5">
 
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-minus"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
           v-hasPermi="['gd:good:delete']"
+          :disabled="multiple"
+          icon="el-icon-minus"
+          plain
+          size="mini"
+          type="danger"
+          @click="handleDelete"
         >删除</el-button>
       </el-col>
 
       <el-col :span="1.5">
         <el-button
-          type="info"
-          plain
-          icon="el-icon-upload2"
-          size="mini"
-          @click="handleImport"
           v-hasPermi="['gd:good:import']"
+          icon="el-icon-upload2"
+          plain
+          size="mini"
+          type="info"
+          @click="handleImport"
         >导入</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
           v-hasPermi="['gd:good:export']"
+          icon="el-icon-download"
+          plain
+          size="mini"
+          type="warning"
+          @click="handleExport"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table max-height="520" v-loading="loading" :data="goodList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" fixed width="55" align="center" />
+    <el-table v-loading="loading" :data="goodList" max-height="520" @selection-change="handleSelectionChange">
+      <el-table-column align="center" fixed type="selection" width="55" />
 
-      <el-table-column label='序号' fixed="left" prop="g_id" width="100"/>
-      <el-table-column label="货品编号" fixed="left" prop="g_code" width="120" />
-      <el-table-column label="货品名称" fixed="left" prop="g_name" :show-overflow-tooltip="true" width="150" />
-      <el-table-column label="状态"  fixed="left" align="center" width="100">
+      <el-table-column fixed="left" label='序号' prop="g_id" width="100"/>
+      <el-table-column fixed="left" label="货品编号" prop="g_code" width="120" />
+      <el-table-column :show-overflow-tooltip="true" fixed="left" label="货品名称" prop="g_name" width="150" />
+      <el-table-column align="center"  fixed="left" label="状态" width="100">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -137,21 +137,21 @@
 
         </template>
       </el-table-column>
-      <el-table-column label="货品类型" prop="gt_name" :show-overflow-tooltip="true" width="150" />
+      <el-table-column :show-overflow-tooltip="true" label="货品类型" prop="gt_name" width="150" />
       <el-table-column label="规格型号" prop="spec_code" width="100" />
-      <el-table-column label="单位" align="center"  width="180">
+      <el-table-column align="center" label="单位"  width="180">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.g_unit_goods" :value="scope.row.unit" />
         </template>
       </el-table-column>
 
       <el-table-column label="供应商" prop="s_name" width="100" />
-      <el-table-column label="入库参考价/元" prop="wr_price" :formatter="formatPrice" width="110" />
-      <el-table-column label="出库参考价/元" prop="or_price" :formatter="formatPrice2" width="110" />
+      <el-table-column :formatter="formatPrice" label="入库参考价/元" prop="wr_price" width="110" />
+      <el-table-column :formatter="formatPrice2" label="出库参考价/元" prop="or_price" width="110" />
       <el-table-column label="显示顺序" prop="sort" width="100" />
-      <el-table-column label="当前库存" prop="item_quantity" :formatter="formatStock" width="100" />
-      <el-table-column label="库存总金额" prop="stocktotalmoney" :formatter="formatPrice3" width="100" />
-      <el-table-column label="保质期管理" prop="has_shelf_life" width="100" :formatter="formathasShelfLife" />
+      <el-table-column :formatter="formatStock" label="当前库存" prop="item_quantity" width="100" />
+      <el-table-column :formatter="formatPrice3" label="库存总金额" prop="stocktotalmoney" width="100" />
+      <el-table-column :formatter="formathasShelfLife" label="保质期管理" prop="has_shelf_life" width="100" />
       <el-table-column label="保质期" prop="shelf_life" width="100" />
       <el-table-column label="预警天数(天)" prop="w_days" width="100" />
       <el-table-column label="操作人" prop="oneuser" width="100" />
@@ -160,21 +160,21 @@
           <span>{{ parseTime(scope.row.create_time) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作"  fixed="right" align="center" class-name="small-padding fixed-width">
+      <el-table-column align="center"  class-name="small-padding fixed-width" fixed="right" label="操作">
         <template slot-scope="scope" >
           <el-button
+            v-hasPermi="['system:role:edit']"
+            icon="el-icon-edit"
             size="mini"
             type="text"
-            icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:role:edit']"
           >编辑</el-button>
           <el-button
+            v-hasPermi="['gd:good:delete']"
+            icon="el-icon-delete"
             size="mini"
             type="text"
-            icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['gd:good:delete']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -184,35 +184,35 @@
 
     <pagination
       v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
+      :page.sync="queryParams.pageNum"
+      :total="total"
       @pagination="getList"
     />
 
 
     <!-- 商品导入对话框 -->
-    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+    <el-dialog :title="upload.title" :visible.sync="upload.open" append-to-body width="400px">
       <el-upload
         ref="upload"
-        :limit="1"
-        accept=".xlsx, .xls"
-        :headers="upload.headers"
         :action="upload.url + '?updateSupport=' + upload.updateSupport"
+        :auto-upload="false"
         :disabled="upload.isUploading"
+        :headers="upload.headers"
+        :limit="1"
         :on-progress="handleFileUploadProgress"
         :on-success="handleFileSuccess"
-        :auto-upload="false"
+        accept=".xlsx, .xls"
         drag
       >
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip text-center" slot="tip">
-          <div class="el-upload__tip" slot="tip">
+        <div slot="tip" class="el-upload__tip text-center">
+          <div slot="tip" class="el-upload__tip">
             <el-checkbox v-model="upload.updateSupport" /> 是否更新已经存在的商品数据
           </div>
           <span>仅允许导入xls、xlsx格式文件。</span>
-          <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>
+          <el-link :underline="false" style="font-size:12px;vertical-align: baseline;" type="primary" @click="importTemplate">下载模板</el-link>
         </div>
       </el-upload>
       <div slot="footer" class="dialog-footer">

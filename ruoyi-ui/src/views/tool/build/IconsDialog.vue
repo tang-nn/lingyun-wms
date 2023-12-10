@@ -1,22 +1,22 @@
 <template>
   <div class="icon-dialog">
     <el-dialog
+      :modal-append-to-body="false"
       v-bind="$attrs"
       width="980px"
-      :modal-append-to-body="false"
-      v-on="$listeners"
-      @open="onOpen"
       @close="onClose"
+      @open="onOpen"
+      v-on="$listeners"
     >
       <div slot="title">
         选择图标
         <el-input
           v-model="key"
-          size="mini"
           :style="{width: '260px'}"
+          clearable
           placeholder="请输入图标名称"
           prefix-icon="el-icon-search"
-          clearable
+          size="mini"
         />
       </div>
       <ul class="icon-ul">

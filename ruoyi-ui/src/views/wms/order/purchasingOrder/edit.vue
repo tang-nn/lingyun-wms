@@ -1,5 +1,5 @@
 <template>
-  <PurchaseFrom @submitForm="submitForm"></PurchaseFrom>
+  <PurchaseFrom :purchaseInf="purchaseInf" @submitForm="submitForm"></PurchaseFrom>
 </template>
 
 <script>
@@ -11,19 +11,24 @@ export default {
   components: {
     PurchaseFrom
   },
-  methods:{
+  methods: {
     async submitForm(data) {
       console.log("purchaseOrderInf: ", data)
     }
   },
+  data() {
+    return {
+      purchaseInf: {}
+    }
+  },
   async created() {
     let poId = this.$route?.params?.poId;
-    if (!poId){
-      this.$tab.openPage("添加进货单据", '/order/purchase/add');
+    if (!poId) {
+      this.$tab.openPage("进货单据信息", '/order/purchase/add');
     }
-    let {data:purchaseInf} = (await getPurchaseInf(poId));
-    console.log("purchaseInf: ", purchaseInf)
-    console.log("route: ", this.$route)
+    ({data: this.purchaseInf} = (await getPurchaseInf(poId)));
+    console.log("purchaseInf: ", this.purchaseInf)
+    // console.log("route: ", this.$route)
   }
 
 }

@@ -1,9 +1,7 @@
 package com.lingyun.wh.goods.doman.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.lingyun.wh.goods.doman.GoodsType;
-import com.ruoyi.system.api.domain.SysDept;
-import com.ruoyi.system.domain.SysMenu;
+import com.lingyun.wh.goods.api.domain.GoodsType;
 
 import java.io.Serializable;
 import java.util.List;
