@@ -1,7 +1,8 @@
 # Tomcat
 server:
   port: 9205
-
+  servlet:
+    context-path: /wh
 # Spring
 spring:
   application:

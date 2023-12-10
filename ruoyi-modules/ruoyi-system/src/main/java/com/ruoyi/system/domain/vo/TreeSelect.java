@@ -31,6 +31,10 @@ public class TreeSelect implements Serializable
 
     }
 
+    /**
+     * 部门树结构
+     * @param dept
+     */
     public TreeSelect(SysDept dept)
     {
         this.id = dept.getDeptId();
@@ -38,13 +42,16 @@ public class TreeSelect implements Serializable
         this.children = dept.getChildren().stream().map(TreeSelect::new).collect(Collectors.toList());
     }
 
+    /**
+     * 菜单树结构
+     * @param menu
+     */
     public TreeSelect(SysMenu menu)
     {
         this.id = menu.getMenuId();
         this.label = menu.getMenuName();
         this.children = menu.getChildren().stream().map(TreeSelect::new).collect(Collectors.toList());
     }
-
     public Long getId()
     {
         return id;

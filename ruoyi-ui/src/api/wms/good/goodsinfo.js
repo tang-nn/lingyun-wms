@@ -18,6 +18,32 @@ export function TypesList(){
 }
 
 
+// 删除商品
+export function delGoodsInfo(g_ids) {
+  return request({
+    url: '/wms/goods/' + g_ids,
+    method: 'delete'
+  })
+}
+
+
+
+// 货品信息状态修改
+export function changeGoodsStatus(gId, status) {
+  const data = {
+    "status":status,
+    "gId":gId
+  }
+  console.info(data);
+  return request({
+    url: '/wms/goods/editGoods',
+    method: 'post',
+    data: data
+  })
+}
+
+
+
 // 查询角色详细
 export function getRole(roleId) {
   return request({
@@ -53,26 +79,9 @@ export function dataScope(data) {
   })
 }
 
-// 角色状态修改
-export function changeRoleStatus(roleId, status) {
-  const data = {
-    roleId,
-    status
-  }
-  return request({
-    url: '/system/role/changeStatus',
-    method: 'put',
-    data: data
-  })
-}
 
-// 删除角色
-export function delRole(g_ids) {
-  return request({
-    url: '/wms/goods/' + g_ids,
-    method: 'delete'
-  })
-}
+
+
 
 // 查询角色已授权用户列表
 export function allocatedUserList(query) {

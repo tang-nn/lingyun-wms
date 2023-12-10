@@ -2,11 +2,11 @@ package com.lingyun.wh.goods.doman;
 
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 货品类型对象 wh_goods_type
@@ -19,6 +19,7 @@ public class GoodsType extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 货品类型 ID */
+    @Excel(name = "货品类型ID")
     private String gtId;
 
     /** 货品类型编号 */
@@ -42,11 +43,19 @@ public class GoodsType extends BaseEntity
     private String parentId;
 
     /** 创建人 **/
+    @Excel(name = "操作人")
     private String createBy;
 
+
+    private String creater;
+
     /** 操作时间 **/
+    @Excel(name = "操作时间",dateFormat = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private List<Date> createTimes;
 
     /** 修改人 **/
     private  String updateBy;
@@ -55,10 +64,31 @@ public class GoodsType extends BaseEntity
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
+    public String getCreater() {
+        return creater;
+    }
+
+    public void setCreater(String creater) {
+        this.creater = creater;
+    }
+
+    @Excel(name = "备注")
+    public String remark;
+
+    @Override
+    public String getRemark() {
+        return remark;
+    }
+
+    @Override
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
     /** 逻辑删除，0：存在；1：已删除，不存在 */
-    @Excel(name = "逻辑删除，0：存在；1：已删除，不存在")
     private Boolean isDelete;
 
+    private List<GoodsType> children;
 
     public String getGtId() {
         return gtId;
@@ -108,12 +138,12 @@ public class GoodsType extends BaseEntity
         this.parentId = parentId;
     }
 
-    @Override
+
     public String getCreateBy() {
         return createBy;
     }
 
-    @Override
+
     public void setCreateBy(String createBy) {
         this.createBy = createBy;
     }
@@ -148,32 +178,48 @@ public class GoodsType extends BaseEntity
         this.updateTime = updateTime;
     }
 
-    public void setIsDelete(Boolean isDelete)
-    {
-        this.isDelete = isDelete;
+    public Boolean getDelete() {
+        return isDelete;
     }
 
-    public Boolean getIsDelete()
-    {
-        return isDelete;
+    public void setDelete(Boolean delete) {
+        isDelete = delete;
+    }
+
+    public List<GoodsType> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<GoodsType> children) {
+        this.children = children;
+    }
+
+    public List<Date> getCreateTimes() {
+        return createTimes;
+    }
+
+    public void setCreateTimes(List<Date> createTimes) {
+        this.createTimes = createTimes;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("gtId", getGtId())
-                .append("gtCode", getGtCode())
-                .append("gtName", getGtName())
-                .append("sort", getSort())
-                .append("status", getStatus())
-                .append("remark", getRemark())
-                .append("parentId", getParentId())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .append("isDelete", getIsDelete())
-                .toString();
+        return "GoodsType{" +
+                "gtId='" + gtId + '\'' +
+                ", gtCode='" + gtCode + '\'' +
+                ", gtName='" + gtName + '\'' +
+                ", sort=" + sort +
+                ", status=" + status +
+                ", parentId='" + parentId + '\'' +
+                ", createBy='" + createBy + '\'' +
+                ", creater='" + creater + '\'' +
+                ", createTime=" + createTime +
+                ", createTimes=" + createTimes +
+                ", updateBy='" + updateBy + '\'' +
+                ", updateTime=" + updateTime +
+                ", isDelete=" + isDelete +
+                ", children=" + children +
+                '}';
     }
 }
 

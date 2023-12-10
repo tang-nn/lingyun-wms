@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.Console;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -141,11 +140,15 @@ public class GoodsController extends BaseController
     /**
      * 修改货品信息
      */
-    @RequiresPermissions("lingyun-wh-goods:goods:edit")
+
+//    @RequiresPermissions("lingyun-wh-goods:goods:edit")
     @Log(title = "货品信息", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public AjaxResult edit(@RequestBody Goods goods)
-    {
+    @PostMapping("/editGoods")
+    public AjaxResult edit(@RequestBody Map<String,Object> map) {
+        Goods goods = new Goods();
+        goods.setGId(map.get("gId").toString());
+        goods.setStatus(Integer.valueOf(map.get("status").toString()));
+        goods.setUpdateBy(SecurityUtils.getUserId().toString());
         return toAjax(goodsService.updateGoods(goods));
     }
 

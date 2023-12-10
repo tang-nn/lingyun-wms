@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 货品信息对象 wh_goods
@@ -19,6 +20,7 @@ public class Goods extends BaseEntity {
      * 序列化和反序列化的兼容性
      */
     private static final long serialVersionUID = 1L;
+    private List<GoodsType> children;
 
     /** 货品ID */
     @Excel(name = "货品ID")
@@ -152,6 +154,7 @@ public class Goods extends BaseEntity {
     public Long getSort() {
         return sort;
     }
+
 
     public void setSort(Long sort) {
         this.sort = sort;

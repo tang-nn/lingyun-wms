@@ -15,6 +15,11 @@ public class OrderType {
      * 货品信息
      */
     public static final int PRODUCT_INFO = 2;
+
+    /**
+     * 货品类型
+     */
+    public static final int GOODS_TYPE = 14;
     /**
      * 入库
      */

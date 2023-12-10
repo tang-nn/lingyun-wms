@@ -1,8 +1,11 @@
 package com.lingyun.wh.goods.service;
 
+import com.lingyun.wh.goods.doman.Goods;
 import com.lingyun.wh.goods.doman.GoodsType;
+import com.lingyun.wh.goods.doman.vo.TreeSelect;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 货品类型Service接口
@@ -20,14 +23,27 @@ public interface IGoodsTypeService
      */
     public GoodsType selectGoodsTypeByGtId(String gtId);
 
+
+    /**
+     * 根据商品类型名称查询是否存在
+     * @param gtname
+     * @return
+     */
+    public int selectGoodsTypeByGname(String gtname);
+
     /**
      * 查询货品类型列表
      *
-     * @param goodsType 货品类型
      * @return 货品类型集合
      */
-    public List<GoodsType> selectGoodsTypeList(GoodsType goodsType);
+    public List<GoodsType>  selectGoodsTypeList(GoodsType goodsType);
 
+    /**
+     * 查询货品树结构信息
+     *
+     * @return 货品树信息集合
+     */
+    List<TreeSelect> selectGoodsTypeTreeList();
 
     /***
      * 查询货品类型下拉框
@@ -61,12 +77,11 @@ public interface IGoodsTypeService
      */
     public int deleteGoodsTypeByGtIds(String[] gtIds);
 
+
     /**
-     * 删除货品类型信息
-     *
-     * @param gtId 货品类型主键
-     * @return 结果
+     * 导入商品类型数据
      */
-    public int deleteGoodsTypeByGtId(String gtId);
+    public String importGoodsType(List<GoodsType> goodsTypeListList, Boolean isUpdateSupport);
+
 }
 

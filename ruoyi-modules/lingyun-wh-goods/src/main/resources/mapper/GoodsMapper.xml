@@ -55,9 +55,10 @@
         <where>
             <if test="g_name != null  and g_name != ''"> and wg.g_name like concat('%', #{g_name}, '%')</if>
             <if test="status != null "> and wg.status = #{status}</if>
+            <if test="gt_id != null "> and wg.gt_id = #{gt_id}</if>
             <if test="gtId != null  and gtId != ''"> and wg.gt_id = #{gtId}</if>
             <if test="unit != null  and unit != ''"> and wsk.unit = #{unit}</if>
-           <if test="gCode != null  and gCode != ''"> and wg.g_code like concat('%', #{gCode}, '%')</if>
+<!--            <if test="gCode != null  and gCode != ''"> and wg.g_code = #{gCode}</if>-->
 <!--            <if test="sort != null "> and wg.sort = #{sort}</if>-->
 <!--            <if test="specCode != null  and specCode != ''"> and wg.spec_code = #{specCode}</if>-->
 <!--            <if test="orPrice != null "> and wg.or_price = #{orPrice}</if>-->
@@ -79,7 +80,7 @@
         select count(*) from wh_goods where g_name=#{gname}
     </select>
 
-    <insert id="insertGoods" parameterType="Goods" useGeneratedKeys="true" keyProperty="gId">
+    <insert id="insertGoods" parameterType="com.lingyun.wh.goods.doman.Goods" useGeneratedKeys="true" keyProperty="gId">
         insert into wh_goods
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="gCode != null and gCode != ''">g_code,</if>
@@ -128,7 +129,7 @@
     </insert>
 
 
-    <update id="updateGoods" parameterType="Goods">
+    <update id="updateGoods" parameterType="com.lingyun.wh.goods.doman.Goods">
         update wh_goods
         <trim prefix="SET" suffixOverrides=",">
             <if test="gCode != null and gCode != ''">g_code = #{gCode},</if>
