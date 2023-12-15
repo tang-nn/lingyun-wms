@@ -135,13 +135,13 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         Date nowDate = DateUtils.getNowDate();
         String userId = String.valueOf(SecurityUtils.getUserId());
         //
-        R<String> res = remoteEncodeRuleService.genSpecifyEncoding(OrderType.PURCHASE_ORDER, SecurityConstants.INNER);
+        R<String[]> res = remoteEncodeRuleService.genSpecifyEncoding(OrderType.PURCHASE_ORDER, 1, SecurityConstants.INNER);
         // System.out.println("res: " + res);
         if (res == null || res.getCode() != 200) {
             log.error("insertPurchaseOrder 获取编码失败");
             throw new RuntimeException("获取编码失败");
         } else {
-            purchaseOrder.setPoCode(res.getData());
+            purchaseOrder.setPoCode(res.getData()[0]);
         }
         purchaseOrder.setCreateTime(nowDate);
         purchaseOrder.setUpdateTime(nowDate);
@@ -164,8 +164,8 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
             }
             System.out.println("remoteAnnexService add: " + add);
         }
-        res = remoteEncodeRuleService.increaseCurrentSerialNumber(OrderType.PURCHASE_ORDER, SecurityConstants.INNER);
-        if (rows <= 0 || res == null || res.getCode() != 200) {
+        R<String> r = remoteEncodeRuleService.increaseCurrentSerialNumber(OrderType.PURCHASE_ORDER, 1, SecurityConstants.INNER);
+        if (rows <= 0 || r == null || r.getCode() != 200) {
             log.error("insertPurchaseOrder 流水号迭代失败");
             throw new RuntimeException("进货数据插入失败");
         }

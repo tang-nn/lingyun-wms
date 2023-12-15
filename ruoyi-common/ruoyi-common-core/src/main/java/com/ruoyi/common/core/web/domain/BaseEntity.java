@@ -24,23 +24,49 @@ public class BaseEntity implements Serializable
     /** 创建者 */
     private String createBy;
 
+    /** 创建者 */
+    private String creatorName;
+    /** 创建者部门 ID */
+    private String creatorDeptId;
+    /** 创建者部门 */
+    private String creatorDept;
     /** 创建时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
-
     /** 更新者 */
     private String updateBy;
-
     /** 更新时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
-
     /** 备注 */
     private String remark;
-
     /** 请求参数 */
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Map<String, Object> params;
+
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
+    }
+
+    public String getCreatorDeptId() {
+        return creatorDeptId;
+    }
+
+    public void setCreatorDeptId(String creatorDeptId) {
+        this.creatorDeptId = creatorDeptId;
+    }
+
+    public String getCreatorDept() {
+        return creatorDept;
+    }
+
+    public void setCreatorDept(String creatorDept) {
+        this.creatorDept = creatorDept;
+    }
 
     public String getSearchValue()
     {

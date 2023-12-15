@@ -21,6 +21,16 @@ public class OrderType {
      */
     public static final int GOODS_TYPE = 14;
     /**
+     * 仓库
+     */
+    public static final int WARE_CODE = 15;
+
+    /**
+     * 库位
+     */
+    public static final int STORAGE_CODE = 16;
+
+    /**
      * 入库
      */
     public static final int WAREHOUS_ENTRY = 3;
@@ -29,13 +39,14 @@ public class OrderType {
      */
     public static final int OUTBOUND_ORDER = 4;
     /**
-     * 库存
-     */
-    public static final int INVENTORY_SHEET = 5;
-    /**
      * 调拨
      */
     public static final int TRANSFER_ORDER = 6;
+
+    /**
+     * 盘点
+     */
+    public static final int INVENTORY_ORDER = 5;
     /**
      * 采购
      */

@@ -3,6 +3,7 @@ package com.lingyun.wh.warehouse.mapper;
 import com.lingyun.wh.warehouse.domain.StorageLocation;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 库位信息Mapper接口
@@ -43,6 +44,14 @@ public interface StorageLocationMapper
      * @return 结果
      */
     public int updateStorageLocation(StorageLocation storageLocation);
+
+
+    /**
+     * 修改库位状态
+     * @param map
+     * @return
+     */
+    public int changeLocationStatus(Map<String,Object> map);
 
     /**
      * 删除库位信息

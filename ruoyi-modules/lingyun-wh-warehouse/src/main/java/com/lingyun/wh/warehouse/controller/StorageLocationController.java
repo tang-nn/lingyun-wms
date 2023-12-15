@@ -1,20 +1,14 @@
 package com.lingyun.wh.warehouse.controller;
 
 import java.util.List;
-import java.io.IOException;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.service.IStorageLocationService;
+import com.lingyun.wh.warehouse.service.IWareHouseService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.annotation.RequiresPermissions;
@@ -35,7 +29,8 @@ public class StorageLocationController extends BaseController
 {
     @Autowired
     private IStorageLocationService storageLocationService;
-
+    @Autowired
+    private IWareHouseService iWareHouseService;
     /**
      * 查询库位信息列表
      */
@@ -54,9 +49,10 @@ public class StorageLocationController extends BaseController
     @RequiresPermissions("system:location:export")
     @Log(title = "库位信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, StorageLocation storageLocation)
+    public void export(HttpServletResponse response, @RequestParam Map<String,Object>map)
     {
-        List<StorageLocation> list = storageLocationService.selectStorageLocationList(storageLocation);
+        System.out.println("exportMap===="+map);
+        List<StorageLocation> list = iWareHouseService.selectStorageListfindByWid(map);
         ExcelUtil<StorageLocation> util = new ExcelUtil<StorageLocation>(StorageLocation.class);
         util.exportExcel(response, list, "库位信息数据");
     }
@@ -90,7 +86,20 @@ public class StorageLocationController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody StorageLocation storageLocation)
     {
+        System.out.println("storageLocation==="+storageLocation);
         return toAjax(storageLocationService.updateStorageLocation(storageLocation));
+    }
+
+    /**
+     * 修改库位状态
+     */
+
+    @Log(title = "仓库", businessType = BusinessType.UPDATE)
+    @PutMapping("/changeLocationStatus")
+    public AjaxResult editStatus(@RequestBody Map<String,Object> map)
+    {
+        System.out.println("changeLocationStatus==map==="+map);
+        return toAjax(storageLocationService.changeLocationStatus(map));
     }
 
     /**

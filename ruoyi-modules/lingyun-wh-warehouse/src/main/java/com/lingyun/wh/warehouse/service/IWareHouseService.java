@@ -1,5 +1,6 @@
 package com.lingyun.wh.warehouse.service;
 
+import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.domain.WareHouse;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface IWareHouseService
      * @param wId 仓库主键
      * @return 仓库
      */
-    public WareHouse selectWareHouseByWId(String wId);
+    public List<Map<String,Object>> selectWareHouseByWId(String wId);
 
     /**
      * 查询仓库列表
@@ -60,10 +61,25 @@ public interface IWareHouseService
     public int deleteWareHouseByWIds(String[] wIds);
 
     /**
+     * 批量删除库位信息
+     *
+     * @param wIds 需要删除的数据主键集合
+     * @return 结果
+     */
+    public int deleteStorageLocationByWIds(String[] wIds);
+
+    /**
      * 删除仓库信息
      * 
      * @param wId 仓库主键
      * @return 结果
      */
     public int deleteWareHouseByWId(String wId);
+
+    /**
+     * 查询仓库下的库位
+     * @param map
+     * @return
+     */
+    public List<StorageLocation>selectStorageListfindByWid(Map<String,Object>map);
 }

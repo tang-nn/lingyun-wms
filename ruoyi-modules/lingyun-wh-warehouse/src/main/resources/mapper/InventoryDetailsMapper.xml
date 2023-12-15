@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingyun.wh.warehouse.mapper.InventoryDetailsMapper">
+    
+    <resultMap type="InventoryDetails" id="InventoryDetailsResult">
+        <result property="isdId"    column="isd_id"    />
+        <result property="isId"    column="is_id"    />
+        <result property="isCode"    column="is_code"    />
+        <result property="sId"    column="s_id"    />
+        <result property="specCode"    column="spec_code"    />
+        <result property="unit"    column="unit"    />
+        <result property="countQuantity"    column="count_quantity"    />
+        <result property="profitLossQuantity"    column="profit_loss_quantity"    />
+        <result property="isStatus"    column="is_status"    />
+        <result property="countAmount"    column="count_amount"    />
+        <result property="iuPrice"    column="iu_price"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="isDelete"    column="is_delete"    />
+    </resultMap>
+
+    <sql id="selectInventoryDetailsVo">
+        select isd_id, is_id, is_code, s_id, spec_code, unit, count_quantity, profit_loss_quantity, is_status, count_amount, iu_price, remark, create_by, create_time, update_by, update_time, is_delete from wh_is_details
+    </sql>
+
+    <select id="selectInventoryDetailsList" parameterType="InventoryDetails" resultMap="InventoryDetailsResult">
+        <include refid="selectInventoryDetailsVo"/>
+        <where>  
+            <if test="isId != null  and isId != ''"> and is_id = #{isId}</if>
+            <if test="isCode != null  and isCode != ''"> and is_code = #{isCode}</if>
+            <if test="sId != null  and sId != ''"> and s_id = #{sId}</if>
+            <if test="specCode != null  and specCode != ''"> and spec_code = #{specCode}</if>
+            <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+            <if test="countQuantity != null "> and count_quantity = #{countQuantity}</if>
+            <if test="profitLossQuantity != null "> and profit_loss_quantity = #{profitLossQuantity}</if>
+            <if test="isStatus != null "> and is_status = #{isStatus}</if>
+            <if test="countAmount != null "> and count_amount = #{countAmount}</if>
+            <if test="iuPrice != null "> and iu_price = #{iuPrice}</if>
+            <if test="isDelete != null "> and is_delete = #{isDelete}</if>
+        </where>
+    </select>
+    
+    <select id="selectInventoryDetailsByIsdId" parameterType="String" resultMap="InventoryDetailsResult">
+        <include refid="selectInventoryDetailsVo"/>
+        where isd_id = #{isdId}
+    </select>
+        
+    <insert id="insertInventoryDetails" parameterType="InventoryDetails" useGeneratedKeys="true" keyProperty="isdId">
+        insert into wh_is_details
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="isId != null and isId != ''">is_id,</if>
+            <if test="isCode != null and isCode != ''">is_code,</if>
+            <if test="sId != null and sId != ''">s_id,</if>
+            <if test="specCode != null and specCode != ''">spec_code,</if>
+            <if test="unit != null and unit != ''">unit,</if>
+            <if test="countQuantity != null">count_quantity,</if>
+            <if test="profitLossQuantity != null">profit_loss_quantity,</if>
+            <if test="isStatus != null">is_status,</if>
+            <if test="countAmount != null">count_amount,</if>
+            <if test="iuPrice != null">iu_price,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="isDelete != null">is_delete,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="isId != null and isId != ''">#{isId},</if>
+            <if test="isCode != null and isCode != ''">#{isCode},</if>
+            <if test="sId != null and sId != ''">#{sId},</if>
+            <if test="specCode != null and specCode != ''">#{specCode},</if>
+            <if test="unit != null and unit != ''">#{unit},</if>
+            <if test="countQuantity != null">#{countQuantity},</if>
+            <if test="profitLossQuantity != null">#{profitLossQuantity},</if>
+            <if test="isStatus != null">#{isStatus},</if>
+            <if test="countAmount != null">#{countAmount},</if>
+            <if test="iuPrice != null">#{iuPrice},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+         </trim>
+    </insert>
+
+    <update id="updateInventoryDetails" parameterType="InventoryDetails">
+        update wh_is_details
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="isId != null and isId != ''">is_id = #{isId},</if>
+            <if test="isCode != null and isCode != ''">is_code = #{isCode},</if>
+            <if test="sId != null and sId != ''">s_id = #{sId},</if>
+            <if test="specCode != null and specCode != ''">spec_code = #{specCode},</if>
+            <if test="unit != null and unit != ''">unit = #{unit},</if>
+            <if test="countQuantity != null">count_quantity = #{countQuantity},</if>
+            <if test="profitLossQuantity != null">profit_loss_quantity = #{profitLossQuantity},</if>
+            <if test="isStatus != null">is_status = #{isStatus},</if>
+            <if test="countAmount != null">count_amount = #{countAmount},</if>
+            <if test="iuPrice != null">iu_price = #{iuPrice},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="isDelete != null">is_delete = #{isDelete},</if>
+        </trim>
+        where isd_id = #{isdId}
+    </update>
+
+    <delete id="deleteInventoryDetailsByIsdId" parameterType="String">
+        delete from wh_is_details where isd_id = #{isdId}
+    </delete>
+
+    <delete id="deleteInventoryDetailsByIsdIds" parameterType="String">
+        delete from wh_is_details where isd_id in 
+        <foreach item="isdId" collection="array" open="(" separator="," close=")">
+            #{isdId}
+        </foreach>
+    </delete>
+</mapper>

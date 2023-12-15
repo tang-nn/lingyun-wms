@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
+import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.domain.WareHouse;
 import com.lingyun.wh.warehouse.service.IWareHouseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +34,26 @@ public class WareHouseController extends BaseController
     /**
      * 查询仓库列表
      */
-    @RequiresPermissions("system:warehouse:list")
+    @RequiresPermissions("wh:house:manager")
     @GetMapping("/list")
     public TableDataInfo list(@RequestParam Map<String,Object> map)
     {
         List<Map<String, Object>> list = wareHouseService.selectWareHouseList(map);
         startPage();
         return getDataTable(list);
+    }
+
+    /**
+     * 查询仓库下的仓位列表
+     */
+    @GetMapping("/storagelist")
+    public TableDataInfo storageList(@RequestParam Map<String,Object> map)
+    {
+        System.out.println("map======"+map);
+        List<StorageLocation> storageLocations = wareHouseService.selectStorageListfindByWid(map);
+        System.out.println("storageLocations====="+storageLocations);
+        startPage();
+        return getDataTable(storageLocations);
     }
 
     /**
@@ -58,7 +72,7 @@ public class WareHouseController extends BaseController
     /**
      * 获取仓库详细信息
      */
-    @RequiresPermissions("system:warehouse:query")
+    @RequiresPermissions("wh:house:details")
     @GetMapping(value = "/{wId}")
     public AjaxResult getInfo(@PathVariable("wId") String wId)
     {
@@ -73,6 +87,7 @@ public class WareHouseController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody WareHouse wareHouse)
     {
+        System.out.println("wareHouse`````````"+wareHouse);
         return toAjax(wareHouseService.insertWareHouse(wareHouse));
     }
 
@@ -88,13 +103,14 @@ public class WareHouseController extends BaseController
     }
 
     /**
-     * 删除仓库
+     * 删除仓库和旗下的库位
      */
     @RequiresPermissions("wh:house:delete")
     @Log(title = "仓库", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{wIds}")
     public AjaxResult remove(@PathVariable String[] wIds)
     {
+        toAjax(wareHouseService.deleteStorageLocationByWIds(wIds));
         return toAjax(wareHouseService.deleteWareHouseByWIds(wIds));
     }
 

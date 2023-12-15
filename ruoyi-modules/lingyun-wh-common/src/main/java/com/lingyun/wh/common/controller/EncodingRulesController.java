@@ -98,14 +98,17 @@ public class EncodingRulesController extends BaseController {
     /**
      * 生成订单编码
      */
-    @InnerAuth
+//    @InnerAuth
     @RequiresPermissions("system:encoding_rules:gen_encoding")
     @Log(title = "生成编码", businessType = BusinessType.UPDATE)
-    @GetMapping("/genEncode/{rulesId}")
-    public R<String> genSpecifyEncoding(@PathVariable int rulesId)
+    @GetMapping(value = {"/genEncode/{rulesId}", "/genEncode/{rulesId}/{num}"})
+    public R<String[]> genSpecifyEncoding(@PathVariable("rulesId") int rulesId, @PathVariable(value = "num", required = false) int num)
     {
         System.out.println("rulesId: " + rulesId);
-        return R.ok(encodingRulesService.genSpecifyEncoding(rulesId));
+        if (num <= 0){
+            num = 1;
+        }
+        return R.ok(encodingRulesService.genSpecifyEncoding(rulesId, num));
     }
 
     /**
@@ -115,10 +118,13 @@ public class EncodingRulesController extends BaseController {
     @InnerAuth
     @RequiresPermissions("system:encoding_rules:incr_encoding")
     @Log(title = "增加当前流水号", businessType = BusinessType.UPDATE)
-    @GetMapping("/incrEncode/{rulesId}")
-    public R<String> increaseCurrentSerialNumber(@PathVariable int rulesId)
+    @GetMapping(value = {"/incrEncode/{rulesId}", "/incrEncode/{rulesId}/{num}"})
+    public R<String> increaseCurrentSerialNumber(@PathVariable("rulesId") int rulesId, @PathVariable(value = "num", required = false) int num)
     {
         System.out.println("增加当前流水号: " + rulesId);
-        return encodingRulesService.increaseCurrentSerialNumber(rulesId)>0?R.ok():R.fail("订单编号流水号迭代成功");
+        if (num <= 0){
+            num = 1;
+        }
+        return encodingRulesService.increaseCurrentSerialNumber(rulesId, num)>0?R.ok():R.fail("订单编号流水号迭代成功");
     }
 }

@@ -92,6 +92,12 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-common-security</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.itcast.getaway</groupId>
+            <artifactId>lingyun-wms-api-goods</artifactId>
+            <version>3.6.3</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 

@@ -98,6 +98,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where sl_id = #{slId}
     </update>
 
+    <update id="changeLocationStatus">
+        update wh_storage_location set status=#{status} where sl_id in
+        <foreach item="slId" collection="sl_id" open="(" separator="," close=")">
+            #{slId}
+        </foreach>
+    </update>
+
+
+
     <delete id="deleteStorageLocationBySlId" parameterType="String">
         delete from wh_storage_location where sl_id = #{slId}
     </delete>

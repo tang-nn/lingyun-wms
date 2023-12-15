@@ -26,12 +26,12 @@ public class RemoteEncodeRuleFallbackFactory implements FallbackFactory<RemoteEn
         log.error("订单编码服务调用失败:{}", throwable.getMessage());
         return new RemoteEncodeRuleService() {
             @Override
-            public R<String> genSpecifyEncoding(int encodingRules, String source) {
+            public R<String[]> genSpecifyEncoding(int rulesId, int num, String source) {
                 return R.fail("编码生成失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<String> increaseCurrentSerialNumber(int encodingRules, String source) {
+            public R<String> increaseCurrentSerialNumber(int rulesId, int num, String source) {
                 return R.fail("流水号迭代失败:" + throwable.getMessage());
             }
         };
