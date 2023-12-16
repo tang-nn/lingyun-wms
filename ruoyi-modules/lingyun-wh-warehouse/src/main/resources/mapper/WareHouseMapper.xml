@@ -62,6 +62,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                            on sd.dept_id = su3.dept_id
     </sql>
 
+    <select id="lists" resultType="WareHouse">
+        SELECT w_id wId,w_name wName FROM wh_warehouse
+    </select>
+
     <select id="selectWareHouseList" resultType="map">
         <include refid="selectWareHouseVo"/>
         <where>  

@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" :inline="true" size="small">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
       <el-form-item label="客户" prop="consumerName">
         <el-input
           v-model="queryParams.consumerName"
-          clearable
           placeholder="请输入客户名称/编号"
+          clearable
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
@@ -13,8 +13,8 @@
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          clearable
           placeholder="请选择"
+          clearable
           style="width: 240px"
         >
           <el-option
@@ -28,8 +28,8 @@
       <el-form-item label="所属行业" prop="status">
         <el-select
           v-model="queryParams.status"
-          clearable
           placeholder="请选择"
+          clearable
           style="width: 240px"
         >
           <el-option
@@ -43,16 +43,16 @@
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="dateRange"
-          end-placeholder="结束日期"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
-          style="width: 240px"
-          type="daterange"
-          value-format="yyyy-MM-dd"
+          end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -60,69 +60,74 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['system:role:add']"
-          icon="el-icon-plus"
-          plain
-          size="mini"
           type="primary"
-          @click="handleAdd"
-        >新增</el-button>
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="addConsumer"
+          v-hasPermi="['system:role:add']"
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['system:role:edit']"
-          :disabled="single"
-          icon="el-icon-edit"
-          plain
-          size="mini"
           type="success"
-          @click="handleUpdate"
-        >修改</el-button>
+          plain
+          icon="el-icon-edit"
+          size="mini"
+          @click="updateConsumer"
+          v-hasPermi="['system:role:edit']"
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['system:role:remove']"
-          :disabled="multiple"
-          icon="el-icon-delete"
-          plain
-          size="mini"
           type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
           @click="handleDelete"
-        >删除</el-button>
+          v-hasPermi="['system:role:remove']"
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['system:role:export']"
-          icon="el-icon-download"
-          plain
-          size="mini"
           type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
           @click="handleExport"
-        >导出</el-button>
+          v-hasPermi="['system:role:export']"
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="consumerList" @selection-change="handleSelectionChange">
-      <el-table-column align="center" type="selection" width="55" />
-      <el-table-column align="center" label="客户编码" prop="cCode" width="120" />
-      <el-table-column align="center" label="客户名称" prop="cName" width="120" />
-      <el-table-column align="center" label="所属行业" prop="industry" width="120" />
-      <el-table-column align="center" label="客户来源" prop="source" width="120" />
-      <el-table-column align="center" label="联系人" prop="contactPerson" width="120" />
-      <el-table-column align="center" label="联系电话" prop="contactNumber" width="120" />
-      <el-table-column align="center" label="电子邮箱" prop="email" width="220" />
-      <el-table-column align="center" label="销售部门" prop="dept" width="120" />
-      <el-table-column align="center" label="销售负责人" prop="saleManager" width="120" />
-      <el-table-column align="center" label="状态" prop="status" width="120" />
-      <el-table-column align="center" label="客户地址" prop="address" width="120" />
-      <el-table-column align="center" label="账户名称" prop="finance.accountName" width="120" />
-      <el-table-column align="center" label="纳税人识别号" prop="finance.tiNumber" width="220" />
-      <el-table-column :show-overflow-tooltip="true" align="center" label="银行账户" prop="finance.bankAccount" width="220" />
-      <el-table-column :show-overflow-tooltip="true" align="center" label="开户银行" prop="finance.bankDeposit" width="150" />
-      <el-table-column :show-overflow-tooltip="true" align="center" label="开户行地址" prop="finance.aobAddress" width="150" />
-      <el-table-column label="操作人" prop="operName" width="100" />
-      <el-table-column align="center" label="操作时间" prop="updateTime" width="100"/>
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="客户编码" prop="cCode" width="120" align="center"/>
+      <el-table-column label="客户名称" prop="cName" width="120" align="center"/>
+      <el-table-column label="所属行业" prop="industry" width="120" align="center"/>
+      <el-table-column label="客户来源" prop="source" width="120" align="center"/>
+      <el-table-column label="联系人" prop="contactPerson" width="120" align="center"/>
+      <el-table-column label="联系电话" prop="contactNumber" width="120" align="center"/>
+      <el-table-column label="电子邮箱" prop="email" width="220" align="center"/>
+      <el-table-column label="销售部门" prop="dept" width="120" align="center"/>
+      <el-table-column label="销售负责人" prop="saleManager" width="120" align="center"/>
+      <el-table-column label="状态" prop="status" width="120" align="center"/>
+      <el-table-column label="客户地址" prop="address" width="120" align="center"/>
+      <el-table-column label="账户名称" prop="finance.accountName" width="120" align="center"/>
+      <el-table-column label="纳税人识别号" prop="finance.tiNumber" width="220" align="center"/>
+      <el-table-column label="银行账户" prop="finance.bankAccount" :show-overflow-tooltip="true" width="220"
+                       align="center"/>
+      <el-table-column label="开户银行" prop="finance.bankDeposit" :show-overflow-tooltip="true" width="150"
+                       align="center"/>
+      <el-table-column label="开户行地址" prop="finance.aobAddress" :show-overflow-tooltip="true" width="150"
+                       align="center"/>
+      <el-table-column label="操作人" prop="operName" width="100"/>
+      <el-table-column label="操作时间" prop="updateTime" width="100" align="center"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template v-if="scope.row.roleId !== 1" slot-scope="scope">
           <el-button
@@ -148,9 +153,9 @@
 
     <pagination
       v-show="total>0"
-      :limit.sync="queryParams.pageSize"
-      :page.sync="queryParams.pageNum"
       :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
 
@@ -158,13 +163,13 @@
 </template>
 
 <script>
-import { listRole, getRole, delRole, addRole, updateRole, dataScope, changeRoleStatus, deptTreeSelect } from "@/api/system/role";
-import { treeselect as menuTreeselect, roleMenuTreeselect } from "@/api/system/menu";
+import {addRole, changeRoleStatus, dataScope, deptTreeSelect, getRole, updateRole} from "@/api/system/role";
+import {roleMenuTreeselect, treeselect as menuTreeselect} from "@/api/system/menu";
 import {conUpdate, listComsumer} from "@/api/wms/contactUnits/consumer/index"
 
 export default {
   name: "index",
-  dicts: ['sys_normal_disable','cu_industry'],
+  dicts: ['sys_normal_disable', 'cu_industry'],
   data() {
     return {
       // 遮罩层
@@ -238,13 +243,13 @@ export default {
       // 表单校验
       rules: {
         roleName: [
-          { required: true, message: "角色名称不能为空", trigger: "blur" }
+          {required: true, message: "角色名称不能为空", trigger: "blur"}
         ],
         roleKey: [
-          { required: true, message: "权限字符不能为空", trigger: "blur" }
+          {required: true, message: "权限字符不能为空", trigger: "blur"}
         ],
         roleSort: [
-          { required: true, message: "角色顺序不能为空", trigger: "blur" }
+          {required: true, message: "角色顺序不能为空", trigger: "blur"}
         ]
       }
     };
@@ -304,11 +309,11 @@ export default {
     // 角色状态修改
     handleStatusChange(row) {
       let text = row.status === "0" ? "启用" : "停用";
-      this.$modal.confirm('确认要"' + text + '""' + row.roleName + '"角色吗？').then(function() {
+      this.$modal.confirm('确认要"' + text + '""' + row.roleName + '"角色吗？').then(function () {
         return changeRoleStatus(row.cId, row.status);
       }).then(() => {
         this.$modal.msgSuccess(text + "成功");
-      }).catch(function() {
+      }).catch(function () {
         row.status = row.status === "0" ? "1" : "0";
       });
     },
@@ -328,21 +333,21 @@ export default {
         this.$refs.menu.setCheckedKeys([]);
       }
       this.menuExpand = false,
-      this.menuNodeAll = false,
-      this.deptExpand = true,
-      this.deptNodeAll = false,
-      this.form = {
-        roleId: undefined,
-        roleName: undefined,
-        roleKey: undefined,
-        roleSort: 0,
-        status: "0",
-        menuIds: [],
-        deptIds: [],
-        menuCheckStrictly: true,
-        deptCheckStrictly: true,
-        remark: undefined
-      };
+        this.menuNodeAll = false,
+        this.deptExpand = true,
+        this.deptNodeAll = false,
+        this.form = {
+          roleId: undefined,
+          roleName: undefined,
+          roleKey: undefined,
+          roleSort: 0,
+          status: "0",
+          menuIds: [],
+          deptIds: [],
+          menuCheckStrictly: true,
+          deptCheckStrictly: true,
+          remark: undefined
+        };
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -359,7 +364,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.roleId)
-      this.single = selection.length!=1
+      this.single = selection.length != 1
       this.multiple = !selection.length
     },
     // 更多操作触发
@@ -384,15 +389,15 @@ export default {
       this.title = "添加角色";
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
-        const tableId = row.tableId || this.ids[0];
-        const tableName = row.tableName || this.tableNames[0];
-        const params = { pageNum: this.queryParams.pageNum };
-        this.$tab.openPage("修改[" + tableName + "]客戶信息", '/tool/gen-edit/index/' + tableId, params);
+    updateConsumer(row) {
+      const tableId = row.tableId || this.ids[0];
+      // const tableName = row.tableName || this.tableNames[0];
+      // const params = {pageNum: this.queryParams.pageNum};
+      this.$tab.openPage("修改客戶信息", "/contactUnits/consumer/update" /**+ tableId, params*/);
     },
     /** 选择角色权限范围触发 */
     dataScopeSelectChange(value) {
-      if(value !== '2') {
+      if (value !== '2') {
         this.$refs.dept.setCheckedKeys([]);
       }
     },
@@ -412,12 +417,12 @@ export default {
       });
     },
     /** 分配用户操作 */
-    handleAuthUser: function(row) {
+    addConsumer: function (row) {
       const roleId = row.roleId;
-      this.$router.push("/system/role-auth/user/" + roleId);
+      this.$tab.openPage("新增客户", "/contactUnits/consumer/add");
     },
     /** 提交按钮 */
-    submitForm: function() {
+    submitForm: function () {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.roleId != undefined) {
@@ -439,7 +444,7 @@ export default {
       });
     },
     /** 提交按钮（数据权限） */
-    submitDataScope: function() {
+    submitDataScope: function () {
       if (this.form.roleId != undefined) {
         this.form.deptIds = this.getDeptAllCheckedKeys();
         dataScope(this.form).then(response => {
@@ -452,12 +457,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       // console.log(row)
-      this.$modal.confirm('确认删除该条数据？').then(function() {
+      this.$modal.confirm('确认删除该条数据？').then(function () {
         return conUpdate(row.cId);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功!");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
