@@ -1,7 +1,8 @@
 package com.lingyun.wh.warehouse.mapper;
 
 import com.lingyun.wh.warehouse.domain.InboundManager;
-import com.lingyun.wh.warehouse.domain.InventoryDetails;
+import com.lingyun.wh.warehouse.domain.InboundDetails;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
@@ -66,7 +67,7 @@ public interface InboundManagerMapper {
      * @param inIds 需要删除的数据主键集合
      * @return 结果
      */
-    public int deleteInventoryDetailsByInIds(String[] inIds);
+    public int deleteInboundDetailsByInIds(String[] inIds);
 
     /**
      * 批量新增入库管理明细
@@ -74,7 +75,7 @@ public interface InboundManagerMapper {
      * @param inventoryDetailsList 入库管理明细列表
      * @return 结果
      */
-    public int batchInventoryDetails(List<InventoryDetails> inventoryDetailsList);
+    public int batchInboundDetails(List<InboundDetails> inventoryDetailsList);
 
 
     /**
@@ -83,5 +84,5 @@ public interface InboundManagerMapper {
      * @param inId 入库管理ID
      * @return 结果
      */
-    public int deleteInventoryDetailsByInId(String inId);
+    public int deleteInboundDetailsByInId(String inId);
 }

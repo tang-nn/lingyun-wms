@@ -25,12 +25,12 @@
         <result property="deleted" column="is_delete"/>
     </resultMap>
 
-    <resultMap id="InboundManagerInventoryDetailsResult" type="InboundManager" extends="InboundManagerResult">
-        <collection property="inventoryDetailsList" notNullColumn="sub_imd_id" javaType="java.util.List"
-                    resultMap="InventoryDetailsResult"/>
+    <resultMap id="InboundManagerInboundDetailsResult" type="InboundManager" extends="InboundManagerResult">
+        <collection property="inboundDetailsList" notNullColumn="sub_imd_id" javaType="java.util.List"
+                    resultMap="InboundDetailsResult"/>
     </resultMap>
 
-    <resultMap type="InventoryDetails" id="InventoryDetailsResult">
+    <resultMap type="inboundDetails" id="InboundDetailsResult">
         <result property="imdId" column="imd_id"/>
         <result property="inId" column="in_id"/>
         <result property="odId" column="od_id"/>
@@ -67,7 +67,7 @@
     </resultMap>
     <resultMap id="InboundResultVo" type="InboundManager" autoMapping="true">
         <id property="inId" column="in_id"/>
-        <collection property="inventoryDetailsList" select="inventoryDetailsListVo" column="in_id">
+        <collection property="inboundDetails" select="inboundDetailsListVo" column="in_id">
         </collection>
     </resultMap>
 
@@ -147,7 +147,7 @@
         </where>
     </select>
 
-    <select id="inventoryDetailsListVo" resultMap="InventoryDetailsResult">
+    <select id="inboundDetailsListVo" resultMap="InboundDetailsResult">
         SELECT g.g_id,
                g.g_code,
                g.g_name,
@@ -180,7 +180,7 @@
           and imd.is_delete = b'0'
     </select>
 
-    <select id="selectInboundManagerByInId" parameterType="String" resultMap="InboundManagerInventoryDetailsResult">
+    <select id="selectInboundManagerByInId" parameterType="String" resultMap="InboundManagerInboundDetailsResult">
 
     </select>
 
@@ -263,20 +263,20 @@
         </foreach>
     </delete>
 
-    <delete id="deleteInventoryDetailsByInIds" parameterType="String">
+    <delete id="deleteInboundDetailsByInIds" parameterType="String">
         delete from wh_im_details where in_id in
         <foreach item="inId" collection="array" open="(" separator="," close=")">
             #{inId}
         </foreach>
     </delete>
 
-    <delete id="deleteInventoryDetailsByInId" parameterType="String">
+    <delete id="deleteInboundDetailsByInId" parameterType="String">
         delete
         from wh_im_details
         where in_id = #{inId}
     </delete>
 
-    <insert id="batchInventoryDetails">
+    <insert id="batchInboundDetails">
         insert into wh_im_details( imd_id, in_id, od_id, unit, quantity_in_stock, unstocked_quantity, sl_id,
         this_quantity, production_date, batch_number, remark, create_by, create_time, update_by, update_time, is_delete)
         values

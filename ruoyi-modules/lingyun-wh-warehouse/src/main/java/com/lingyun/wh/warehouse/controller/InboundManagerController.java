@@ -22,7 +22,7 @@ import java.util.List;
  * @CreateDate : 2023/12/12 13:23
  */
 @RestController
-@RequestMapping("/inventory")
+@RequestMapping("/inbound")
 public class InboundManagerController extends BaseController {
     @Autowired
     private IInboundManagerService inboundManagerService;

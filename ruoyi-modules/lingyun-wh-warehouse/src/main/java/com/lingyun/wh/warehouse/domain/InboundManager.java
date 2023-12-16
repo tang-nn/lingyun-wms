@@ -111,7 +111,7 @@ public class InboundManager extends BaseEntity {
     /**
      * 入库管理明细信息
      */
-    private List<InventoryDetails> inventoryDetailsList;
+    private List<InboundDetails> inboundDetails;
 
     public String getWhName() {
         return whName;
@@ -241,12 +241,12 @@ public class InboundManager extends BaseEntity {
         this.deleted = deleted;
     }
 
-    public List<InventoryDetails> getInventoryDetailsList() {
-        return inventoryDetailsList;
+    public List<InboundDetails> getInboundDetails() {
+        return inboundDetails;
     }
 
-    public void setInventoryDetailsList(List<InventoryDetails> inventoryDetailsList) {
-        this.inventoryDetailsList = inventoryDetailsList;
+    public void setInboundDetails(List<InboundDetails> inboundDetails) {
+        this.inboundDetails = inboundDetails;
     }
 
     @Override
@@ -265,7 +265,7 @@ public class InboundManager extends BaseEntity {
                 ", storageDate=" + storageDate +
                 ", orderId='" + orderId + '\'' +
                 ", deleted='" + deleted + '\'' +
-                ", inventoryDetailsList=" + inventoryDetailsList +
+                ", inboundDetails=" + inboundDetails +
                 '}';
     }
 }

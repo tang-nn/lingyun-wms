@@ -1,7 +1,7 @@
 package com.lingyun.wh.warehouse.service.impl;
 
 import com.lingyun.wh.warehouse.domain.InboundManager;
-import com.lingyun.wh.warehouse.domain.InventoryDetails;
+import com.lingyun.wh.warehouse.domain.InboundDetails;
 import com.lingyun.wh.warehouse.mapper.InboundManagerMapper;
 import com.lingyun.wh.warehouse.service.IInboundManagerService;
 import com.ruoyi.common.core.utils.DateUtils;
@@ -62,7 +62,7 @@ public class InboundManagerServiceImpl implements IInboundManagerService {
     public int insertInboundManager(InboundManager inboundManager) {
         inboundManager.setCreateTime(DateUtils.getNowDate());
         int rows = inboundManagerMapper.insertInboundManager(inboundManager);
-        insertInventoryDetails(inboundManager);
+        insertInboundDetails(inboundManager);
         return rows;
     }
 
@@ -76,8 +76,8 @@ public class InboundManagerServiceImpl implements IInboundManagerService {
     @Override
     public int updateInboundManager(InboundManager inboundManager) {
         inboundManager.setUpdateTime(DateUtils.getNowDate());
-        inboundManagerMapper.deleteInventoryDetailsByInId(inboundManager.getInId());
-        insertInventoryDetails(inboundManager);
+        inboundManagerMapper.deleteInboundDetailsByInId(inboundManager.getInId());
+        insertInboundDetails(inboundManager);
         return inboundManagerMapper.updateInboundManager(inboundManager);
     }
 
@@ -90,7 +90,7 @@ public class InboundManagerServiceImpl implements IInboundManagerService {
     @Transactional
     @Override
     public int deleteInboundManagerByInIds(String[] inIds) {
-        inboundManagerMapper.deleteInventoryDetailsByInIds(inIds);
+        inboundManagerMapper.deleteInboundDetailsByInIds(inIds);
         return inboundManagerMapper.deleteInboundManagerByInIds(inIds);
     }
 
@@ -103,7 +103,7 @@ public class InboundManagerServiceImpl implements IInboundManagerService {
     @Transactional
     @Override
     public int deleteInboundManagerByInId(String inId) {
-        inboundManagerMapper.deleteInventoryDetailsByInId(inId);
+        inboundManagerMapper.deleteInboundDetailsByInId(inId);
         return inboundManagerMapper.deleteInboundManagerByInId(inId);
     }
 
@@ -112,17 +112,17 @@ public class InboundManagerServiceImpl implements IInboundManagerService {
      *
      * @param inboundManager 入库管理对象
      */
-    public void insertInventoryDetails(InboundManager inboundManager) {
-        List<InventoryDetails> inventoryDetailsList = inboundManager.getInventoryDetailsList();
+    public void insertInboundDetails(InboundManager inboundManager) {
+        List<InboundDetails> inventoryDetailsList = inboundManager.getInboundDetails();
         String inId = inboundManager.getInId();
         if (StringUtils.isNotNull(inventoryDetailsList)) {
-            List<InventoryDetails> list = new ArrayList<InventoryDetails>();
-            for (InventoryDetails inventoryDetails : inventoryDetailsList) {
+            List<InboundDetails> list = new ArrayList<InboundDetails>();
+            for (InboundDetails inventoryDetails : inventoryDetailsList) {
                 inventoryDetails.setInId(inId);
                 list.add(inventoryDetails);
             }
             if (!list.isEmpty()) {
-                inboundManagerMapper.batchInventoryDetails(list);
+                inboundManagerMapper.batchInboundDetails(list);
             }
         }
     }
