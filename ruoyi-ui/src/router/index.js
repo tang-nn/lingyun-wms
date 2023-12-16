@@ -210,6 +210,34 @@ export const dynamicRoutes = [
       }
     ]
   },
+  {
+    path: '/contactUnits/consumer/add',
+    component: Layout,
+    hidden: true,
+    permissions: ['contactUnits:consumer:add'],
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/wms/contactUnits/consumer/add'),
+        name: '新增客户',
+        meta: { title: '新增客户', activeMenu: '/contactUnits/consumer/add' }
+      }
+    ]
+  },
+  {
+    path: '/contactUnits/consumer/index',
+    component: Layout,
+    hidden: true,
+    permissions: ['contactUnits:consumer:index'],
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/wms/contactUnits/consumer/index'),
+        name: '客户',
+        meta: { title: '客户', activeMenu: '/contactUnits/consumer/index' }
+      }
+    ]
+  },
 ]
 
 // 防止连续点击多次路由报错

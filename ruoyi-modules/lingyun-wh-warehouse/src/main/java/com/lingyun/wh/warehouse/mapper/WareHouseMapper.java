@@ -23,6 +23,11 @@ public interface WareHouseMapper
     public WareHouse selectWareHouseByWId(String wId);
 
     /**
+     * 查询仓库
+     */
+    public List<WareHouse> lists();
+
+    /**
      * 查询仓库列表
      *
      * @return 仓库集合

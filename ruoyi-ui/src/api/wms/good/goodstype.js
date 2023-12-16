@@ -61,5 +61,3 @@ export function changeGoodTypeStatus(gtId, status) {
     data: data
   })
 }
-
-

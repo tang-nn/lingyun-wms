@@ -37,9 +37,19 @@ public class WareHouseController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(@RequestParam Map<String,Object> map)
     {
-        List<Map<String, Object>> list = wareHouseService.selectWareHouseList(map);
         startPage();
+        List<Map<String, Object>> list = wareHouseService.selectWareHouseList(map);
         return getDataTable(list);
+    }
+
+    /**
+     * 查询仓库
+     */
+    @RequiresPermissions("system:warehouse:lists")
+    @GetMapping("/lists")
+    public List<WareHouse> lists()
+    {
+        return wareHouseService.lists();
     }
 
     /**

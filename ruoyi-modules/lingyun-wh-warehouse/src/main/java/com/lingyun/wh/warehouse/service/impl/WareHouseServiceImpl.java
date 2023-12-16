@@ -39,6 +39,11 @@ public class WareHouseServiceImpl implements IWareHouseService
         return wareHouseMapper.selectWareHouseByWId(wId);
     }
 
+    @Override
+    public List<WareHouse> lists() {
+        return wareHouseMapper.lists();
+    }
+
     /**
      * 查询仓库列表
      *
