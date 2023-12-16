@@ -70,10 +70,89 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
+        path: '/housedetails/:w_id',
+        component: () => import('@/views/wms/warehouse/warehousedetails/index'),
+        name: 'warehousedetail',
+        meta: { title: '仓库详情', icon: 'dashboard'}
+      }
+    ]
+  },
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'warehousemanager',
+        component: () => import('@/views/wms/warehouse/index'),
+        name: 'whdetail',
+        meta: { title: '仓库管理', icon: 'dashboard'}
+      }
+    ]
+  },
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'addwarehouse',
+        component: () => import('@/views/wms/warehouse/addwarehouse/index'),
+        name: 'whdetail',
+        meta: { title: '新增仓库', icon: 'dashboard'}
+      }
+    ]
+  },
+
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
         path: '/gdsedit',
         component: () => import('@/views/wms/goodsmanager/goodsinfo/goodsedit'),
-        name: 'goodsadd',
+        name: 'goodsedit',
         meta: { title: '商品管理 / 编辑货品信息', icon: 'dashboard' }
+      }
+    ]
+  },
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/InventorySheet',
+        component: () => import('@/views/wms/warehouse/inventory/index'),
+        name: 'InSheet',
+        meta: { title: '库存盘点', icon: 'dashboard' }
+      }
+    ]
+  },
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/Inventorydetails/:isId',
+        component: () => import('@/views/wms/warehouse/inventory/detailsIndex'),
+        name: 'Indetails',
+        meta: { title: '库存盘点/盘点详情', icon: 'dashboard'}
+      }
+    ]
+  },
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/addInventorySheet',
+        component: () => import('@/views/wms/warehouse/inventory/addIndex'),
+        name: 'addInSheet',
+        meta: { title: '库存盘点 / 新增盘点', icon: 'dashboard' }
       }
     ]
   },

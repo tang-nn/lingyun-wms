@@ -20,7 +20,7 @@ public interface WareHouseMapper
      * @param wId 仓库主键
      * @return 仓库
      */
-    public WareHouse selectWareHouseByWId(String wId);
+    public List<Map<String,Object>> selectWareHouseByWId(String wId);
 
     /**
      * 查询仓库列表
@@ -91,4 +91,16 @@ public interface WareHouseMapper
      * @return 结果
      */
     public int deleteStorageLocationByWId(String wId);
+
+
+    /**
+     * 查询仓库下的库位
+     * @param map
+     * @return
+     */
+    public List<StorageLocation>selectStorageListfindByWid(Map<String,Object> map);
+
+
+
+
 }

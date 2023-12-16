@@ -13,7 +13,6 @@ import com.ruoyi.common.core.utils.StringUtils;
 import com.lingyun.wh.goods.doman.vo.TreeSelect;
 import com.ruoyi.common.core.utils.bean.BeanValidators;
 import com.ruoyi.system.api.RemoteEncodeRuleService;
-import com.ruoyi.system.service.impl.SysUserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class GoodsTypeServiceImpl implements IGoodsTypeService {
-    private static final Logger log = LoggerFactory.getLogger(SysUserServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(IGoodsTypeService.class);
 
     @Autowired
     protected Validator validator;
@@ -185,18 +184,18 @@ public class GoodsTypeServiceImpl implements IGoodsTypeService {
     @Override
     public int insertGoodsType(GoodsType goodsType) {
         goodsType.setCreateTime(DateUtils.getNowDate());
-        R<String> res = remoteEncodeRuleService.genSpecifyEncoding(OrderType.GOODS_TYPE, SecurityConstants.INNER);
+        R<String[]> res = remoteEncodeRuleService.genSpecifyEncoding(OrderType.GOODS_TYPE, 1, SecurityConstants.INNER);
         System.out.println("货品类型编码获取 res: " + res);
         if (res == null || res.getCode() != 200) {
             log.error("insertGoodsType 货品类型编码获取失败");
             throw new RuntimeException("货品类型编码获取失败");
         } else {
-            goodsType.setGtCode(res.getData());
+            goodsType.setGtCode(res.getData()[0]);
         }
         int i = goodsTypeMapper.insertGoodsType(goodsType);
         if (i > 0) {
-            res = remoteEncodeRuleService.increaseCurrentSerialNumber(OrderType.GOODS_TYPE, SecurityConstants.INNER);
-            if (res == null || res.getCode() != 200) {
+            R<String> r = remoteEncodeRuleService.increaseCurrentSerialNumber(OrderType.GOODS_TYPE, 1, SecurityConstants.INNER);
+            if (r == null || r.getCode() != 200) {
                 log.error("insertGoodsType 流水号迭代失败");
                 throw new RuntimeException("进货数据插入失败");
             }

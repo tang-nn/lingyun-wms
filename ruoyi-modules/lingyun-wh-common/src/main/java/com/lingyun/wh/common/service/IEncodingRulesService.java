@@ -69,7 +69,7 @@ public interface IEncodingRulesService {
      * @param rulesId 目标订单，数据字典
      * @return 结果
      */
-    String genSpecifyEncoding(int rulesId);
+    String[] genSpecifyEncoding(int rulesId, int num);
 
     /**
      * 生成订单编码后，某个服务使用编码，
@@ -78,7 +78,7 @@ public interface IEncodingRulesService {
      * @param rulesId 目标订单，数据字典
      * @return 结果
      */
-    int increaseCurrentSerialNumber(int rulesId);
+    int increaseCurrentSerialNumber(int rulesId, int num);
 
 
 }

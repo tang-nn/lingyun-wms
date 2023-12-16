@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 库位信息Service业务层处理
@@ -70,6 +71,11 @@ public class StorageLocationServiceImpl implements IStorageLocationService
     {
         storageLocation.setUpdateTime(DateUtils.getNowDate());
         return storageLocationMapper.updateStorageLocation(storageLocation);
+    }
+
+    @Override
+    public int changeLocationStatus(Map<String, Object> map) {
+        return storageLocationMapper.changeLocationStatus(map);
     }
 
     /**

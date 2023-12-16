@@ -3,6 +3,7 @@ package com.lingyun.wh.warehouse.service;
 import com.lingyun.wh.warehouse.domain.StorageLocation;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 库位信息Service接口
@@ -43,6 +44,13 @@ public interface IStorageLocationService
      * @return 结果
      */
     public int updateStorageLocation(StorageLocation storageLocation);
+
+    /**
+     * 修改库位状态
+     * @param map
+     * @return
+     */
+    public int changeLocationStatus(Map<String,Object> map);
 
     /**
      * 批量删除库位信息

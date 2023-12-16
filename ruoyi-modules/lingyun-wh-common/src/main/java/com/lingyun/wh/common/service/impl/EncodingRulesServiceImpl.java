@@ -104,26 +104,31 @@ public class EncodingRulesServiceImpl implements IEncodingRulesService {
      * @return 结果
      */
     @Override
-    public String genSpecifyEncoding(int rulesId) {
+    public String[] genSpecifyEncoding(int rulesId, int num) {
+        String[] encodes = new String[num];
         EncodingRules rules = encodingRulesMapper.selectEncodingRules(rulesId, null);
         String orderNumber = null;
-        // 数据库查看为空，抛出异常
+        // 数据【】库查看为空，抛出异常
         if (rules == null) {
             throw new RuntimeException("The encoding rule for the target [" + rulesId + "] form does not exist");
         }
         System.out.println("rules = " + rules);
-        int csn = rules.getCurrentSerialNumber() + rules.getStepLength();
-        // 当前流水号超过规定位数，抛出异常
-            if (rules.getSerialNumber() < String.valueOf(csn).length()) {
-            throw new RuntimeException("前流水号超过规定位数，请重新指定编码的流水好长度");
-        }
 
         String timeRule = rules.getTimeRules();
         System.out.println("timeRule: " + timeRule);
-        orderNumber = rules.getNumberPrefix() + LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern(timeRule)) + String.format("%0" + rules.getSerialNumber() + "d", csn);
-        log.info("目标表单: {}，生成订单号：{}", rules.getTargetForm(), orderNumber);
-        return orderNumber;
+        for (int i = 1; i <= encodes.length; i++) {
+            int csn = rules.getCurrentSerialNumber() + rules.getStepLength() * i;
+            // 当前流水号超过规定位数，抛出异常
+            if (rules.getSerialNumber() < String.valueOf(csn).length()) {
+                throw new RuntimeException("前流水号超过规定位数，请重新指定编码的流水好长度");
+            }
+            orderNumber = rules.getNumberPrefix() + LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern(timeRule)) + String.format("%0" + rules.getSerialNumber() + "d", csn);
+            encodes[i - 1] = orderNumber;
+            log.info("目标表单: {}，生成订单号：{}, i: {}", rules.getTargetForm(), orderNumber, i);
+        }
+
+        return encodes;
     }
 
     /**
@@ -134,7 +139,7 @@ public class EncodingRulesServiceImpl implements IEncodingRulesService {
      * @return
      */
     @Override
-    public int increaseCurrentSerialNumber(int rulesId) {
+    public int increaseCurrentSerialNumber(int rulesId, int num) {
         EncodingRules rules = encodingRulesMapper.selectEncodingRules(rulesId, null);
         String orderNumber = null;
         // 数据库查看为空，抛出异常
@@ -143,7 +148,7 @@ public class EncodingRulesServiceImpl implements IEncodingRulesService {
         }
         EncodingRules newRules = new EncodingRules();
         newRules.setErId(rules.getErId());
-        newRules.setCurrentSerialNumber(rules.getCurrentSerialNumber() + rules.getStepLength());
+        newRules.setCurrentSerialNumber(rules.getCurrentSerialNumber() + rules.getStepLength() * num);
         newRules.setUpdateTime(DateUtils.getNowDate());
         newRules.setUpdateBy(String.valueOf(SecurityUtils.getLoginUser().getUserid()));
         System.out.println("newRules = " + newRules);

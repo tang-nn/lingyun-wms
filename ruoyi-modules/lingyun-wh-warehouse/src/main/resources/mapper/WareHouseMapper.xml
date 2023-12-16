@@ -52,10 +52,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                ww.create_time, ww.update_by,su2.user_name twouser,
                ww.update_time, ww.is_delete,(select count(*)from wh_storage_location where w_id=ww.w_id)storageNum
         from wh_warehouse ww
-                 left join sys_user su
-                           on ww.create_by=su.user_id
-                 left join sys_user su2
-                           on ww.update_by=su2.user_id
+                     left join sys_user su
+                               on ww.create_by=su.user_id
+                     left join sys_user su2
+                               on ww.update_by=su2.user_id
                  left join sys_user su3
                            on ww.w_supervisor=su3.user_id
                  left join sys_dept sd
@@ -75,11 +75,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     </select>
     
-    <select id="selectWareHouseByWId" parameterType="String" resultMap="WareHouseStorageLocationResult">
-        select a.w_id, a.w_code, a.w_name, a.w_capacity, a.status, a.w_address, a.is_default, a.is_lock, a.w_supervisor, a.remark, a.sort, a.create_by, a.create_time, a.update_by, a.update_time, a.is_delete,
- b.sl_id as sub_sl_id, b.w_id as sub_w_id, b.sl_code as sub_sl_code, b.sl_name as sub_sl_name, b.location_capacity as sub_location_capacity, b.position_manager as sub_position_manager, b.sort as sub_sort, b.status as sub_status, b.remark as sub_remark, b.create_by as sub_create_by, b.create_time as sub_create_time, b.update_by as sub_update_by, b.update_time as sub_update_time, b.is_delete as sub_is_delete
+    <select id="selectWareHouseByWId" parameterType="String" resultType="map">
+        select a.w_id, a.w_code, a.w_name, a.w_capacity, a.`status`, a.w_address, a.is_default, a.is_lock,
+               a.w_supervisor,su3.user_name supervisorUser, a.remark, a.sort, a.create_by,su.user_name oneuser,
+               a.create_time, a.update_by,sd.dept_name deptName,sd.phone tel,
+               su2.user_name twouser, a.update_time, a.is_delete,
+               b.sl_id as sub_sl_id, b.w_id as sub_w_id, b.sl_code as sub_sl_code, b.sl_name as sub_sl_name,
+               b.location_capacity as sub_location_capacity, b.position_manager as sub_position_manager,
+               b.sort as sub_sort, b.`status` as sub_status, b.remark as sub_remark, b.create_by as sub_create_by,
+               b.create_time as sub_create_time, b.update_by as sub_update_by, b.update_time as sub_update_time,
+               b.is_delete as sub_is_delete,(select count(*)from wh_storage_location where w_id=a.w_id)storageNum
         from wh_warehouse a
-        left join wh_storage_location b on b.w_id = a.w_id
+                 left join wh_storage_location b on b.w_id = a.w_id
+                 left join sys_user su
+                           on a.create_by=su.user_id
+                 left join sys_user su2
+                           on a.update_by=su2.user_id
+                 left join sys_user su3
+                           on a.w_supervisor=su3.user_id
+                 left join sys_dept sd
+                           on sd.dept_id = su3.dept_id
         where a.w_id = #{wId}
     </select>
 
@@ -162,7 +177,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
     
     <delete id="deleteStorageLocationByWIds" parameterType="String">
-        delete from wh_storage_location where w_id in 
+        update  wh_storage_location set is_delete=1 where w_id in
         <foreach item="wId" collection="array" open="(" separator="," close=")">
             #{wId}
         </foreach>
@@ -175,9 +190,35 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="batchStorageLocation">
         insert into wh_storage_location( sl_id, w_id, sl_code, sl_name, location_capacity, position_manager, sort, status, remark, create_by, create_time, update_by, update_time, is_delete) values
 		<foreach item="item" index="index" collection="list" separator=",">
-            ( #{item.slId}, #{item.wId}, #{item.slCode}, #{item.slName}, #{item.locationCapacity}, #{item.positionManager}, #{item.sort}, #{item.status}, #{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime}, #{item.isDelete})
+            ( #{item.slId}, #{item.wId}, #{item.slCode}, #{item.slName}, #{item.locationCapacity}, #{item.positionManager}, #{item.sort}, #{item.status}, #{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime}, b'0')
         </foreach>
     </insert>
+
+
+
+
+    <select id="selectStorageListfindByWid" resultType="map">
+        select wsl.sl_id,wsl.w_id, wsl.sl_code,wsl.sl_name,
+               wsl.location_capacity,wsl.position_manager,su3.user_name manager,
+               wsl.sort,wsl.`status`, wsl.remark,wsl.create_by,su.user_name creater,
+               wsl.create_time,wsl.update_by,su2.user_name updater,wsl.update_time,
+               wsl.is_delete from wh_storage_location wsl
+               inner join sys_user su
+               on wsl.create_by=su.user_id
+               inner join sys_user su2
+               on wsl.update_by=su2.user_id
+               inner join sys_user su3
+               on wsl.position_manager=su3.user_id
+               where wsl.w_id=#{w_id}
+        <include refid="selectStorageListfindByWidWhere"/>
+    </select>
+
+    <sql id="selectStorageListfindByWidWhere">
+        <if test="sl_name != null  and sl_name != ''">and wsl.sl_name like concat('%',#{sl_name},'%')</if>
+        <if test="status != null "> and wsl.status = #{status}</if>
+        <if test="position_manager != null  and position_manager != ''"> and su3.user_name = #{position_manager}</if>
+        and wsl.is_delete = 0
+    </sql>
 
 
 

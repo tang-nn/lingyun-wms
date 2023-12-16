@@ -41,11 +41,11 @@ public class WareHouse extends BaseEntity
 
     /** 是否默认,,,,0：不是默认的；1：是默认的 */
     @Excel(name = "是否默认,,,,0：不是默认的；1：是默认的")
-    private String isDefault;
+    private Boolean isDefault;
 
     /** 仓库锁定,,,,0：没有锁库；1：锁库，冻结仓库 */
     @Excel(name = "仓库锁定,,,,0：没有锁库；1：锁库，冻结仓库")
-    private String isLock;
+    private Boolean isLock;
 
     /** 关联至用户表，仓库主管 */
     @Excel(name = "关联至用户表，仓库主管")
@@ -57,7 +57,7 @@ public class WareHouse extends BaseEntity
 
     /** 0：存在；1：已删除，不存在 */
     @Excel(name = "0：存在；1：已删除，不存在")
-    private String isDelete;
+    private Boolean isDelete;
 
     /** 库位信息信息 */
     private List<StorageLocation> storageLocationList;
@@ -116,21 +116,21 @@ public class WareHouse extends BaseEntity
     {
         return wAddress;
     }
-    public void setIsDefault(String isDefault) 
+    public void setIsDefault(Boolean isDefault)
     {
         this.isDefault = isDefault;
     }
 
-    public String getIsDefault() 
+    public Boolean getIsDefault()
     {
         return isDefault;
     }
-    public void setIsLock(String isLock) 
+    public void setIsLock(Boolean isLock)
     {
         this.isLock = isLock;
     }
 
-    public String getIsLock() 
+    public Boolean getIsLock()
     {
         return isLock;
     }
@@ -152,12 +152,12 @@ public class WareHouse extends BaseEntity
     {
         return sort;
     }
-    public void setIsDelete(String isDelete) 
+    public void setIsDelete(Boolean isDelete)
     {
         this.isDelete = isDelete;
     }
 
-    public String getIsDelete() 
+    public Boolean getIsDelete()
     {
         return isDelete;
     }

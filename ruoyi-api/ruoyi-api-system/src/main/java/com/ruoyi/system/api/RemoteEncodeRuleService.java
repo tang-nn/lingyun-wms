@@ -24,14 +24,14 @@ public interface RemoteEncodeRuleService {
     /**
      * 生成订单编码
      */
-    @GetMapping("/whcomm/encoding/genEncode/{rulesId}")
-    R<String> genSpecifyEncoding(@PathVariable("rulesId") int rulesId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @GetMapping("/whcomm/encoding/genEncode/{rulesId}/{num}")
+    R<String[]> genSpecifyEncoding(@PathVariable("rulesId") int rulesId, @PathVariable(value = "num", required = false) int num, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 生成订单编码后，某个服务使用编码，
      * 调用此服务进行将该编码规则的当前流水号增加
      */
-    @GetMapping("/whcomm/encoding/incrEncode/{rulesId}")
-    R<String> increaseCurrentSerialNumber(@PathVariable("rulesId") int rulesId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @GetMapping("/whcomm/encoding/incrEncode/{rulesId}/{num}")
+    R<String> increaseCurrentSerialNumber(@PathVariable("rulesId") int rulesId, @PathVariable(value = "num", required = false) int num, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 }

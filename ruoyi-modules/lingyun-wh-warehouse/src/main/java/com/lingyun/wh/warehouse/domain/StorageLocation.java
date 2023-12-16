@@ -16,6 +16,7 @@ public class StorageLocation extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 库位ID */
+    @Excel(name = "库位ID")
     private String slId;
 
     /** 仓库ID */
@@ -31,11 +32,11 @@ public class StorageLocation extends BaseEntity
     private String slName;
 
     /** 库位容量/立方 */
-    @Excel(name = "库位容量/立方")
+    @Excel(name = "库位容量")
     private Integer locationCapacity;
 
     /** 关联至用户表,仓位主管 */
-    @Excel(name = "关联至用户表,仓位主管")
+    @Excel(name = "仓位主管")
     private String positionManager;
 
     /** 排序 */
@@ -43,11 +44,14 @@ public class StorageLocation extends BaseEntity
     private Long sort;
 
     /** 库位状态,0:default,启用;1:警用 */
-    @Excel(name = "库位状态,0:default,启用;1:警用")
+    @Excel(name = "库位状态")
     private Integer status;
 
+
+    @Excel(name = "备注")
+    private String remark;
+
     /** 0：存在；1：已删除，不存在 */
-    @Excel(name = "0：存在；1：已删除，不存在")
     private String isDelete;
 
     public void setSlId(String slId) 
@@ -132,23 +136,26 @@ public class StorageLocation extends BaseEntity
         return isDelete;
     }
 
+    public String getRemark() {
+        return remark;
+    }
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("slId", getSlId())
-            .append("wId", getwId())
-            .append("slCode", getSlCode())
-            .append("slName", getSlName())
-            .append("locationCapacity", getLocationCapacity())
-            .append("positionManager", getPositionManager())
-            .append("sort", getSort())
-            .append("status", getStatus())
-            .append("remark", getRemark())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateBy", getUpdateBy())
-            .append("updateTime", getUpdateTime())
-            .append("isDelete", getIsDelete())
-            .toString();
+        return "StorageLocation{" +
+                "slId='" + slId + '\'' +
+                ", wId='" + wId + '\'' +
+                ", slCode='" + slCode + '\'' +
+                ", slName='" + slName + '\'' +
+                ", locationCapacity=" + locationCapacity +
+                ", positionManager='" + positionManager + '\'' +
+                ", sort=" + sort +
+                ", status=" + status +
+                ", remark='" + remark + '\'' +
+                ", isDelete='" + isDelete + '\'' +
+                '}';
     }
 }

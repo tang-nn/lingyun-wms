@@ -1,102 +1,67 @@
 package com.lingyun.wh.warehouse.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.math.BigDecimal;
+
 import com.lingyun.wh.goods.api.domain.Goods;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 /**
- * @Author : Tang
- * @Description : 入库管理明细对象 wh_im_details
- * @CreateDate : 2023/12/12 13:01
+ * 盘点明细对象 wh_is_details
+ *
+ * @author LiJin
+ * @date 2023-12-13
  */
-public class InventoryDetails extends BaseEntity {
+public class InventoryDetails extends BaseEntity
+{
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 入库明细单ID
-     */
-    private String imdId;
+    /** 盘点明细ID */
+    private String isdId;
 
-    /**
-     * 入库ID
-     */
-    @Excel(name = "入库ID")
-    private String inId;
+    /** 盘点 ID */
+    @Excel(name = "盘点 ID")
+    private String isId;
 
-    /**
-     * 进货明细 ID 或销售退货明细 ID
-     */
-    @Excel(name = "进货明细 ID 或销售退货明细 ID")
-    private String odId;
+    /** 盘点单号 */
+    @Excel(name = "盘点单号")
+    private String isCode;
 
-    /**
-     * 货品 ID
-     */
-    private String goodsId;
-    /**
-     * 单位
-     */
-    @Excel(name = "单位")
-    private String unit;
+    /** 库存 ID */
+    @Excel(name = "库存 ID")
+    private String sId;
 
-    /**
-     * 已入库数量，已废弃
-     */
-    @Deprecated
-    private BigDecimal quantityInStock;
 
-    /**
-     * 入库仓位
-     */
-    @Excel(name = "入库仓位")
-    private String slId;
+    /** 盘点数量 */
+    @Excel(name = "盘点数量")
+    private BigDecimal countQuantity;
 
-    /**
-     * 本次入库数量
-     */
-    @Excel(name = "本次入库数量")
-    private BigDecimal thisQuantity;
+    /** 盈亏数量 */
+    @Excel(name = "盈亏数量")
+    private Integer profitLossQuantity;
 
-    /**
-     * 生产日期
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "生产日期", width = 30, dateFormat = "yyyy-MM-dd")
-    private Date productionDate;
+    /** 盘点状态 */
+    @Excel(name = "盘点状态")
+    private Integer isStatus;
 
-    /**
-     * 批次号
-     */
-    @Excel(name = "批次号")
-    private String batchNumber;
+    /** 盘点金额 */
+    @Excel(name = "盘点金额")
+    private BigDecimal countAmount;
 
-    /**
-     * 0：存在；1：已删除，不存在
-     */
-    private Boolean isDelete;
-    /**
-     * 入库货品信息
-     */
+    /*库存*/
+    private Stock stock;
+
+    /*货品*/
     private Goods goods;
 
-    public String getGoodsId() {
-        return goodsId;
+    public Stock getStock() {
+        return stock;
     }
 
-    public void setGoodsId(String goodsId) {
-        this.goodsId = goodsId;
-    }
-
-    public Boolean getDelete() {
-        return isDelete;
-    }
-
-    public void setDelete(Boolean delete) {
-        isDelete = delete;
+    public void setStock(Stock stock) {
+        this.stock = stock;
     }
 
     public Goods getGoods() {
@@ -107,100 +72,118 @@ public class InventoryDetails extends BaseEntity {
         this.goods = goods;
     }
 
-    public String getImdId() {
-        return imdId;
-    }
-
-    public void setImdId(String imdId) {
-        this.imdId = imdId;
-    }
-
-    public String getInId() {
-        return inId;
-    }
-
-    public void setInId(String inId) {
-        this.inId = inId;
-    }
-
-    public String getOdId() {
-        return odId;
-    }
-
-    public void setOdId(String odId) {
-        this.odId = odId;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
-    public BigDecimal getQuantityInStock() {
-        return quantityInStock;
-    }
-
-    public void setQuantityInStock(BigDecimal quantityInStock) {
-        this.quantityInStock = quantityInStock;
-    }
-
-    public String getSlId() {
-        return slId;
-    }
-
-    public void setSlId(String slId) {
-        this.slId = slId;
-    }
-
-    public BigDecimal getThisQuantity() {
-        return thisQuantity;
-    }
-
-    public void setThisQuantity(BigDecimal thisQuantity) {
-        this.thisQuantity = thisQuantity;
-    }
-
-    public Date getProductionDate() {
-        return productionDate;
-    }
-
-    public void setProductionDate(Date productionDate) {
-        this.productionDate = productionDate;
-    }
-
-    public String getBatchNumber() {
-        return batchNumber;
-    }
-
-    public void setBatchNumber(String batchNumber) {
-        this.batchNumber = batchNumber;
-    }
-
-    public Boolean getIsDelete() {
+    public Boolean getDelete() {
         return isDelete;
     }
 
-    public void setIsDelete(Boolean isDelete) {
+    public void setDelete(Boolean delete) {
+        isDelete = delete;
+    }
+
+    /** 0：存在；1：已删除，不存在 */
+    @Excel(name = "0：存在；1：已删除，不存在")
+    private Boolean isDelete;
+
+    public void setIsdId(String isdId)
+    {
+        this.isdId = isdId;
+    }
+
+    public String getIsdId()
+    {
+        return isdId;
+    }
+    public void setIsId(String isId)
+    {
+        this.isId = isId;
+    }
+
+    public String getIsId()
+    {
+        return isId;
+    }
+    public void setIsCode(String isCode)
+    {
+        this.isCode = isCode;
+    }
+
+    public String getIsCode()
+    {
+        return isCode;
+    }
+    public void setsId(String sId)
+    {
+        this.sId = sId;
+    }
+
+    public String getsId()
+    {
+        return sId;
+    }
+
+    public void setCountQuantity(BigDecimal countQuantity)
+    {
+        this.countQuantity = countQuantity;
+    }
+
+    public BigDecimal getCountQuantity()
+    {
+        return countQuantity;
+    }
+    public void setProfitLossQuantity(Integer profitLossQuantity)
+    {
+        this.profitLossQuantity = profitLossQuantity;
+    }
+
+    public Integer getProfitLossQuantity()
+    {
+        return profitLossQuantity;
+    }
+    public void setIsStatus(Integer isStatus)
+    {
+        this.isStatus = isStatus;
+    }
+
+    public Integer getIsStatus()
+    {
+        return isStatus;
+    }
+    public void setCountAmount(BigDecimal countAmount)
+    {
+        this.countAmount = countAmount;
+    }
+
+    public BigDecimal getCountAmount()
+    {
+        return countAmount;
+    }
+    public void setIsDelete(Boolean isDelete)
+    {
         this.isDelete = isDelete;
+    }
+
+    public Boolean getIsDelete()
+    {
+        return isDelete;
     }
 
     @Override
     public String toString() {
-        return "InventoryDetails{" +
-                "imdId='" + imdId + '\'' +
-                ", inId='" + inId + '\'' +
-                ", odId='" + odId + '\'' +
-                ", goodsId='" + goodsId + '\'' +
-                ", unit='" + unit + '\'' +
-                ", slId='" + slId + '\'' +
-                ", thisQuantity=" + thisQuantity +
-                ", productionDate=" + productionDate +
-                ", batchNumber='" + batchNumber + '\'' +
-                ", isDelete=" + isDelete +
-                ", goods=" + goods +
-                '}';
+        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+            .append("isdId", getIsdId())
+            .append("isId", getIsId())
+            .append("isCode", getIsCode())
+            .append("sId", getsId())
+            .append("countQuantity", getCountQuantity())
+            .append("profitLossQuantity", getProfitLossQuantity())
+            .append("isStatus", getIsStatus())
+            .append("countAmount", getCountAmount())
+            .append("remark", getRemark())
+            .append("createBy", getCreateBy())
+            .append("createTime", getCreateTime())
+            .append("updateBy", getUpdateBy())
+            .append("updateTime", getUpdateTime())
+            .append("isDelete", getIsDelete())
+            .toString();
     }
 }

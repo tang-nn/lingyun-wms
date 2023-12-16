@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingyun.wh.warehouse.mapper.InventorySheetMapper">
+<!--    主表 InventorySheet 映射字段-->
+    <resultMap type="InventorySheet" id="InventorySheetResult" autoMapping="true">
+        <result property="isId" column="is_id"/>
+        <result property="isCode" column="is_code"/>
+        <result property="isResult" column="is_result"/>
+        <result property="wId" column="w_id"/>
+        <result property="isType" column="is_type"/>
+        <result property="isStartTime" column="is_start_time"/>
+        <result property="isEndTime" column="is_end_time"/>
+        <result property="outStatus" column="out_status"/>
+        <result property="inStatus" column="in_status"/>
+        <result property="remark" column="remark"/>
+        <result property="isManager" column="is_manager"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDelete" column="is_delete"/>
+<!--        盘点明细表 InventoryDetails 集合-->
+        <collection property="inventoryDetailsList" autoMapping="true"
+                    select="selectInventoryDetailsByIsId" column="is_id">
+        </collection>
+    </resultMap>
+
+
+<!--   子表 InventoryDetails 映射字段-->
+        <resultMap type="InventoryDetails" id="InventoryDetailsResults" autoMapping="true">
+        <result property="isdId" column="isd_id"/>
+        <result property="isId" column="is_id"/>
+        <result property="isCode" column="is_code"/>
+        <result property="sId" column="s_id"/>
+        <result property="countQuantity" column="count_quantity"/>
+        <result property="profitLossQuantity" column="profit_loss_quantity"/>
+        <result property="isStatus" column="is_status"/>
+        <result property="countAmount" column="count_amount"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDelete" column="is_delete"/>
+<!--     子表关联的 goods stock       -->
+        <association property="goods" javaType="com.lingyun.wh.goods.api.domain.Goods">
+            <result column="g_name" property="gName"/>
+            <result column="wr_price" property="wrPrice"/>
+            <result column="g_code" property="gCode"/>
+            <result column="spec_code" property="specCode"/>
+        </association>
+        <association property="stock" javaType="com.lingyun.wh.warehouse.domain.Stock">
+            <result column="unit" property="unit"/>
+            <result column="item_quantity" property="itemQuantity"/>
+        </association>
+        </resultMap>
+
+
+
+<!--   主表 InventorySheet 相关查询 -->
+    <select id="selectInventorySheetList" resultMap="InventorySheetResult">
+        select pdb.is_id, pdb.is_code, pdb.is_result, pdb.w_id,ckb.w_name whName,
+               pdb.is_type, pdb.is_start_time, pdb.is_end_time, pdb.out_status,
+               pdb.in_status, pdb.remark, pdb.is_manager,manager.user_name managerName,
+               pdb.create_by,creater.user_name creatorName, pdb.create_time,pdb.update_by,
+               pdb.update_time,pdb.is_delete, dp.dept_name creatorDept
+            from wh_inventory_sheet pdb
+            inner join wh_warehouse ckb on pdb.w_id=ckb.w_id
+            inner join sys_user manager on pdb.is_manager=manager.user_id
+            inner join sys_user creater on pdb.create_by=creater.user_id
+            inner join sys_dept dp on dp.dept_id=creater.dept_id
+        <where>
+            <if test="is_code != null  and is_code != ''">and pdb.is_code = #{is_code}</if>
+            <if test="is_result != null  and is_result != ''">and pdb.is_result = #{is_result}</if>
+            <if test="is_type != null  and is_type != ''">and pdb.is_type = #{is_type}</if>
+            <if test="w_id != null  and w_id != ''">and pdb.w_id = #{w_id}</if>
+            <if test="isId != null  and isId != ''">and pdb.is_id = #{isId}</if>
+            and pdb.is_delete=0
+        </where>
+    </select>
+
+<!--    子表 InventoryDetails 相关查询-->
+    <select id="selectInventoryDetailsByIsId" parameterType="String" resultMap="InventoryDetailsResults">
+        SELECT
+        pdmxb.count_quantity,pdmxb.profit_loss_quantity,
+        pdmxb.is_status,pdmxb.count_amount, gdb.g_name, gdb.wr_price,
+        gdb.g_name,gdb.g_code,gdb.spec_code,kcb.unit,kcb.item_quantity
+        from wh_is_details pdmxb
+        inner join wh_stock kcb on pdmxb.s_id=kcb.s_id
+        inner join wh_goods gdb on kcb.g_id=gdb.g_id
+        <where>
+            pdmxb.is_id = #{is_id}
+        </where>
+    </select>
+
+
+<!--    刚开始的盘点list查询语句思路-->
+    <sql id="selectInventorySheetVo">
+        select pdb.is_id,
+               pdb.is_code,
+               pdb.is_result,
+               pdb.w_id,
+               ckb.w_name        ckname,
+               pdb.is_type,
+               pdb.is_start_time,
+               gdb.g_name,
+               pdb.is_end_time,
+               pdb.out_status,
+               pdb.in_status,
+               pdb.remark,
+               pdb.is_manager,
+               manager.user_name operator,
+               pdb.create_by,
+               creater.user_name creat,
+               pdb.create_time,
+               pdb.update_by,
+               pdb.update_time,
+               pdb.is_delete,
+               pdmxb.count_quantity,
+               pdmxb.profit_loss_quantity,
+               pdmxb.is_status,
+               pdmxb.count_amount,
+               dp.dept_name      deptName
+        from wh_inventory_sheet pdb
+                 inner join wh_is_details pdmxb on pdb.is_id = pdmxb.is_id
+                 inner join wh_stock kcb on pdmxb.s_id = kcb.s_id
+                 inner join wh_goods gdb on kcb.g_id = gdb.g_id
+                 inner join wh_warehouse ckb on pdb.w_id = ckb.w_id
+                 inner join sys_user manager on pdb.is_manager = manager.user_id
+                 inner join sys_user creater on pdb.create_by = creater.user_id
+                 inner join sys_dept dp on dp.dept_id = creater.dept_id
+    </sql>
+
+
+
+    <!--    批量删除盘点单-->
+    <update id="deleteInventorySheetByIsIds" parameterType="String">
+        update  wh_inventory_sheet set is_delete=1 where is_id in
+        <foreach item="isId" collection="array" open="(" separator="," close=")">
+            #{isId}
+        </foreach>
+    </update>
+
+    <!--     批量删除盘点明细-->
+    <update id="deleteInventoryDetailsByIsIds" parameterType="String">
+        update  wh_is_details set is_delete=1 where is_id in
+        <foreach item="isId" collection="array" open="(" separator="," close=")">
+            #{isId}
+        </foreach>
+    </update>
+
+    <!--    通过盘点单主键删除盘点明细信息-->
+    <update id="deleteInventoryDetailsByIsId" parameterType="String">
+        update  wh_is_details set is_delete=1 where is_id = #{isId}
+    </update>
+
+    <!--  根据仓库查询下面的货品  -->
+    <select id="selectInventorySheetByWid" resultType="map">
+        select gd.g_name,gd.g_code,gd.spec_code,ws.unit,ws.s_id,gt_name,ws.item_quantity,
+               gd.wr_price,ws.sl_id,ws.remark,sl.sl_name from wh_stock ws
+                 inner join wh_goods gd
+                            on gd.g_id=ws.g_id
+                 inner join wh_goods_type gt
+                            on  gt.gt_id=gd.gt_id
+                 inner join wh_storage_location sl
+                            on sl.sl_id=ws.sl_id
+        where ws.w_id=#{w_id}
+        <if test="g_name!=null and g_name!=''">
+            and gd.g_name like concat('%',#{g_name},'%')
+        </if>
+        <if test="unit!=null and unit!=''">
+            and ws.unit = #{unit}
+        </if>
+        and ws.is_delete=0
+    </select>
+
+
+
+   <!--新增盘点单-->
+   <insert id="insertInventorySheet" parameterType="InventorySheet" useGeneratedKeys="true" keyProperty="isId">
+    insert into wh_inventory_sheet
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="isCode != null and isCode != ''">is_code,</if>
+        <if test="isResult != null and isResult != ''">is_result,</if>
+        <if test="wId != null and wId != ''">w_id,</if>
+        <if test="isType != null and isType != ''">is_type,</if>
+        <if test="isStartTime != null">is_start_time,</if>
+        <if test="isEndTime != null">is_end_time,</if>
+        <if test="remark != null">remark,</if>
+        <if test="isManager != null and isManager != ''">is_manager,</if>
+        <if test="createBy != null and createBy != ''">create_by,</if>
+        <if test="createTime != null">create_time,</if>
+        <if test="updateBy != null and updateBy != ''">update_by,</if>
+        <if test="updateTime != null">update_time,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <if test="isCode != null and isCode != ''">#{isCode},</if>
+        <if test="isResult != null and isResult != ''">no</if>
+        <if test="wId != null and wId != ''">#{wId},</if>
+        <if test="isType != null and isType != ''">#{isType},</if>
+        <if test="isStartTime != null">#{isStartTime},</if>
+        <if test="isEndTime != null">#{isEndTime},</if>
+        <if test="remark != null">#{remark},</if>
+        <if test="isManager != null and isManager != ''">#{isManager},</if>
+        <if test="createBy != null and createBy != ''">#{createBy},</if>
+        <if test="createTime != null">#{createTime},</if>
+        <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+        <if test="updateTime != null">#{updateTime},</if>
+    </trim>
+</insert>
+
+<!--   批量新增盘点明细 -->
+    <insert id="batchInventoryDetails">
+        insert into wh_is_details( is_id, s_id, count_quantity,
+               profit_loss_quantity, is_status, count_amount, remark, create_by,
+              create_time, update_by, update_time, is_delete) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.isId}, #{item.sId},
+            #{item.countQuantity}, #{item.profitLossQuantity}, #{item.isStatus}, #{item.countAmount},
+            #{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime},
+            0)
+        </foreach>
+    </insert>
+
+
+
+    <resultMap id="InventorySheetInventoryDetailsResult" type="InventorySheet" extends="InventorySheetResult">
+        <collection property="inventoryDetailsList" notNullColumn="sub_isd_id" javaType="java.util.List"
+                    resultMap="InventoryDetailsResult"/>
+    </resultMap>
+
+
+
+    <resultMap type="InventoryDetails" id="InventoryDetailsResult">
+        <result property="isdId"    column="sub_isd_id"    />
+        <result property="isId"    column="sub_is_id"    />
+        <result property="isCode"    column="sub_is_code"    />
+        <result property="sId"    column="sub_s_id"    />
+        <result property="specCode"    column="sub_spec_code"    />
+        <result property="unit"    column="sub_unit"    />
+        <result property="countQuantity"    column="sub_count_quantity"    />
+        <result property="profitLossQuantity"    column="sub_profit_loss_quantity"    />
+        <result property="isStatus"    column="sub_is_status"    />
+        <result property="countAmount"    column="sub_count_amount"    />
+        <result property="iuPrice"    column="sub_iu_price"    />
+        <result property="remark"    column="sub_remark"    />
+        <result property="createBy"    column="sub_create_by"    />
+        <result property="createTime"    column="sub_create_time"    />
+        <result property="updateBy"    column="sub_update_by"    />
+        <result property="updateTime"    column="sub_update_time"    />
+        <result property="isDelete"    column="sub_is_delete"    />
+    </resultMap>
+
+    <select id="selectInventorySheetByIsId" parameterType="String" resultMap="InventorySheetInventoryDetailsResult">
+        select a.is_id,
+               a.is_code,
+               a.is_result,
+               a.w_id,
+               a.is_type,
+               a.is_start_time,
+               a.is_end_time,
+               a.out_status,
+               a.in_status,
+               a.remark,
+               a.is_manager,
+               a.create_by,
+               a.create_time,
+               a.update_by,
+               a.update_time,
+               a.is_delete,
+               b.isd_id               as sub_isd_id,
+               b.is_id                as sub_is_id,
+               b.is_code              as sub_is_code,
+               b.s_id                 as sub_s_id,
+               b.spec_code            as sub_spec_code,
+               b.unit                 as sub_unit,
+               b.count_quantity       as sub_count_quantity,
+               b.profit_loss_quantity as sub_profit_loss_quantity,
+               b.is_status            as sub_is_status,
+               b.count_amount         as sub_count_amount,
+               b.iu_price             as sub_iu_price,
+               b.remark               as sub_remark,
+               b.create_by            as sub_create_by,
+               b.create_time          as sub_create_time,
+               b.update_by            as sub_update_by,
+               b.update_time          as sub_update_time,
+               b.is_delete            as sub_is_delete
+        from wh_inventory_sheet a
+                 left join wh_is_details b on b.is_id = a.is_id
+        where a.is_id = #{isId}
+    </select>
+
+
+
+
+    <update id="updateInventorySheet" parameterType="InventorySheet">
+        update wh_inventory_sheet
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="isCode != null and isCode != ''">is_code = #{isCode},</if>
+            <if test="isResult != null and isResult != ''">is_result = #{isResult},</if>
+            <if test="wId != null and wId != ''">w_id = #{wId},</if>
+            <if test="isType != null and isType != ''">is_type = #{isType},</if>
+            <if test="isStartTime != null">is_start_time = #{isStartTime},</if>
+            <if test="isEndTime != null">is_end_time = #{isEndTime},</if>
+            <if test="outStatus != null">out_status = #{outStatus},</if>
+            <if test="inStatus != null">in_status = #{inStatus},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="isManager != null and isManager != ''">is_manager = #{isManager},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="isDelete != null">is_delete = #{isDelete},</if>
+        </trim>
+        where is_id = #{isId}
+    </update>
+
+
+
+
+
+
+
+
+</mapper>
