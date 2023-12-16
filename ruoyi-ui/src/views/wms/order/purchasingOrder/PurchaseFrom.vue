@@ -30,25 +30,25 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="供应商" prop="sid">
-              <el-select v-model="purchaseOrderInf.supplier"
+              <el-select v-model="purchaseOrderInf.sid"
                          placeholder="请选择供应商" @change="handlerSupplierChange">
                 <el-option
                   v-for="item in supplierList"
                   :key="item.sId"
                   :label="item.sName"
-                  :value="item">
+                  :value="item.sId">
                 </el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="联系人">
-              <el-input v-model="purchaseOrderInf.supplier.contactPerson" :readonly="true" disabled/>
+              <el-input v-model="supplier.contactPerson" disabled/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item label="联系方式">
-          <el-input v-model="purchaseOrderInf.supplier.contactNumber" :readonly="true" disabled/>
+          <el-input v-model="supplier.contactNumber" disabled/>
         </el-form-item>
         <el-row>
           <el-col :span="12">
@@ -282,7 +282,7 @@ export default {
       gids: [],
       baseApi: process.env.VUE_APP_BASE_API,
       rules: {
-        sid: [
+        supplier: [
           {required: true, message: '请选择供应商', trigger: 'change'}
         ],
         purDeptId: [
@@ -325,8 +325,7 @@ export default {
       },
       purchaseOrderInf: {
         selectGoods: [],
-        selectAnnex: [],
-        supplier:{}
+        selectAnnex: []
       },
       purchaseDetails: [],
       goodsTotal: 0,
@@ -345,32 +344,13 @@ export default {
   async created() {
     this.getDeptTree();
     this.supplierList = (await listSupplier()).rows;
-    let selectAnnex = this.purchaseInf?.annexes?.map(e => ({
-      name: e.content.split("/")[-1].split("_")[0] + "." + e.content.split("/")[-1].split(".")[-1],
-      url: e.content
-    }))
-    let selectGoods = this.purchaseInf?.purchaseDetailsList?.map(e => ({
-      g_name: e.goods.g_name,
-      g_code: e.goods.g_code,
-      spec_code: e.specCode,
-      unit: e.unit,
-      gt_name: e.goods.gt_name,
-      purchaseQuantity: e.purchaseQuantity,
-      wr_price: e.puPrice,
-      remark: e.goods.remark,
-    }));
-    this.purchaseOrderInf = {
-      poCode: this.purchaseInf.poCode,
-      purchaseDate: this.purchaseInf.purchaseDate,
-      sid: this.purchaseInf.sId,
-      purDeptId: this.purchaseInf.purchasingDept,
-      purchaser: this.purchaseInf.purchaserId,
-      remark: this.purchaseInf.remark,
-      selectAnnex, selectGoods
+    if (/\/order\/purchase\/edit\/(\d+)$/.test(this.$route.path)) {
+      console.log("进了编辑状态")
+      this.initProps();
+      console.log("this.purchaseInf", this.purchaseInf)
     }
-    this.supplierList.forEach(e => (e.sId === this.purchaseInf.sId) ? this.purchaseOrderInf.supplier = e : this.purchaseOrderInf.supplier = {});
-    console.log("this.purchaseOrderInf", this.purchaseOrderInf)
-    },
+    console.log("purchaseInf: ", this.purchaseInf)
+  },
   computed: {
     token() {
       return {
@@ -385,6 +365,41 @@ export default {
         this.deptOptions = response.data;
       });
     },
+    initProps() {
+      this.purchaseOrderInf = this.purchaseInf;
+      this.supplier = this.supplierList.filter(e => e.sId === this.purchaseOrderInf.sid)?.[0];
+      // let selectAnnex = this.purchaseInf?.annexes?.map(e => {
+      //   let url = e.content;
+      //   const filename = url.substring(url.lastIndexOf('/') + 1); // 获取URL中的文件名部分
+      //   const parts = filename.split('_'); // 使用下划线将文件名分割成部分
+      //   const result = parts[0] + '.' + parts[1].split('.')[1]; // 按照您的要求拼接文件名和后缀名
+      //   return {
+      //     name: result,
+      //     url
+      //   }
+      // })
+      // let selectGoods = this.purchaseInf?.purchaseDetailsList?.map(e => ({
+      //   g_name: e.goods.g_name,
+      //   g_code: e.goods.g_code,
+      //   spec_code: e.specCode,
+      //   unit: e.unit,
+      //   gt_name: e.goods.gt_name,
+      //   purchaseQuantity: e.purchaseQuantity,
+      //   wr_price: e.puPrice,
+      //   remark: e.goods.remark,
+      // }));
+      // this.purchaseOrderInf = {
+      //   poCode: this.purchaseInf.poCode,
+      //   purchaseDate: this.purchaseInf.purchaseDate,
+      //   sid: this.purchaseInf.sId,
+      //   purDeptId: this.purchaseInf.purchasingDept,
+      //   purchaser: this.purchaseInf.purchaserId,
+      //   remark: this.purchaseInf.remark,
+      //   selectAnnex, selectGoods
+      // }
+      // this.supplierList.forEach(e => (e.sId === this.purchaseInf.sId) ? this.purchaseOrderInf.supplier = e : this.purchaseOrderInf.supplier = {});
+      // console.log("this.purchaseOrderInf", this.purchaseOrderInf)
+    },
     async getUserList() {
       if (this.purchaseOrderInf.purDeptId) {
         this.userList = (await listUser({deptId: this.purchaseOrderInf?.purDeptId})).rows
@@ -394,7 +409,8 @@ export default {
     },
     handlerSupplierChange(row) {
       // this.purchaseOrderInf.sid = row.sId;
-      this.supplier = row;
+      this.supplier = this.supplierList.filter(e => e.sId === row)?.[0];
+      // console.log("supplier: ", this.supplier)
     },
     closeGoodsSelect() {
       this.dialogTableVisible = false;
@@ -459,6 +475,8 @@ export default {
         // this.purchaseOrderInf.selectAnnex = fileList;
         this.purchaseOrderInf.selectAnnex.push({name: file.name, url: data.url})
         this.$message.success(`${file.name}附件上传完成！`);
+      }else{
+        this.$message.error(`[${file.name}]附件上传失败！`);
       }
     },
     handleRemove(file) {
@@ -489,7 +507,7 @@ export default {
           }))
           let purchaseOrderInf = {
             purchaseDate: this.purchaseOrderInf.purchaseDate,
-            "sId": this.purchaseOrderInf.supplier.sId,
+            "sId": this.purchaseOrderInf.sid,
             purchaserId: this.purchaseOrderInf.purchaser,
             purchasingDept: this.purchaseOrderInf.purDeptId,
             purchaseDetailsList,

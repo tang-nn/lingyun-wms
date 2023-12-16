@@ -207,6 +207,42 @@ export const dynamicRoutes = [
         component: () => import('@/views/wms/order/purchasingOrder/edit.vue'),
         name: '编辑进货单据',
         meta: { title: '编辑进货信息', activeMenu: '/order/purchase/edit' }
+      },
+      {
+        path: 'purchase/details/:poId(\\d+)',
+        permissions: ['order:purchase:details'],
+        component: () => import('@/views/wms/order/purchasingOrder/details.vue'),
+        name: '进货单据明细',
+        meta: { title: '进货单据明细', activeMenu: '/order/purchase/details' }
+      }
+    ]
+  },
+  {
+    path: '/inboundOutbound',
+    component: Layout,
+    hidden: true,
+    permissions: ['inbound'],
+    children: [
+      {
+        path: 'inbound/add',
+        permissions: ['inbound:add'],
+        component: () => import('@/views/wms/warehouse/outboundInbound/inbound/add.vue'),
+        name: '添加入库单',
+        meta: { title: '添加入库单', activeMenu: 'inbound/add' }
+      },
+      {
+        path: 'inbound/edit/:inid(\\d+)',
+        permissions: ['inbound:editor'],
+        component: () => import('@/views/wms/warehouse/outboundInbound/inbound/editor.vue'),
+        name: '编辑入库单',
+        meta: { title: '编辑入库单', activeMenu: 'inbound/editor' }
+      },
+      {
+        path: 'inbound/details/:inid(\\d+)',
+        permissions: ['inbound:details'],
+        component: () => import('@/views/wms/warehouse/outboundInbound/inbound/details.vue'),
+        name: '入库单明细',
+        meta: { title: '入库单明细', activeMenu: 'inbound/details' }
       }
     ]
   },

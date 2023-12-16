@@ -9,6 +9,7 @@ import com.lingyun.wh.goods.api.domain.Goods;
 import com.lingyun.wh.order.domain.PurchaseDetails;
 import com.lingyun.wh.order.domain.PurchaseOrder;
 import com.lingyun.wh.order.mapper.PurchaseOrderMapper;
+import com.lingyun.wh.order.pojo.dto.PurchaseReviewDto;
 import com.lingyun.wh.order.pojo.vo.PurchaseOrderVo;
 import com.lingyun.wh.order.service.IPurchaseOrderService;
 import com.ruoyi.common.core.constant.AttachmentType;
@@ -94,14 +95,14 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
                 });
                 po.put("purchaseDetailsList", dl);
                 System.out.println("goodsList: " + goodsList);
-                System.out.println("dl: "+ dl);
+                System.out.println("dl: " + dl);
             }
         }
-        TableDataInfo list = remoteAnnexService.list(new Annex(AttachmentType.PURCHASE_ANNEX, poId, null));
+        R<Object> list = remoteAnnexService.list(AttachmentType.PURCHASE_ANNEX, poId, null);
         System.out.println("remoteAnnexService list: " + list);
         if (list != null && list.getCode() == 200) {
             // purchaseOrder.setAnnexes((List<Annex>) list.getRows());
-            po.put("annexes", list.getRows());
+            po.put("annexes", list.getData());
         } else {
             log.error("进货 ID：{}，查询附件失败", poId);
         }
@@ -116,11 +117,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
      */
     @Override
     public List<PurchaseOrderVo> selectPurchaseOrderList(Map<String, Object> params) {
-        List<PurchaseOrderVo> purchaseOrders = purchaseOrderMapper.selectPurchaseDetailsList(params);
-        // purchaseOrders.forEach(e -> {
-        //     remoteGoodsService.getInfo();
-        // });
-        return purchaseOrders;
+        return purchaseOrderMapper.selectPurchaseDetailsList(params);
     }
 
     /**
@@ -196,6 +193,10 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     @Transactional
     @Override
     public int deletePurchaseOrderByPoIds(String[] poIds) {
+        AjaxResult result = remoteAnnexService.remove(poIds, AttachmentType.PURCHASE_ANNEX);
+        if (!"200".equals(String.valueOf(result.get(AjaxResult.CODE_TAG)))) {
+            throw new RuntimeException("附件删除失败");
+        }
         purchaseOrderMapper.deletePurchaseDetailsByPoIds(poIds);
         return purchaseOrderMapper.deletePurchaseOrderByPoIds(poIds);
     }
@@ -241,5 +242,25 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
                 purchaseOrderMapper.batchPurchaseDetails(list);
             }
         }
+    }
+
+    /**
+     * 审核进货
+     * @param dto
+     * @return
+     */
+    @Override
+    public boolean reviewPurchaseOrder(PurchaseReviewDto dto) {
+        PurchaseOrder purchaseOrder = new PurchaseOrder();
+        String userId = String.valueOf(SecurityUtils.getUserId());
+        Date nowDate = DateUtils.getNowDate();
+        purchaseOrder.setStatus(dto.getStatus());
+        purchaseOrder.setReviewComments(dto.getReviewComments());
+        purchaseOrder.setReviewerDate(nowDate);
+        purchaseOrder.setUpdateBy(userId);
+        purchaseOrder.setUpdateTime(nowDate);
+        purchaseOrder.setPoId(dto.getPoId());
+        System.out.println("purchaseOrder = "+ purchaseOrder);
+        return purchaseOrderMapper.updatePurchaseOrder(purchaseOrder) > 0;
     }
 }

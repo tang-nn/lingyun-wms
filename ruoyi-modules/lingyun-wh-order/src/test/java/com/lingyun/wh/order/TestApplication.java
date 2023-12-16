@@ -16,9 +16,9 @@ import springfox.documentation.spring.web.json.Json;
 public class TestApplication {
 
     public static void main(String[] args) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(new PurchaseDetails(null, null, null, null, null, null, null, null, null));
-        System.out.println("json = " + json);
+        // ObjectMapper mapper = new ObjectMapper();
+        // String json = mapper.writeValueAsString(new PurchaseDetails(null, null, null, null, null, null, null, null, null, null));
+        // System.out.println("json = " + json);
     }
 
 }

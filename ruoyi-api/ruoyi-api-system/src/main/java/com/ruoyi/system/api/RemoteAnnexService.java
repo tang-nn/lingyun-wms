@@ -1,15 +1,13 @@
 package com.ruoyi.system.api;
 
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.core.web.page.TableDataInfo;
 import com.ruoyi.system.api.factory.RemoteAnnexFallbackFactory;
 import com.ruoyi.system.api.domain.Annex;
 import com.ruoyi.common.core.constant.ServiceNameConstants;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +24,8 @@ public interface RemoteAnnexService {
     R<?> add(@RequestBody List<Annex> annexes);
 
     @GetMapping("/whcomm/annex/list")
-    TableDataInfo list(@RequestParam("annex") Annex annex);
+    R<Object> list(@RequestParam("type") String type, @RequestParam("formId") String formId, @RequestParam(value = "content", required = false, defaultValue = "") String content);
+
+    @DeleteMapping("/whcomm/annex/rm")
+    AjaxResult remove(@RequestParam("formId") String[] formId, @RequestParam("type") String type);
 }

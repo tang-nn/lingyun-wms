@@ -33,7 +33,7 @@
                wg.spec_code, wg.remark, wg.or_price, wg.wr_price, wg.has_shelf_life,shelf_life,
                wg.item_limit, wg.lower_limit, wg.warning_id,  wg.is_delete,
                w_days,gt_name,s_name,item_quantity,(item_quantity*or_price) stocktotalmoney,su.user_name oneuser,
-               wg.create_time,su2.user_name twouser,wg.update_time,wsk.unit
+               wg.create_time,su2.user_name twouser,wg.update_time,wsk.unit,wsk.item_quantity, wsk.number_plans
                from wh_goods wg
                  inner join wh_warning_info wwi
                             on wg.warning_id=wwi.w_id
@@ -81,7 +81,7 @@
         wg.spec_code, wg.remark, wg.or_price, wg.wr_price, wg.has_shelf_life,shelf_life,
         wg.item_limit, wg.lower_limit, wg.warning_id,  wg.is_delete,
         w_days,gt_name,s_name,item_quantity,
-        wg.create_time,wg.update_time,wsk.unit
+        wg.create_time,wg.update_time,wsk.unit,wsk.item_quantity, wsk.number_plans
         from wh_goods wg
         inner join wh_warning_info wwi
         on wg.warning_id=wwi.w_id

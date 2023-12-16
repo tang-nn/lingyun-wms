@@ -1,54 +1,64 @@
 <template>
   <div class="app-container">
     <el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" size="small">
-      <el-form-item label="进货订单" label-width="86px" prop="purOrderSn">
+      <el-form-item label="入库订单" label-width="86px" prop="inCode">
         <el-input
-          v-model.trim="queryParams.purOrderSn"
+          v-model.trim="queryParams.inCode"
           clearable
-          placeholder="请输入进货订单"
+          placeholder="请输入库订单"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="订单状态" label-width="86px" prop="orderStatus">
+      <el-form-item label="入库类型" label-width="86px" prop="inType">
         <el-select
-          v-model="queryParams.orderStatus"
+          v-model="queryParams.inType"
           clearable
-          placeholder="订单状态"
+          placeholder="入库类型"
           style="width: 120px"
         >
           <el-option
-            v-for="dict in dict.type.ord_doc_status"
+            v-for="dict in dict.type.incoming_type"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="供应商" label-width="86px" prop="suppName">
-        <el-input
-          v-model.trim="queryParams.suppName"
+      <el-form-item label="单据状态" label-width="86px" prop="status">
+        <el-select
+          v-model="queryParams.status"
           clearable
-          placeholder="请输入供应商名称"
-          style="width: 200px"
-          @keyup.enter.native="handleQuery"
-        />
+          placeholder="单据状态"
+          style="width: 120px"
+        >
+          <el-option
+            v-for="dict in dict.type.inbound_status"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
-      <el-form-item label="进货时间" label-width="86px" prop="purDate">
-        <el-date-picker
-          v-model="dateRange"
-          end-placeholder="结束日期"
-          range-separator="-"
-          start-placeholder="开始日期"
-          style="width: 240px"
-          type="daterange"
-          value-format="yyyy-MM-dd"
-        ></el-date-picker>
+      <el-form-item label="仓库" label-width="86px" prop="whNo">
+        <el-select
+          v-model="queryParams.wid"
+          clearable
+          placeholder="请选择仓库"
+          style="width: 120px"
+        >
+          <el-option
+            v-for="wh in whList"
+            :key="wh.value"
+            :label="wh.label"
+            :value="wh.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-        <el-button icon="el-icon-search" plain size="mini" type="primary">高级搜索</el-button>
+<!--        <el-button icon="el-icon-search" plain size="mini" type="primary">高级搜索</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -143,47 +153,50 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="purchaseList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="inventoryList" @selection-change="handleSelectionChange">
       <el-table-column align="center" fixed type="selection" width="50"/>
       <el-table-column align="center" fixed type="index" width="40">
         <template slot="header">
           <i class="el-icon-setting"></i>
         </template>
       </el-table-column>
-      <el-table-column fixed label="进货单号" prop="poCode" width="100">
+      <el-table-column fixed label="入库单号" prop="inCode" width="100">
         <template slot-scope="scope">
-          <router-link :to="'/order/purchase/details/' + scope.row.poId" class="link-type">
-            <span>{{ scope.row.poCode }}</span>
+          <router-link :to="'/order/inventory/details/' + scope.row.inCode" class="link-type">
+            <span>{{ scope.row.inCode }}</span>
           </router-link>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" fixed label="入库类型" prop="inType" width="80">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.incoming_type" :value="scope.row.inType"/>
         </template>
       </el-table-column>
       <el-table-column align="center" fixed label="单据状态" prop="status" width="80">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.ord_doc_status" :value="scope.row.status"/>
+          <dict-tag :options="dict.type.inbound_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" fixed label="进货日期" prop="purchaseDate" width="130">
+      <el-table-column align="center" fixed label="入库日期" prop="storageDate" width="130">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.purchaseDate, "{y}年{m}月{d}日") }}</span>
+          <span>{{ parseTime(scope.row.storageDate, "{y}年{m}月{d}日") }}</span>
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" align="center" label="供应商" prop="supplName" width="100"/>
-      <el-table-column align="center" label="联系人" prop="contactPerson" width="80"/>
-      <el-table-column align="center" label="联系方式" prop="contactNumber" width="110"/>
-      <el-table-column align="center" label="进货部门" prop="purDeptName" width="100"/>
-      <el-table-column align="center" label="进货人" prop="purNickName" width="100"/>
-      <el-table-column :formatter="handlerFormatQuantity" align="center" label="货品数量" width="100"/>
-      <el-table-column :formatter="handlerFormatPrice" align="center" label="货品金额" width="100"/>
-      <el-table-column :formatter="handlerProductName" :show-overflow-tooltip="true" align="center" label="进货货品"
+      <el-table-column :show-overflow-tooltip="true" align="center" label="仓库名称" prop="whName" width="100"/>
+      <el-table-column align="center" label="关联单号" prop="relatedOrder" width="80"/>
+      <el-table-column :formatter="handlerProductName" align="center" label="入库货品" prop="contactNumber" width="110"/>
+      <el-table-column align="center" label="经办人" prop="managerName" width="100"/>
+      <el-table-column :formatter="handlerFormatPrice" align="center" label="入库金额" width="100"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="制单人" prop="creatorName"
                        width="140"/>
-      <el-table-column align="center" label="所在部门" prop="cudeptName" width="100"/>
-      <el-table-column align="center" label="制单时间" prop="cudate" width="130">
+      <el-table-column align="center" label="所在部门" prop="creatorDept" width="100"/>
+      <el-table-column align="center" label="制单时间" prop="createTime" width="130">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.cudate, "{y}年{m}月{d}日") }}</span>
+          <span>{{ parseTime(scope.row.createTime, "{y}年{m}月{d}日") }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="审核人" prop="reviewerUname" width="100"/>
-      <el-table-column align="center" label="审核时间" prop="reviewerDate" width="100"/>
+      <el-table-column align="center" label="审核人" prop="reviewerName" width="100"/>
+      <el-table-column align="center" label="审核时间" prop="reviewerTime" width="100"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template v-if="scope.row.roleId !== 1" slot-scope="scope">
           <el-button
@@ -237,11 +250,11 @@
 
 <script>
 
-import {delPurchase, listPurchase, reviewPurchase} from "@/api/wms/order/purchase";
+import { listInventory } from "@/api/wms/inboundOutbound/inboundMgt";
 
 export default {
   name: "purchaseList",
-  dicts: ['ord_doc_status'],
+  dicts: ['incoming_type','inbound_status', 'inbound_status'],
   data() {
     return {
       // 遮罩层
@@ -258,33 +271,26 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 角色表格数据
-      purchaseList: [],
+      // 入库数据
+      inventoryList: [],
+      // 仓库数据
+      whList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
-      // 是否显示弹出层（数据权限）
-      openDataScope: false,
-      menuExpand: false,
-      menuNodeAll: false,
-      deptExpand: true,
-      deptNodeAll: false,
       // 日期范围
       dateRange: [],
-      // 数据范围选项
-      dataScopeOptions: [],
-      // 菜单列表
-      menuOptions: [],
       // 部门列表
       deptOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 5,
-        purOrderSn: "",
-        orderStatus: undefined,
-        suppName: undefined
+        pageSize: 10,
+        inCode: undefined,
+        inType: undefined,
+        status: undefined,
+        wid: undefined
       },
       // 表单参数
       form: {},
@@ -302,6 +308,7 @@ export default {
     this.getList();
   },
   methods: {
+    /** 查询角色列表 */
     async getList() {
       this.loading = true;
       let params = this.queryParams;
@@ -311,13 +318,14 @@ export default {
       }
       console.log("query params: ", params);
       ({
-        rows: this.purchaseList,
+        rows: this.inventoryList,
         total: this.total
-      } = (await listPurchase(params)));
+      } = (await listInventory(params)));
       this.loading = false;
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      console.log("搜索按钮操作")
       this.queryParams.pageNum = 1;
       this.getList();
     },
@@ -329,29 +337,38 @@ export default {
     },
     // 处理表格数量展示
     handlerFormatQuantity(row) {
-      let count = 0;
-      return row.purchaseDetails?.reduce((accumulator, currentValue) => {
-        return accumulator + (currentValue.purchaseQuantity || 0);
-      }, count);
+      try {
+        return row.purchaseDetails?.reduce((accumulator, currentValue) => {
+          return accumulator + (currentValue.purchaseQuantity || 0);
+        }, 0);
+      } catch (e) {
+        return '计算出错';
+      }
     },
     //  处理表格金额展示
     handlerFormatPrice(row) {
-      let count = 0;
-      return row.purchaseDetails?.reduce((accumulator, currentValue) => {
-        return accumulator + (currentValue.puPrice || 0);
-      }, count);
+      try {
+        return row.inventoryDetailsList?.reduce((accumulator, currentValue) => {
+          return accumulator + (currentValue.goods.wrPrice || 0);
+        }, 0);
+      } catch (e) {
+        return '计算出错';
+      }
     },
     //  处理表格货品展示
     handlerProductName(row) {
-      let arr = row.purchaseDetails?.map((e) => (e?.goodsName || ''));
-      return arr.slice(0, Boolean(arr.slice(-1)[0]) ? arr.length : -1).join("，");
+      try {
+        let arr = row.inventoryDetailsList?.map((e) => (e?.goods?.gname || ''));
+        return arr.slice(0, Boolean(arr?.slice(-1)[0]) ? arr.length : -1).join("，");
+      } catch (e) {
+        return '计算出错';
+      }
     },
     handleAdd() {
       this.$tab.openPage("添加进货单据", '/order/purchase/add');
     },
-    handleUpdate(row) {
-      const poIds = row.poId || this.ids[0];
-      this.$tab.openPage("编辑进货单据", '/order/purchase/edit/' + poIds);
+    handleUpdate() {
+      this.$tab.openPage("编辑进货单据", '/order/purchase/edit/' + this.ids?.[0]);
     },
     handleDelete(row) {
       const poIds = row.poId || this.ids;
@@ -364,18 +381,6 @@ export default {
           if (poIds.length > 5) {
             this.$message.error("一次最多删除 5 条数据")
           }
-          delPurchase(poIds).then(({code, msg}) => {
-            if (code === 200) {
-              this.getList();
-              this.$message({
-                message: '删除成功！',
-                type: 'success'
-              });
-            } else {
-              this.$message.error(msg)
-            }
-          });
-
         })
         .catch(action => {
           // 未关闭
@@ -400,7 +405,6 @@ export default {
         this.$message.error("审核失败！");
         this.loading = false;
       }
-
     },
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.poId);

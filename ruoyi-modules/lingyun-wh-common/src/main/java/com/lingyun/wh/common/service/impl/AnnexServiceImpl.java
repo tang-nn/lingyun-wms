@@ -14,8 +14,7 @@ import java.util.List;
  * @CreateDate : 2023/12/7 19:34
  */
 @Service
-public class AnnexServiceImpl implements IAnnexService
-{
+public class AnnexServiceImpl implements IAnnexService {
     @Autowired
     private AnnexMapper annexMapper;
 
@@ -26,8 +25,7 @@ public class AnnexServiceImpl implements IAnnexService
      * @return 附件
      */
     @Override
-    public Annex selectAnnexByAId(Long aId)
-    {
+    public Annex selectAnnexByAId(Long aId) {
         return annexMapper.selectAnnexByAId(aId);
     }
 
@@ -38,8 +36,8 @@ public class AnnexServiceImpl implements IAnnexService
      * @return 附件
      */
     @Override
-    public List<Annex> selectAnnexList(Annex annex)
-    {
+    public List<Annex> selectAnnexList(Annex annex) {
+        System.out.println("annex: "+ annex);
         return annexMapper.selectAnnexList(annex);
     }
 
@@ -50,10 +48,9 @@ public class AnnexServiceImpl implements IAnnexService
      * @return 结果
      */
     @Override
-    public int insertAnnex(List<Annex> annexes)
-    {
+    public int insertAnnex(List<Annex> annexes) {
         int rows = annexMapper.insertAnnex(annexes);
-        System.out.println("rows: "+rows);
+        System.out.println("rows: " + rows);
         return rows;
     }
 
@@ -64,8 +61,7 @@ public class AnnexServiceImpl implements IAnnexService
      * @return 结果
      */
     @Override
-    public int updateAnnex(Annex annex)
-    {
+    public int updateAnnex(Annex annex) {
         return annexMapper.updateAnnex(annex);
     }
 
@@ -76,9 +72,11 @@ public class AnnexServiceImpl implements IAnnexService
      * @return 结果
      */
     @Override
-    public int deleteAnnexByAIds(Long[] aIds)
-    {
-        return annexMapper.deleteAnnexByAIds(aIds);
+    public int deleteAnnexByAIds(String[] aIds, String type) {
+        if (aIds == null || aIds.length == 0) {
+            return 0;
+        }
+        return annexMapper.deleteAnnexByAids(aIds, type);
     }
 
     /**
@@ -88,8 +86,7 @@ public class AnnexServiceImpl implements IAnnexService
      * @return 结果
      */
     @Override
-    public int deleteAnnexByAId(Long aId)
-    {
+    public int deleteAnnexByAId(String aId) {
         return annexMapper.deleteAnnexByAId(aId);
     }
 }

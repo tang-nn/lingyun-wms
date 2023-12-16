@@ -32,10 +32,11 @@ public class AnnexController extends BaseController {
      */
     @RequiresPermissions("annex:annex:list")
     @GetMapping("/list")
-    public TableDataInfo list(Annex annex) {
-        startPage();
-        List<Annex> list = annexService.selectAnnexList(annex);
-        return getDataTable(list);
+    public R<Object> list(@RequestParam("type") String type, @RequestParam("formId") String formId, @RequestParam(value = "content", required = false, defaultValue = "") String content) {
+        // startPage();
+        List<Annex> list = annexService.selectAnnexList(new Annex(type, formId, content));
+        list.forEach(System.out::println);
+        return R.ok(list);
     }
 
     /**
@@ -66,7 +67,7 @@ public class AnnexController extends BaseController {
     @Log(title = "附件", businessType = BusinessType.INSERT)
     @PostMapping
     public R<?> add(@RequestBody List<Annex> annexes) {
-        if(annexes == null || annexes.isEmpty()){
+        if (annexes == null || annexes.isEmpty()) {
             return R.ok("附件为空");
         }
         return annexService.insertAnnex(annexes) == annexes.size() ? R.ok() : R.fail();
@@ -87,8 +88,8 @@ public class AnnexController extends BaseController {
      */
     @RequiresPermissions("annex:annex:remove")
     @Log(title = "附件", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{aIds}")
-    public AjaxResult remove(@PathVariable Long[] aIds) {
-        return toAjax(annexService.deleteAnnexByAIds(aIds));
+    @DeleteMapping("/rm")
+    public AjaxResult remove(@RequestParam("formId") String[] formId, @RequestParam("type") String type) {
+        return success(annexService.deleteAnnexByAIds(formId, type));
     }
 }

@@ -2,6 +2,7 @@ package com.lingyun.wh.order.service;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.lingyun.wh.order.domain.PurchaseOrder;
+import com.lingyun.wh.order.pojo.dto.PurchaseReviewDto;
 import com.lingyun.wh.order.pojo.vo.PurchaseOrderVo;
 
 import java.util.List;
@@ -60,4 +61,11 @@ public interface IPurchaseOrderService {
      * @return 结果
      */
     public int deletePurchaseOrderByPoId(String poId);
+
+    /**
+     * 订单审核
+     * @param dto
+     * @return
+     */
+    boolean reviewPurchaseOrder(PurchaseReviewDto dto);
 }

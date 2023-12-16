@@ -135,7 +135,7 @@ public class GoodsController extends BaseController
     public AjaxResult getInfoByIds(@RequestParam String[] ids)
     {
         List<HashMap<String, Object>> goodsList = goodsService.queryGoodsByIds(ids);
-        goodsList.forEach(System.out::println);
+        // goodsList.forEach(System.out::println);
         return success(goodsList);
     }
 

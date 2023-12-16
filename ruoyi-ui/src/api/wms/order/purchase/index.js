@@ -34,3 +34,24 @@ export function editPurchase(data) {
     data
   })
 }
+
+// 批量删除进货订单
+export function delPurchase(params) {
+  let ids = (Array.isArray(params) ? params : [params]).toString()
+  return request({
+    url: '/wms/order/purchase/del',
+    method: 'DELETE',
+    params: {
+      ids
+    }
+  })
+}
+
+// 批量删除进货订单
+export function reviewPurchase(data) {
+  return request({
+    url: '/wms/order/purchase/review',
+    method: 'PUT',
+    data
+  })
+}

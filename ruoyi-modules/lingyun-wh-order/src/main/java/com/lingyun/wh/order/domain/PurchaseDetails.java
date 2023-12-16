@@ -48,6 +48,11 @@ public class PurchaseDetails extends BaseEntity {
     private String unit;
 
     /**
+     * 入库数量
+     */
+    @Excel(name = "入库数量")
+    private BigDecimal quantityInStock;
+    /**
      * 进货数量
      */
     @Excel(name = "进货数量")
@@ -73,16 +78,25 @@ public class PurchaseDetails extends BaseEntity {
     public PurchaseDetails() {
     }
 
-    public PurchaseDetails(String pdId, String poId, String goodsId, String specCode, String unit, BigDecimal purchaseQuantity, BigDecimal puPrice, Boolean isDelete, Goods goods) {
+    public PurchaseDetails(String pdId, String poId, String goodsId, String specCode, String unit, BigDecimal quantityInStock, BigDecimal purchaseQuantity, BigDecimal puPrice, Boolean isDelete, Goods goods) {
         this.pdId = pdId;
         this.poId = poId;
         this.goodsId = goodsId;
         this.specCode = specCode;
         this.unit = unit;
+        this.quantityInStock = quantityInStock;
         this.purchaseQuantity = purchaseQuantity;
         this.puPrice = puPrice;
         this.isDelete = isDelete;
         this.goods = goods;
+    }
+
+    public BigDecimal getQuantityInStock() {
+        return quantityInStock;
+    }
+
+    public void setQuantityInStock(BigDecimal quantityInStock) {
+        this.quantityInStock = quantityInStock;
     }
 
     public Boolean getDelete() {

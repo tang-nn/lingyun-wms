@@ -2,6 +2,7 @@ package com.lingyun.wh.order.controller;
 
 import com.lingyun.wh.goods.api.RemoteGoodsService;
 import com.lingyun.wh.order.domain.PurchaseOrder;
+import com.lingyun.wh.order.pojo.dto.PurchaseReviewDto;
 import com.lingyun.wh.order.pojo.vo.PurchaseOrderVo;
 import com.lingyun.wh.order.service.IPurchaseOrderService;
 import com.ruoyi.common.core.domain.R;
@@ -103,8 +104,23 @@ public class PurchaseOrderController extends BaseController {
      */
     @RequiresPermissions("order:purchase:remove")
     @Log(title = "进货订单", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{poIds}")
-    public AjaxResult remove(@PathVariable String[] poIds) {
-        return toAjax(purchaseOrderService.deletePurchaseOrderByPoIds(poIds));
+    @DeleteMapping("/del")
+    public AjaxResult remove(@RequestParam String[] ids) {
+        if(ids == null || ids.length == 0){
+            return AjaxResult.error("请选择要删除的进货订单");
+        } else if (ids.length > 5) {
+            return AjaxResult.error("一次最多删除 5 条数据");
+        }
+        return toAjax(purchaseOrderService.deletePurchaseOrderByPoIds(ids));
+    }
+
+    /**
+     * 审核订单
+     */
+    @RequiresPermissions("order:purchase:review")
+    @Log(title = "审核进货订单", businessType = BusinessType.DELETE)
+    @PutMapping("/review")
+    public AjaxResult review(@RequestBody PurchaseReviewDto purchaseReviewDto) {
+        return toAjax(purchaseOrderService.reviewPurchaseOrder(purchaseReviewDto));
     }
 }

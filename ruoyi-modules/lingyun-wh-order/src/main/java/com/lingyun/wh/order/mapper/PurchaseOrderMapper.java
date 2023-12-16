@@ -63,7 +63,7 @@ public interface PurchaseOrderMapper {
     public int deletePurchaseOrderByPoIds(String[] poIds);
 
     /**
-     * 批量删除进货明细
+     * 批量删除进货明细 - [逻辑删除]
      *
      * @param poIds 需要删除的数据主键集合
      * @return 结果
@@ -71,7 +71,7 @@ public interface PurchaseOrderMapper {
     public int deletePurchaseDetailsByPoIds(String[] poIds);
 
     /**
-     * 批量新增进货明细
+     * 批量新增进货明细 - [逻辑删除]
      *
      * @param purchaseDetailsList 进货明细列表
      * @return 结果

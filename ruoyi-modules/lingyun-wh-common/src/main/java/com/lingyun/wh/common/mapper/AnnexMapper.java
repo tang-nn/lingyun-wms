@@ -1,6 +1,7 @@
 package com.lingyun.wh.common.mapper;
 
 import com.ruoyi.system.api.domain.Annex;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -49,7 +50,7 @@ public interface AnnexMapper {
      * @param aId 附件主键
      * @return 结果
      */
-    public int deleteAnnexByAId(Long aId);
+    public int deleteAnnexByAId(String aId);
 
     /**
      * 批量删除附件
@@ -57,6 +58,6 @@ public interface AnnexMapper {
      * @param aIds 需要删除的数据主键集合
      * @return 结果
      */
-    public int deleteAnnexByAIds(Long[] aIds);
+    int deleteAnnexByAids(@Param("array") String[] aIds,@Param("type") String type);
 
 }

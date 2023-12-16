@@ -9,3 +9,11 @@ export function listSupplier(query) {
     params: query
   })
 }
+
+// 查询客户详情
+export function getSupplier(sid) {
+  return request({
+    url: '/wms/cu/supplier/' + sid,
+    method: 'get'
+  })
+}

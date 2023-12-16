@@ -15,25 +15,14 @@ import com.ruoyi.common.core.exception.UtilException;
 public final class UUID implements java.io.Serializable, Comparable<UUID>
 {
     private static final long serialVersionUID = -1185015143654744140L;
-
-    /**
-     * SecureRandom 的单例
-     *
-     */
-    private static class Holder
-    {
-        static final SecureRandom numberGenerator = getSecureRandom();
-    }
-
     /** 此UUID的最高64有效位 */
     private final long mostSigBits;
-
     /** 此UUID的最低64有效位 */
     private final long leastSigBits;
 
     /**
      * 私有构造
-     * 
+     *
      * @param data 数据
      */
     private UUID(byte[] data)
@@ -66,8 +55,8 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
     }
 
     /**
-     * 获取类型 4（伪随机生成的）UUID 的静态工厂。 
-     * 
+     * 获取类型 4（伪随机生成的）UUID 的静态工厂。
+     *
      * @return 随机生成的 {@code UUID}
      */
     public static UUID fastUUID()
@@ -77,7 +66,7 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
 
     /**
      * 获取类型 4（伪随机生成的）UUID 的静态工厂。 使用加密的强伪随机数生成器生成该 UUID。
-     * 
+     *
      * @return 随机生成的 {@code UUID}
      */
     public static UUID randomUUID()
@@ -87,7 +76,7 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
 
     /**
      * 获取类型 4（伪随机生成的）UUID 的静态工厂。 使用加密的强伪随机数生成器生成该 UUID。
-     * 
+     *
      * @param isSecure 是否使用{@link SecureRandom}如果是可以获得更安全的随机码，否则可以得到更好的性能
      * @return 随机生成的 {@code UUID}
      */
@@ -161,6 +150,47 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
         leastSigBits |= Long.decode(components[4]).longValue();
 
         return new UUID(mostSigBits, leastSigBits);
+    }
+
+    /**
+     * 返回指定数字对应的hex值
+     *
+     * @param val 值
+     * @param digits 位
+     * @return 值
+     */
+    private static String digits(long val, int digits)
+    {
+        long hi = 1L << (digits * 4);
+        return Long.toHexString(hi | (val & (hi - 1))).substring(1);
+    }
+
+    /**
+     * 获取{@link SecureRandom}，类提供加密的强随机数生成器 (RNG)
+     *
+     * @return {@link SecureRandom}
+     */
+    public static SecureRandom getSecureRandom()
+    {
+        try
+        {
+            return SecureRandom.getInstance("SHA1PRNG");
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new UtilException(e);
+        }
+    }
+
+    /**
+     * 获取随机数生成器对象<br>
+     * ThreadLocalRandom是JDK 7之后提供并发产生随机数，能够解决多个线程发生的竞争争夺。
+     *
+     * @return {@link ThreadLocalRandom}
+     */
+    public static ThreadLocalRandom getRandom()
+    {
+        return ThreadLocalRandom.current();
     }
 
     /**
@@ -289,7 +319,7 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
      *
      * <p>
      * UUID 的字符串表示形式由此 BNF 描述：
-     * 
+     *
      * <pre>
      * {@code
      * UUID                   = <time_low>-<time_mid>-<time_high_and_version>-<variant_and_sequence>-<node>
@@ -302,7 +332,7 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
      * hexDigit               = [0-9a-fA-F]
      * }
      * </pre>
-     * 
+     *
      * </blockquote>
      *
      * @return 此{@code UUID} 的字符串表现形式
@@ -319,7 +349,7 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
      *
      * <p>
      * UUID 的字符串表示形式由此 BNF 描述：
-     * 
+     *
      * <pre>
      * {@code
      * UUID                   = <time_low>-<time_mid>-<time_high_and_version>-<variant_and_sequence>-<node>
@@ -332,7 +362,7 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
      * hexDigit               = [0-9a-fA-F]
      * }
      * </pre>
-     * 
+     *
      * </blockquote>
      *
      * @param isSimple 是否简单模式，简单模式为不带'-'的UUID字符串
@@ -371,6 +401,8 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
         return builder.toString();
     }
 
+    // Comparison Operations
+
     /**
      * 返回此 UUID 的哈希码。
      *
@@ -382,6 +414,9 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
         long hilo = mostSigBits ^ leastSigBits;
         return ((int) (hilo >> 32)) ^ (int) hilo;
     }
+
+    // -------------------------------------------------------------------------------------------------------------------
+    // Private method start
 
     /**
      * 将此对象与指定对象比较。
@@ -402,8 +437,6 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
         UUID id = (UUID) obj;
         return (mostSigBits == id.mostSigBits && leastSigBits == id.leastSigBits);
     }
-
-    // Comparison Operations
 
     /**
      * 将此 UUID 与指定的 UUID 比较。
@@ -428,21 +461,6 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
                                         0))));
     }
 
-    // -------------------------------------------------------------------------------------------------------------------
-    // Private method start
-    /**
-     * 返回指定数字对应的hex值
-     * 
-     * @param val 值
-     * @param digits 位
-     * @return 值
-     */
-    private static String digits(long val, int digits)
-    {
-        long hi = 1L << (digits * 4);
-        return Long.toHexString(hi | (val & (hi - 1))).substring(1);
-    }
-
     /**
      * 检查是否为time-based版本UUID
      */
@@ -455,30 +473,10 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
     }
 
     /**
-     * 获取{@link SecureRandom}，类提供加密的强随机数生成器 (RNG)
-     * 
-     * @return {@link SecureRandom}
+     * SecureRandom 的单例
      */
-    public static SecureRandom getSecureRandom()
+    private static class Holder
     {
-        try
-        {
-            return SecureRandom.getInstance("SHA1PRNG");
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw new UtilException(e);
-        }
-    }
-
-    /**
-     * 获取随机数生成器对象<br>
-     * ThreadLocalRandom是JDK 7之后提供并发产生随机数，能够解决多个线程发生的竞争争夺。
-     * 
-     * @return {@link ThreadLocalRandom}
-     */
-    public static ThreadLocalRandom getRandom()
-    {
-        return ThreadLocalRandom.current();
+        static final SecureRandom numberGenerator = getSecureRandom();
     }
 }

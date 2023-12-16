@@ -23,13 +23,13 @@ public class OrderType {
     /**
      * 入库
      */
-    public static final int WAREHOUS_ENTRY = 3;
+    public static final int INBOUND_ORDER = 3;
     /**
      * 出库
      */
     public static final int OUTBOUND_ORDER = 4;
     /**
-     * 库存
+     * 盘点
      */
     public static final int INVENTORY_SHEET = 5;
     /**

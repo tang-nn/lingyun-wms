@@ -33,6 +33,7 @@
         <result property="goodsId" column="sub_goods_id"/>
         <result property="specCode" column="sub_spec_code"/>
         <result property="unit" column="sub_unit"/>
+        <result property="quantityInStock" column="sub_quantity_in_stock"/>
         <result property="purchaseQuantity" column="sub_purchase_quantity"/>
         <result property="puPrice" column="sub_pu_price"/>
         <result property="remark" column="sub_remark"/>
@@ -66,13 +67,17 @@
         <result property="supplName" column="s_name"/>
         <result property="contactPerson" column="contact_person"/>
         <result property="contactNumber" column="contact_number"/>
-        <collection property="purchaseDetails" ofType="com.lingyun.wh.order.pojo.vo.PurchaseDetailVo">
-            <id property="pdId" column="pod_pd_id"/>
-            <result property="goodsId" column="pod_goods_id"/>
-            <result property="purchaseQuantity" column="pod_purchase_quantity"/>
-            <result property="puPrice" column="pod_pu_price"/>
-            <result property="goodsName" column="goodsName"/>
+        <collection property="purchaseDetails" column="po_id" select="selectOrderDetailsList" ofType="com.lingyun.wh.order.pojo.vo.PurchaseDetailVo">
+
         </collection>
+    </resultMap>
+    <resultMap id="purchaseDetailsVO" type="com.lingyun.wh.order.pojo.vo.PurchaseDetailVo">
+        <id property="pdId" column="pod_pd_id"/>
+        <result property="goodsId" column="pod_goods_id"/>
+        <result property="purchaseQuantity" column="pod_purchase_quantity"/>
+        <result property="puPrice" column="pod_pu_price"/>
+        <result property="goodsName" column="goodsName"/>
+        <result property="quantityInStock" column="quantity_in_stock"/>
     </resultMap>
     <sql id="selectPurchaseOrderVo">
         select po_id,
@@ -96,8 +101,6 @@
     <select id="selectPurchaseDetailsList" resultMap="PurchaseOrderList">
         SELECT
         po.po_id,po.po_code,po.status po_status,po.purchase_date po_purchase_date,po.s_id,po.purchaser_id,po.reviewer,po.review_comments,po.reviewer_date,po.create_by po_create_by,po.create_time po_create_time,po.update_by po_update_by,po.update_time po_update_time,
-        pod.pd_id pod_pd_id,pod.goods_id pod_goods_id,pod.purchase_quantity pod_purchase_quantity,pod.pu_price pod_pu_price,
-        g.g_name goodsName,
         pu.dept_id pu_dept_id,pu.nick_name pu_nick_name,
         pdt.dept_id pdt_dept_id,pdt.dept_name pdt_dept_name,
         cu.user_id cu_user_id,cu.dept_id cu_dept_id,cu.nick_name cu_nick_name,
@@ -105,20 +108,14 @@
         ru.user_id ru_user_id,ru.dept_id ru_dept_id,ru.nick_name ru_nick_name,
         s.s_name,s.contact_person,s.contact_number
         FROM wh_purchase_order po
-        # 订单明细
-        INNER JOIN wh_purchase_details pod on pod.po_id = po.po_id
         # 供应商
         INNER JOIN wh_supplier s on s.s_id = po.s_id
-        # 货品信息
-        INNER JOIN wh_goods g on g.g_id = pod.goods_id
         # 进货人和进货部门
         INNER JOIN sys_user pu on pu.user_id = po.purchaser_id
         INNER JOIN sys_dept pdt on pdt.dept_id = po.purchasing_dept
         # 制单人和所在部门
         INNER JOIN sys_user cu on cu.user_id = po.create_by
         INNER JOIN sys_dept cdt on cdt.dept_id = cu.dept_id
-        # 供应商
-        INNER JOIN wh_supplier on s.s_id = po.s_id
         # 审核人
         LEFT JOIN sys_user ru on ru.user_id = po.reviewer
         <where>
@@ -133,49 +130,11 @@
                 <if test="params.supplierName != null and params.supplierName != ''">
                     and s.supplier_name like concat('%',#{params.supplierName},'%')
                 </if>
-                <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
-                    AND date_format(po.purchase_date,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+                <if test="params.purchaser != null and params.purchaser != ''">
+                    and pu.nick_name like concat('%',#{params.purchaser},'%')
                 </if>
-                <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
-                    AND date_format(po.purchase_date,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
-                </if>
-            </if>
-        </where>
-    </select>
-    <select id="selectPurchaseDetailsList_COUNT" resultType="Long">
-        select count(0) from (
-        SELECT
-        po.po_id,
-        pu.dept_id pu_dept_id,
-        pdt.dept_id pdt_dept_id,
-        cu.user_id cu_user_id,
-        cdt.dept_id cdt_dept_id,
-        ru.user_id ru_user_id,
-        s.s_name
-        FROM wh_purchase_order po
-        # 供应商
-        INNER JOIN wh_supplier s on s.s_id = po.s_id
-        # 进货人和进货部门
-        INNER JOIN sys_user pu on pu.user_id = po.purchaser_id
-        INNER JOIN sys_dept pdt on pdt.dept_id = pu.dept_id
-        # 制单人和所在部门
-        INNER JOIN sys_user cu on cu.user_id = po.create_by
-        INNER JOIN sys_dept cdt on cdt.dept_id = po.purchasing_dept
-        # 供应商
-        INNER JOIN wh_supplier on s.s_id = po.s_id
-        # 审核人
-        LEFT JOIN sys_user ru on ru.user_id = po.reviewer
-        <where>
-            po.is_delete = 0
-            <if test="params != null">
-                <if test="params.purOrderSn != null and params.purOrderSn != ''">
-                    and po.po_code like concat('%',#{params.purOrderSn},'%')
-                </if>
-                <if test="params.orderStatus != null and params.orderStatus != ''">
-                    and po.status =  #{params.orderStatus}
-                </if>
-                <if test="params.supplierName != null and params.supplierName != ''">
-                    and s.supplier_name like concat('%',#{params.supplierName},'%')
+                <if test="params.purDept != null and params.purDept != ''">
+                    and pdt.dept_name like concat('%',#{params.purDept},'%')
                 </if>
                 <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
                     AND date_format(po.purchase_date,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
@@ -185,8 +144,60 @@
                 </if>
             </if>
         </where>
-        ) tmp_count
     </select>
+    <select id="selectOrderDetailsList" resultMap="purchaseDetailsVO">
+        select
+            g.g_name goodsName,
+            pod.pd_id pod_pd_id,pod.goods_id pod_goods_id,pod.purchase_quantity pod_purchase_quantity,pod.pu_price pod_pu_price, pod.quantity_in_stock
+        from wh_purchase_details pod
+        INNER JOIN wh_goods g on g.g_id = pod.goods_id
+        where pod.po_id = #{poId,jdbcType=BIGINT}
+    </select>
+    <!-- <select id="selectPurchaseDetailsList_COUNT" resultType="Long"> -->
+    <!--     select count(0) from ( -->
+    <!--     SELECT -->
+    <!--     po.po_id, -->
+    <!--     pu.dept_id pu_dept_id, -->
+    <!--     pdt.dept_id pdt_dept_id, -->
+    <!--     cu.user_id cu_user_id, -->
+    <!--     cdt.dept_id cdt_dept_id, -->
+    <!--     ru.user_id ru_user_id, -->
+    <!--     s.s_name -->
+    <!--     FROM wh_purchase_order po -->
+    <!--     # 供应商 -->
+    <!--     INNER JOIN wh_supplier s on s.s_id = po.s_id -->
+    <!--     # 进货人和进货部门 -->
+    <!--     INNER JOIN sys_user pu on pu.user_id = po.purchaser_id -->
+    <!--     INNER JOIN sys_dept pdt on pdt.dept_id = pu.dept_id -->
+    <!--     # 制单人和所在部门 -->
+    <!--     INNER JOIN sys_user cu on cu.user_id = po.create_by -->
+    <!--     INNER JOIN sys_dept cdt on cdt.dept_id = po.purchasing_dept -->
+    <!--     # 供应商 -->
+    <!--     INNER JOIN wh_supplier on s.s_id = po.s_id -->
+    <!--     # 审核人 -->
+    <!--     LEFT JOIN sys_user ru on ru.user_id = po.reviewer -->
+    <!--     <where> -->
+    <!--         po.is_delete = 0 -->
+    <!--         <if test="params != null"> -->
+    <!--             <if test="params.purOrderSn != null and params.purOrderSn != ''"> -->
+    <!--                 and po.po_code like concat('%',#{params.purOrderSn},'%') -->
+    <!--             </if> -->
+    <!--             <if test="params.orderStatus != null and params.orderStatus != ''"> -->
+    <!--                 and po.status =  #{params.orderStatus} -->
+    <!--             </if> -->
+    <!--             <if test="params.supplierName != null and params.supplierName != ''"> -->
+    <!--                 and s.supplier_name like concat('%',#{params.supplierName},'%') -->
+    <!--             </if> -->
+    <!--             <if test="params.beginTime != null and params.beginTime != ''">&lt;!&ndash; 开始时间检索 &ndash;&gt; -->
+    <!--                 AND date_format(po.purchase_date,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d') -->
+    <!--             </if> -->
+    <!--             <if test="params.endTime != null and params.endTime != ''">&lt;!&ndash; 结束时间检索 &ndash;&gt; -->
+    <!--                 AND date_format(po.purchase_date,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d') -->
+    <!--             </if> -->
+    <!--         </if> -->
+    <!--     </where> -->
+    <!--     ) tmp_count -->
+    <!-- </select> -->
     <select id="selectPurchaseOrderByPoId" parameterType="String" resultMap="PurchaseOrderPurchaseDetailsResult">
         select a.po_id,
                a.po_code,
@@ -208,6 +219,7 @@
                b.goods_id          as sub_goods_id,
                b.spec_code         as sub_spec_code,
                b.unit              as sub_unit,
+               b.quantity_in_stock as sub_quantity_in_stock,
                b.purchase_quantity as sub_purchase_quantity,
                b.pu_price          as sub_pu_price,
                b.remark            as sub_remark,
@@ -280,24 +292,23 @@
         where po_id = #{poId}
     </delete>
 
-    <delete id="deletePurchaseOrderByPoIds" parameterType="String">
-        delete from wh_purchase_order where po_id in
+    <update id="deletePurchaseOrderByPoIds" parameterType="String">
+        update wh_purchase_order set is_delete = b'1' where po_id in
         <foreach item="poId" collection="array" open="(" separator="," close=")">
             #{poId}
         </foreach>
-    </delete>
+    </update>
 
     <delete id="deletePurchaseDetailsByPoIds" parameterType="String">
-        delete from wh_purchase_details where po_id in
+        update wh_purchase_details set is_delete = b'1' where po_id in
         <foreach item="poId" collection="array" open="(" separator="," close=")">
             #{poId}
         </foreach>
     </delete>
 
-    <delete id="deletePurchaseDetailsByPoId" parameterType="String">
-        delete
-        from wh_purchase_details
-        where po_id = #{poId}
+    <delete id="deletePurchaseDetailsByPoId">
+        update wh_purchase_details set is_delete = b'1'
+                                   where po_id = #{poId}
     </delete>
 
     <insert id="batchPurchaseDetails">

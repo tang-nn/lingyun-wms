@@ -50,7 +50,7 @@ public interface IAnnexService {
      * @param aIds 需要删除的附件主键集合
      * @return 结果
      */
-    public int deleteAnnexByAIds(Long[] aIds);
+    public int deleteAnnexByAIds(String[] aIds, String type);
 
     /**
      * 删除附件信息
@@ -58,5 +58,5 @@ public interface IAnnexService {
      * @param aId 附件主键
      * @return 结果
      */
-    public int deleteAnnexByAId(Long aId);
+    public int deleteAnnexByAId(String aId);
 }

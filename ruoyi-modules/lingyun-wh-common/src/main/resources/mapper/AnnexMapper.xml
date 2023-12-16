@@ -15,7 +15,7 @@
         select a_id, a_type, form_id, a_content from wh_annex
     </sql>
 
-    <select id="selectAnnexList" parameterType="com.ruoyi.system.api.domain.Annex" resultMap="AnnexResult">
+    <select id="selectAnnexList" resultMap="AnnexResult">
         <include refid="selectAnnexVo"/>
         <where>
             <if test="type != null  and type != ''"> and a_type = #{type}</if>
@@ -45,14 +45,15 @@
         where a_id = #{aid}
     </update>
 
-    <delete id="deleteAnnexByAid" parameterType="String">
+    <delete id="deleteAnnexByAid">
         delete from wh_annex where a_id = #{aid}
     </delete>
 
-    <delete id="deleteAnnexByAids" parameterType="String">
-        delete from wh_annex where a_id in
+    <delete id="deleteAnnexByAids">
+        delete from wh_annex where form_id in
         <foreach item="aid" collection="array" open="(" separator="," close=")">
             #{aid}
         </foreach>
+        and a_type = #{type}
     </delete>
 </mapper>

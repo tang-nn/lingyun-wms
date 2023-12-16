@@ -1,6 +1,7 @@
 package com.lingyun.wh.order.pojo.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.ruoyi.common.core.annotation.Excel;
 
 import java.math.BigDecimal;
 
@@ -27,6 +28,10 @@ public class PurchaseDetailVo {
      */
     private String goodsName;
 
+    /**
+     * 入库数量
+     */
+    private BigDecimal quantityInStock;
 
     /**
      * 进货数量
@@ -48,6 +53,14 @@ public class PurchaseDetailVo {
      * 单位
      */
     private String unit;
+
+    public BigDecimal getQuantityInStock() {
+        return quantityInStock;
+    }
+
+    public void setQuantityInStock(BigDecimal quantityInStock) {
+        this.quantityInStock = quantityInStock;
+    }
 
     public String getPdId() {
         return pdId;
