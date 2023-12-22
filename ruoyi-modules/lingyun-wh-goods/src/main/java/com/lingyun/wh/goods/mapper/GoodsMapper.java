@@ -2,6 +2,7 @@ package com.lingyun.wh.goods.mapper;
 
 
 import com.lingyun.wh.goods.api.domain.Goods;
+import com.lingyun.wh.goods.api.domain.WarningInfo;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,35 @@ import java.util.Map;
  * @date 2023-11-21
  */
 public interface GoodsMapper {
+
+    /**
+     * 查询货品信息列表
+     *
+     * @param
+     * @return 货品信息集合
+     */
+    public List<Map<String,Object>> selectGoodsList(Map<String,Object>map);
+
+    /**
+     * 新增货品信息
+     *
+     * @param goods 货品信息
+     * @return 结果
+     */
+    public int insertGoods(Goods goods);
+
+    //新增预警
+    public int insertWarning(WarningInfo warningInfo);
+
+
+
+
+
+
+
+
+
+
     /**
      * 查询货品信息
      *
@@ -34,22 +64,7 @@ public interface GoodsMapper {
      */
     public int selectGoodsByGname(String gname);
 
-    /**
-     * 查询货品信息列表
-     *
-     * @param
-     * @return 货品信息集合
-     */
-    public List<Map<String,Object>> selectGoodsList(Map<String,Object>map);
 
-
-    /**
-     * 新增货品信息
-     *
-     * @param goods 货品信息
-     * @return 结果
-     */
-    public int insertGoods(Goods goods);
 
     /**
      * 修改货品信息

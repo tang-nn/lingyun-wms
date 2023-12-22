@@ -5,18 +5,18 @@
    padding-bottom: 10px;margin-left: 200px;width: 1280px">
       <h3 style="margin-left: 20px">基础信息</h3>
       <div style="border-top: 1px solid #eeeeee;padding-top: 30px;padding-left: 30px">
-        <el-form ref="elForm" :model="formData" label-width="95px" size="medium">
+        <el-form ref="formData" :model="formData"  label-width="95px" size="medium">
           <el-row>
             <el-col :span="9">
-              <el-form-item label="盘点单号" prop="isCode">
-                <el-input v-model="formData.isCode" :style="{width: '100%'}" clearable placeholder="自动获取系统编码"readonly>
+              <el-form-item label="盘点单号" >
+                <el-input :style="{width: '100%'}" v-model="formData.isCode" placeholder="自动获取系统编码" readonly>
                 </el-input>
               </el-form-item>
             </el-col>
             <el-col :span="9" style="margin-left: 180px">
               <el-form-item label="盘点类型">
                 <el-select :style="{width: '100%'}"
-                  v-model="queryParams.isType"
+                  v-model="formData.isType"
                   placeholder="请选择"
                   clearable
                   style="width: 240px"
@@ -33,7 +33,7 @@
           </el-row>
           <el-row>
             <el-col :span="9">
-              <el-form-item label="盘点开始时间" prop="isStartTime" label-width="100">
+              <el-form-item label="盘点开始时间" label-width="100">
                 <el-date-picker clearable
                                 v-model="formData.isStartTime"
                                 type="date"
@@ -43,7 +43,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="10" style="margin-left: 180px">
-              <el-form-item label="盘点结束时间" prop="isStartTime" label-width="100">
+              <el-form-item label="盘点结束时间"  label-width="100">
                 <el-date-picker clearable
                                 v-model="formData.isEndTime"
                                 type="date"
@@ -57,7 +57,7 @@
             <el-col :span="9">
               <el-form-item label="仓库名称" prop="wId">
                 <el-select :style="{width: '100%'}"
-                  v-model="queryGoodsParams.wId"
+                  v-model="formData.whName"
                   placeholder="请选择"
                   clearable
                   style="width: 240px"
@@ -76,7 +76,7 @@
             <el-col :span="9" style="margin-left: 180px">
               <el-form-item label="经办人" prop="usera" >
                 <el-input
-                  v-model="formData.usera"
+                  v-model="formData.isManager"
                   placeholder="请输入"
                   clearable
                   @focus="handleUsera"
@@ -130,7 +130,6 @@
         <el-table :loading="loading" style="margin-top: 50px"
                   :data="inventorysheetInf.selectGoods"
                   max-height="520px"
-                  row-key="g_id"
                   @selection-change="handleSelectionChange"
                   :row-class-name="rowStorageLocationIndex">
           <el-table-column type="selection" fixed="left" width="55" align="center" />
@@ -157,21 +156,14 @@
           </el-table-column>
           <el-table-column label="盘点数量" align="center" prop="countQuantity" width="100px">
             <template slot-scope="scope">
-              <el-input  v-model="scope.row.countQuantity" @blur="countQuantity(scope.row)"></el-input>
+              <el-input  v-model="scope.row.countQuantity"></el-input>
             </template>
           </el-table-column>
           <el-table-column label="盘点金额" align="center" prop="countAmount"/>
-          <el-table-column label="盈亏数量" align="center" prop="profitLossQuantity"   >
-            <template slot-scope="scope">
-              <span :style="{ color: scope.row.profitLossQuantity === 0 ?
-               'black' : scope.row.profitLossQuantity>0?'lightseagreen':'red' }">
-                {{ scope.row.profitLossQuantity }}
-              </span>
-            </template>
-          </el-table-column>
+          <el-table-column label="盈亏数量" align="center" prop="profitLossQuantity"/>
           <el-table-column label="盘点状态"  align="center" prop="isStatus" width="100px">
             <template slot-scope="scope">
-              <dict-tag :options="dict.type.pd_status_check"  :value="scope.row.isStatus"/>
+              <dict-tag :options="dict.type.pd_status_check" :value="scope.row.isStatus"/>
             </template>
           </el-table-column>
           <el-table-column label="入库单价" align="center" :formatter="wrPrice"  prop="wr_price" width="100px">
@@ -179,14 +171,7 @@
               <el-input v-model="scope.row.wr_price" ></el-input>
             </template>
           </el-table-column>
-          <el-table-column label="盈亏金额" prop="profitLossAmount" align="center">
-            <template slot-scope="scope">
-              <span :style="{ color: scope.row.profitLossAmount === 0 ?
-               'black' : scope.row.profitLossAmount>0?'lightseagreen':'red' }">
-                {{ scope.row.profitLossAmount }}
-              </span>
-            </template>
-          </el-table-column>
+          <el-table-column label="盈亏金额" prop="profitLossAmount" align="center"/>
           <el-table-column label="备注" align="center" prop="remark" width="140px">
             <template slot-scope="scope">
               <el-input v-model="scope.row.remark" ></el-input>
@@ -209,14 +194,13 @@
              <span>合计</span>
              <el-col >
                <div class="down" style="float:right;margin-right: 5px;margin-top:-14px;font-size: 14px">
-                 <span>账面库存：<em >{{totalItemQuantity}}</em></span>
-
-                 <span>账面金额：<em>{{totalCountAmount}}</em></span>
-                 <span>盘点数量：<em>{{totalCountQuantity}}</em></span>
-                 <span>盘盈数量：<em>{{totalProCount}}</em></span>
-                 <span>盘亏数量:<em>{{totalLossCount}}</em></span>
-                 <span>盘盈金额：:<em>{{totalProAmount}}</em></span>
-                 <span>盘亏金额：:<em>{{totalLossAmount}}</em></span>
+                 <span>账面库存：<em ></em></span>
+                 <span>账面金额：<em ></em></span>
+                 <span>盘点数量：<em ></em></span>
+                 <span>盘盈数量：<em></em></span>
+                 <span>盘亏数量:<em></em></span>
+                 <span>盘盈金额：:<em></em></span>
+                 <span>盘亏金额：:<em></em></span>
                </div>
              </el-col>
 
@@ -311,7 +295,7 @@
       </el-form>
       <el-table ref="goodsTable" v-loading="loading" :data="goodsList"
                 row-key="g_id" @selection-change="handlerSelectionChange">
-        <el-table-column align="center" fixed type="selection" width="50"/>
+        <el-table-column :reserve-selection="true" align="center" fixed type="selection" width="50"/>
         <el-table-column align="center" fixed label="序号" type="index" width="60"/>
         <el-table-column align="center" fixed label="货品编号" prop="g_code" width="80"/>
         <el-table-column align="center" fixed label="货品名称" prop="g_name" width="110"/>
@@ -344,7 +328,11 @@ import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import { listUser} from "@/api/system/user";
 import {listWarehouse} from "@/api/wms/warehouse/warehouse.js";
-import { listGoodByWid,addInventory} from "@/api/wms/warehouse/InventorySheet/inventory.js";
+import {
+  listGoodByWid,
+  addInventory,
+  listInventoryByIsId,
+} from "@/api/wms/warehouse/InventorySheet/inventory.js";
 
 export default {
   components: {Treeselect},
@@ -373,6 +361,7 @@ export default {
       goodsTotal: 0,
       //选中货品数据
       tempSelectGoodsList: [],
+
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -403,74 +392,42 @@ export default {
     }
   },
   computed: {
-    //总计
-
-    //账面库存
-    totalItemQuantity(){
-      return this.inventorysheetInf.selectGoods?.reduce((accumulator, currentValue) => {
-        return accumulator + (currentValue.item_quantity || 0);
-      }, 0);
-    },
-    //账面金额
-    totalCountAmount(){
-      let fm= this.inventorysheetInf.selectGoods?.reduce((accumulator, currentValue) => {
-        return accumulator + (currentValue.item_quantity*currentValue.wr_price || 0);
-      }, 0);
-
-      return fm?.toFixed(2);
-    },
-   //盘点数量
-    totalCountQuantity(){
-      return this.inventorysheetInf.selectGoods?.reduce((accumulator, currentValue) => {
-        return accumulator + (Number(currentValue.countQuantity) || 0);
-      }, 0);
-    },
-    //盘盈数量
-    totalProCount(){
-      return this.inventorysheetInf.selectGoods?.reduce((accumulator, currentValue) => {
-        return accumulator + (currentValue.profitLossQuantity>0?currentValue.profitLossQuantity:0 || 0);
-      }, 0);
-    },
-
-    //盘亏数量
-    totalLossCount(){
-      return (this.inventorysheetInf.selectGoods?.reduce((accumulator, currentValue) => {
-        return accumulator + (currentValue.profitLossQuantity<0?currentValue.profitLossQuantity:0 || 0);
-      }, 0))*-1;
-    },
-
-    //盘盈金额
-    totalProAmount(){
-      return this.inventorysheetInf.selectGoods?.reduce((accumulator, currentValue) => {
-        return accumulator + (currentValue.profitLossAmount>0?currentValue.profitLossAmount:0|| 0);
-      }, 0);
-
-    },
-
-
-    //盘亏金额
-    totalLossAmount(){
-      return this.inventorysheetInf.selectGoods?.reduce((accumulator, currentValue) => {
-        return accumulator + (currentValue.profitLossAmount<0?currentValue.profitLossAmount:0|| 0);
-      }, 0)*-1;
-
-    },
-
-
-
   },
   watch: {},
   created() {
     this.getUsera();
     this.wareName();
-
     this.inventorysheetInf = {
       selectGoods:[],
     };
   },
-  mounted() {},
+  mounted() {
+    this.isId=this.$route.params.isId;
+    this.getDetailsByIsId();
+  },
   methods: {
-    /** 库位信息序号 */
+    //根据isId查询盘点单
+    getDetailsByIsId(){
+      listInventoryByIsId({"isId":this.isId}).then(response => {
+        this.formData = response.data[0];
+        this.$nextTick(() => {
+          this.$refs.formData.resetFields(); // 先重置表单项，再用新数据填充
+        });
+        console.log("this.formData",this.formData)
+      });
+    },
+
+
+
+
+
+
+
+
+
+
+
+    /** 盘点明细序号 */
     rowStorageLocationIndex({ row, rowIndex }) {
       row.index = rowIndex + 1;
     },
@@ -526,7 +483,6 @@ export default {
       let wh = this.wareNameList.filter(function (w){
         return w.w_id === e;
       })[0];
-
       if (wh.status !== 2){
         this.queryGoodsParams.wId=null;
         MessageBox.confirm("该仓库暂未锁定，请锁定后再进行盘点。", "提示", {
@@ -541,27 +497,9 @@ export default {
             MessageBox.close(); // 关闭对话框
           });
       }
-      this.$set(this.inventorysheetInf, 'selectGoods', []);
     },
 
-    //盘点数量失去焦点获取信息
-    countQuantity(row){
-      console.log(row.index);
-      row.countQuantity = parseFloat(row.countQuantity);//盘点数量
-      //获取账面库存
-      let iq=this.itemQuantity(row);
-      //获取入库单价
-      let wp=this.wrPrice(row);
-      //计算盈亏数量（盘点数量-账面库存）
-      row.profitLossQuantity=row.countQuantity-iq;
-      //计算盈亏金额（入库单价*盈亏数量）
-      row.profitLossAmount=wp*row.profitLossQuantity;
-      //盘点金额
-      row.countAmount=row.countQuantity*wp;
-      //盘点状态
-      row.isStatus = row.profitLossQuantity > 0 ? 0 : row.profitLossQuantity == 0 ? 2 : 1;
-      this.inventorysheetInf.selectGoods.splice(row.index-1, 1, row);
-    },
+
     //账面库存数量
     itemQuantity(row){
       return row.item_quantity ||'无货';
@@ -584,13 +522,13 @@ export default {
     //货品确定按钮
     handleGoodsDefine() {
       this.inventorysheetInf.selectGoods = this.tempSelectGoodsList;
-      console.info(this.tempSelectGoodsList+"*****************");
       console.log(" this.inventorysheetInf.selectGoods", this.inventorysheetInf.selectGoods)
       this.closeGoodsSelect();
     },
     //货品取消按钮
     closeGoodsSelect() {
       this.dialogTableVisible = false;
+      this.tempSelectGoodsList = this.inventorysheetInf.selectGoods;
     },
     //货品选中按钮
     handlerSelectionChange(row) {
@@ -624,6 +562,8 @@ export default {
       return ca.toFixed(2);
     },
 
+    //总计
+
 
     // 表单重置
     reset() {
@@ -652,8 +592,8 @@ export default {
           this.goodsTotal = response.total;
           this.$nextTick(() => {
             console.log("nextTick selectGoods: ", this.inventorysheetInf.selectGoods)
+            this.inventorysheetInf.selectGoods.map(vl => {
               this.goodsList.map(item => {
-                this.inventorysheetInf.selectGoods.map(vl => {
                 if (item.g_id === vl.g_id) {
                   this.$refs.goodsTable.toggleRowSelection(item, true)
                 }
@@ -686,16 +626,12 @@ export default {
           this.formData.isManager=this.userIda;
           this.formData.isType=this.queryParams.isType;
           this.formData.wId=this.queryGoodsParams.wId;
-          if(this.totalLossCount===0&&this.totalProCount===0){
-            this.formData.isResult="no";
-          }else {
-            this.formData.isResult="yes";
-          }
           this.formData.inventoryDetailsList=this.inventorysheetInf.selectGoods;
+          // this.formData.inventoryDetailsList.add("s_id",)
           console.log("this.formData，",this.formData)
           addInventory(this.formData).then(response =>{
             this.$modal.msgSuccess("新增成功");
-            this.$router.push(`/InventorySheet`);
+            this.$router.push(`/warehousemanager`);
 
           })
 

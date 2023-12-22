@@ -425,8 +425,8 @@ export default {
     handlerSelectionChange(row) {
       // console.log("row: ", row)
       this.tempSelectGoodsList = row;
-      // console.log("selectGoods: ", this.purchaseOrderInf.selectGoods)
-      // console.log("tempSelectGoodsList：", this.tempSelectGoodsList)
+      console.log("selectGoods: ", this.purchaseOrderInf.selectGoods)
+      console.log("tempSelectGoodsList：", this.tempSelectGoodsList)
     },
     getGoodsList() {
       this.loading = true;
@@ -440,6 +440,7 @@ export default {
           this.goodsTotal = response.total;
           this.$nextTick(() => {
             console.log("nextTick selectGoods: ", this.purchaseOrderInf.selectGoods)
+            console.log("nextTick tempSelectGoodsList：", this.tempSelectGoodsList)
             this.purchaseOrderInf.selectGoods.map(vl => {
               this.goodsList.map(item => {
                 if (item.g_id === vl.g_id) {

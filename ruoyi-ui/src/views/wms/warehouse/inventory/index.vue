@@ -85,20 +85,8 @@
         >删除
         </el-button>
       </el-col>
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="warning"-->
-<!--          plain-->
-<!--          icon="el-icon-download"-->
-<!--          size="mini"-->
-<!--          @click="handleExport"-->
-<!--          v-hasPermi="['InventorySheet:inventory:export']"-->
-<!--        >导出-->
-<!--        </el-button>-->
-<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
-          type="success"
           plain
           icon="el-icon-unlock"
           size="mini"
@@ -107,17 +95,21 @@
         >锁定仓库
         </el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="single"
+          v-hasPermi="['transfer:transfer:edit']"
+        >审核</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-
-    <el-table v-loading="loading" :data="inventoryList" @selection-change="handleSelectionChange">
+    <el-table max-height="520"  v-loading="loading" :data="inventoryList" @selection-change="handleSelectionChange">
       <el-table-column fixed="left" type="selection" width="55" align="center"/>
       <el-table-column fixed="left" label="盘点ID" align="center" prop="isId"/>
-<!--      <el-table-column fixed="left" label="盘点单号" align="center" prop="isCode" width="120px">-->
-<!--      <template slot-scope="{ row }">-->
-<!--        <span @click="goToDetails(row)">{{row.isCode }}</span>-->
-<!--      </template>-->
-<!--      </el-table-column>-->
       <el-table-column fixed="left" label="盘点单号" align="center" prop="isCode" width="120px">
         <template slot-scope="{ row }">
           <span @click="goToDetails(row.isId)">{{row.isCode}}</span>
@@ -156,40 +148,40 @@
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" label="盘点货品" :formatter="handlerProductName" align="center" prop="gname"/>
       <el-table-column label="盘点数量" align="center" :formatter="handlerCountQuantity"/>
-      <el-table-column :formatter="handlerProfitQuantity" label="盘盈数量" style="color: #1ab394" align="center"/>
+      <el-table-column :formatter="handlerProfitQuantity" label="盘盈数量" align="center"/>
       <el-table-column :formatter="handlerLossQuantity" label="盘亏数量" align="center"
                        prop="profit_loss_quantity" style="color: red"/>
       <el-table-column :formatter="handlerCountAmount" label="盘点金额"  align="center" width="100"/>
       <el-table-column :formatter="handlerProfitAmount" label="盘盈金额" align="center" prop="count_amount" width="100" style="color: #1ab394"/>
       <el-table-column :formatter="handlerLossAmount" label="盘亏金额" align="center" prop="count_amount" width="100" style="color: red"/>
       <el-table-column label="经办人" align="center" prop="managerName"/>
-      <el-table-column label="制单人" align="center" prop="creatorName"/>
-      <el-table-column label="所在部门" align="center" prop="creatorDept" width="140px"/>
-      <el-table-column label="制单时间" align="center" prop="createTime" width="110px">
+      <el-table-column label="制单人" fixed="right" align="center" prop="creatorName"/>
+      <el-table-column label="所在部门" fixed="right" align="center" prop="creatorDept" width="140px"/>
+      <el-table-column label="制单时间" fixed="right" align="center" prop="createTime" width="110px">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['InventorySheet:inventory:edit']"
-          >修改
-          </el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['InventorySheet:inventory:remove']"
-          >删除
-          </el-button>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="操作" fixed="right" align="center" class-name="small-padding fixed-width">-->
+<!--        <template slot-scope="{ row }">-->
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-edit"-->
+<!--            @click="handleUpdate(row.isId)"-->
+<!--            v-hasPermi="['InventorySheet:inventory:edit']"-->
+<!--          >修改-->
+<!--          </el-button>-->
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-delete"-->
+<!--            @click="handleDelete(scope.row)"-->
+<!--            v-hasPermi="['InventorySheet:inventory:remove']"-->
+<!--          >删除-->
+<!--          </el-button>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
     </el-table>
 
     <pagination
@@ -305,7 +297,7 @@ export default {
   },
   created() {
     this.getList();
-    this. wareName();
+    this.wareName();
   },
   methods: {
     /** 查询盘点单列表 */
@@ -317,11 +309,6 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
     },
     //锁定仓库
     lock(){
@@ -417,43 +404,13 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      // this.reset();
-      // this.open = true;
-      // this.title = "添加盘点单";
       this.$router.push('/addInventorySheet');
     },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const isId = row.isId || this.ids
-      getInventory(isId).then(response => {
-        this.form = response.data;
-        this.inventoryDetailsList = response.data.inventoryDetailsList;
-        this.open = true;
-        this.title = "修改盘点单";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          this.form.inventoryDetailsList = this.inventoryDetailsList;
-          if (this.form.isId != null) {
-            updateInventory(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addInventory(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
+    // /** 修改按钮操作 */
+    // handleUpdate(isId) {
+    //   this.$router.push({ path: `/editInventorySheet/${isId}` }); // 将 row.isCode 参数传递给路径占位符
+    //
+    // },
     /** 删除按钮操作 */
     handleDelete(row) {
       const isIds = row.isId || this.ids;
@@ -475,44 +432,6 @@ export default {
     rowInventoryDetailsIndex({row, rowIndex}) {
       row.index = rowIndex + 1;
     },
-    /** 盘点明细添加按钮操作 */
-    handleAddInventoryDetails() {
-      let obj = {};
-      obj.isCode = "";
-      obj.sId = "";
-      obj.specCode = "";
-      obj.unit = "";
-      obj.countQuantity = "";
-      obj.profitLossQuantity = "";
-      obj.isStatus = "";
-      obj.countAmount = "";
-      obj.iuPrice = "";
-      obj.remark = "";
-      obj.isDelete = "";
-      this.inventoryDetailsList.push(obj);
-    },
-    // /** 盘点明细删除按钮操作 */
-    // handleDeleteInventoryDetails() {
-    //   if (this.checkedInventoryDetails.length == 0) {
-    //     this.$modal.msgError("请先选择要删除的盘点明细数据");
-    //   } else {
-    //     const inventoryDetailsList = this.inventoryDetailsList;
-    //     const checkedInventoryDetails = this.checkedInventoryDetails;
-    //     this.inventoryDetailsList = inventoryDetailsList.filter(function (item) {
-    //       return checkedInventoryDetails.indexOf(item.index) == -1
-    //     });
-    //   }
-    // },
-    /** 复选框选中数据 */
-    handleInventoryDetailsSelectionChange(selection) {
-      this.checkedInventoryDetails = selection.map(item => item.index)
-    },
-    // /** 导出按钮操作 */
-    // handleExport() {
-    //   this.download('InventorySheet/inventory/export', {
-    //     ...this.queryParams
-    //   }, `inventory_${new Date().getTime()}.xlsx`)
-    // }
   }
 };
 </script>

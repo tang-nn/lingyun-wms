@@ -112,29 +112,29 @@
       </div>
      </el-row>
 
-    <el-row :gutter="20" style="background-color: white;border-radius: 5px;box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-    margin-top: 20px;padding-bottom: 10px;margin-left: 40px;width: 1280px">
-      <h3 style="margin-left: 20px">库存信息</h3>
-      <div style="border-top: 1px solid #eeeeee;padding-top: 20px;padding-left: 30px">
-    <el-table v-loading="loading" :data="goodList" style="margin-top: 50px" @selection-change="handleSelectionChange">
-      <el-table-column fixed label="序号" prop="g_code" width="120" />
-      <el-table-column :show-overflow-tooltip="true" fixed label="货品名称" prop="g_name" width="150" />
-      <el-table-column align="center"  fixed label="状态" width="100">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.status"
-            :active-value="0"
-            :inactive-value="1"
-            @change="handleStatusChange(scope.row)"
-          ></el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" label="货品类型" prop="gt_name" width="150" />
-      <el-table-column label="规格型号" prop="spec_code" width="100" />
+<!--    <el-row :gutter="20" style="background-color: white;border-radius: 5px;box-shadow: 2px 2px 5px rgba(0,0,0,0.2);-->
+<!--    margin-top: 20px;padding-bottom: 10px;margin-left: 40px;width: 1280px">-->
+<!--      <h3 style="margin-left: 20px">库存信息</h3>-->
+<!--      <div style="border-top: 1px solid #eeeeee;padding-top: 20px;padding-left: 30px">-->
+<!--    <el-table v-loading="loading" :data="goodList" style="margin-top: 50px" @selection-change="handleSelectionChange">-->
+<!--      <el-table-column fixed label="序号" prop="g_code" width="120" />-->
+<!--      <el-table-column :show-overflow-tooltip="true" fixed label="货品名称" prop="g_name" width="150" />-->
+<!--      <el-table-column align="center"  fixed label="状态" width="100">-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-switch-->
+<!--            v-model="scope.row.status"-->
+<!--            :active-value="0"-->
+<!--            :inactive-value="1"-->
+<!--            @change="handleStatusChange(scope.row)"-->
+<!--          ></el-switch>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column :show-overflow-tooltip="true" label="货品类型" prop="gt_name" width="150" />-->
+<!--      <el-table-column label="规格型号" prop="spec_code" width="100" />-->
 
-    </el-table>
-      </div>
-    </el-row>
+<!--    </el-table>-->
+<!--      </div>-->
+<!--    </el-row>-->
 
 
     <el-row :gutter="20" style="background-color: white;border-radius: 5px;box-shadow: 2px 2px 5px rgba(0,0,0,0.2);

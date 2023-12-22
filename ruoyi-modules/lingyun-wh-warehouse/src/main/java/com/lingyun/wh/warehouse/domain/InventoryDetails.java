@@ -56,6 +56,12 @@ public class InventoryDetails extends BaseEntity
     /*货品*/
     private Goods goods;
 
+
+
+    /*库位*/
+    private StorageLocation storageLocation;
+
+
     public Stock getStock() {
         return stock;
     }
@@ -165,6 +171,14 @@ public class InventoryDetails extends BaseEntity
     public Boolean getIsDelete()
     {
         return isDelete;
+    }
+
+    public StorageLocation getStorageLocation() {
+        return storageLocation;
+    }
+
+    public void setStorageLocation(StorageLocation storageLocation) {
+        this.storageLocation = storageLocation;
     }
 
     @Override

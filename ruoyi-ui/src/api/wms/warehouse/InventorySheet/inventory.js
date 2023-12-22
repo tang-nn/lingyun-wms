@@ -9,6 +9,14 @@ export function listInventory(query) {
   })
 }
 
+export function listInventoryByIsId(query) {
+  return request({
+    url: '/wms/wh/inventory/listByIsId',
+    method: 'get',
+    params: query
+  })
+}
+
 //根据仓库查询下面的盘点货品
 export function listGoodByWid(query) {
   return request({

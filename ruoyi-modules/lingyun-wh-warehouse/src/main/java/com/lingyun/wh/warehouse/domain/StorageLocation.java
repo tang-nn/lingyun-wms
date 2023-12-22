@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 
+import java.util.Objects;
+
 /**
  * 库位信息对象 wh_storage_location
  * 
@@ -157,5 +159,18 @@ public class StorageLocation extends BaseEntity
                 ", remark='" + remark + '\'' +
                 ", isDelete='" + isDelete + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StorageLocation that = (StorageLocation) o;
+        return Objects.equals(slId, that.slId) && Objects.equals(wId, that.wId) && Objects.equals(slCode, that.slCode) && Objects.equals(slName, that.slName) && Objects.equals(locationCapacity, that.locationCapacity) && Objects.equals(positionManager, that.positionManager) && Objects.equals(sort, that.sort) && Objects.equals(status, that.status) && Objects.equals(remark, that.remark) && Objects.equals(isDelete, that.isDelete);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(slId, wId, slCode, slName, locationCapacity, positionManager, sort, status, remark, isDelete);
     }
 }

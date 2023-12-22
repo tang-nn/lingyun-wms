@@ -1,19 +1,27 @@
 package com.lingyun.wh.goods.service.impl;
 
 import com.lingyun.wh.goods.api.domain.Goods;
+import com.lingyun.wh.goods.api.domain.WarningInfo;
 import com.lingyun.wh.goods.mapper.GoodsMapper;
 import com.lingyun.wh.goods.service.IGoodsService;
+import com.ruoyi.common.core.constant.OrderType;
+import com.ruoyi.common.core.constant.SecurityConstants;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanValidators;
+import com.ruoyi.common.security.utils.SecurityUtils;
+import com.ruoyi.system.api.RemoteEncodeRuleService;
 import com.ruoyi.system.service.impl.SysUserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Validator;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +36,10 @@ import java.util.Map;
  */
 @Service
 public class GoodsServiceImpl implements IGoodsService {
-    private static final Logger log = LoggerFactory.getLogger(SysUserServiceImpl.class);
-//    @Autowired
-//    private ISysConfigService configService;
+    private static final Logger log = LoggerFactory.getLogger(GoodsServiceImpl.class);
+    @Autowired
+    private RemoteEncodeRuleService remoteEncodeRuleService;
+
     @Autowired
     protected Validator validator;
     @Autowired
@@ -90,10 +99,44 @@ public class GoodsServiceImpl implements IGoodsService {
      * @return 结果
      */
     @Override
+
+    @Transactional(rollbackFor = SQLException.class)
     public int insertGoods(Goods goods)
     {
-        goods.setCreateTime(DateUtils.getNowDate());
-        return goodsMapper.insertGoods(goods);
+        Date nowDate = DateUtils.getNowDate();
+        String uid = SecurityUtils.getUserId().toString();
+
+        goods.setCreateTime(nowDate);
+        goods.setCreateBy(uid);
+        goods.setUpdateTime(nowDate);
+        goods.setUpdateBy(uid);
+        R<String[]> res = remoteEncodeRuleService.genSpecifyEncoding(OrderType.PRODUCT_INFO, 1, SecurityConstants.INNER);
+        System.out.println("货品编码获取 res: " + res);
+        if (res == null || res.getCode() != 200) {
+            log.error("insertGoodsType 货品编码获取失败");
+            throw new RuntimeException("货品编码获取失败");
+        } else {
+            goods.setGCode(res.getData()[0]);
+        }
+
+        System.out.println("oooooooooo"+goods);
+        WarningInfo w=new WarningInfo();
+        w.setwDays(goods.getwDays());
+        System.out.println("qqqqqq"+w);
+        int ware_id = goodsMapper.insertWarning(w);
+        System.out.println("ware44444444"+w.getWareId());
+
+        goods.setWarningId(String.valueOf(w.getWareId()));
+        int rows = goodsMapper.insertGoods(goods);
+        if (rows > 0) {
+            R<String> r = remoteEncodeRuleService.increaseCurrentSerialNumber(OrderType.PRODUCT_INFO, 1, SecurityConstants.INNER);
+            System.out.println("流水号迭代 Res: "+ r);
+            if (r == null || r.getCode() != 200) {
+                log.error("insertWareHouse 流水号迭代失败");
+                throw new RuntimeException("货品数据插入失败");
+            }
+        }
+        return rows;
     }
 
     /**

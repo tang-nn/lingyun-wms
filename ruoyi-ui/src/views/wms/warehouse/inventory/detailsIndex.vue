@@ -10,7 +10,7 @@
                   @click="" v-hasPermi="['gd:good:add']" >入库</el-button>
       <el-button  style="float:right;margin-right: 5px;margin-top: 12px;padding-right: 16px"
                   plain size="small"
-                  @click="handleDelete"  v-hasPermi="['wh:house:delete']">出库</el-button>
+                  @click=""  v-hasPermi="['wh:house:delete']">出库</el-button>
     </div>
       <div style="padding-top: 30px;padding-left: 30px">
         <el-form ref="elForm" size="medium" label-width="95px" style="margin-top: 14px">
@@ -37,10 +37,10 @@
             </el-col>
           </el-row>
 
-          <el-row style="width:100px;font-size:18px;font-weight:bolder;float: right;margin-right:-3px;margin-top: -5px;color: #606266">
+          <el-row style="width:175px;font-size:23px;font-weight:bolder;float: right;margin-right:-67px;margin-top: -5px;color: #606266">
             <el-col :span="10">
               <template>
-                {{ InventoryDetails[0].isResult === 'yes' ? '有盈亏' : '无盈亏' }}
+                {{  InventoryDetails[0]&&InventoryDetails[0].isResult === 'yes' ? '有盈亏' : '无盈亏' }}
               </template>
             </el-col>
           </el-row>
@@ -99,9 +99,12 @@
 
      <!-- 盘点明细小窗口-->
       <div  v-show="open" style="border-top: 1px solid #eeeeee;padding-top: 40px;padding-left: 30px;margin-top: 74px">
-        <el-table style="margin-top: 20px" :data="InventoryDetails[0]&&InventoryDetails[0].inventoryDetailsList"  max-height="520px" @selection-change="handleSelectionChange">
+        <el-table style="margin-top: 20px" :data="InventoryDetails[0]&&InventoryDetails[0].inventoryDetailsList"
+                  max-height="520px"
+                  :row-class-name="operateIndex"
+                  @selection-change="handleSelectionChange">
           <el-table-column type="selection" fixed="left" width="55" align="center" />
-          <el-table-column label="序号"  fixed="left" prop="isId" width="120" />
+          <el-table-column label="序号"  fixed="left" prop="index" width="120" />
           <el-table-column label="货品名称" fixed="left" prop="goods.gname"  width="100" />
           <el-table-column label="货品编号"  fixed="left" align="center" prop="goods.gcode" />
           <el-table-column label="规格型号" align="center" prop="goods.specCode" />
@@ -116,22 +119,19 @@
               {{ handlerCountAmount(scope.row) }}
             </template>
           </el-table-column>
-          <el-table-column label="盘点仓位" align="center" prop="" width="100px">
-<!--            <template slot-scope="scope">-->
-<!--              <el-input v-model="scope.row.sl_name" readonly ></el-input>-->
-<!--            </template>-->
+          <el-table-column label="盘点仓位" align="center" prop="storageLocation.slName" width="100px">
           </el-table-column>
           <el-table-column label="盘点数量" align="center" width="100px">
             <template slot-scope="scope">
-              <el-input  v-model="scope.row.countQuantity" ></el-input>
+              <span>{{ scope.row.countQuantity }}</span>
             </template>
           </el-table-column>
           <el-table-column label="盘点金额" align="center" prop="countAmount"/>
-          <el-table-column label="盈亏数量" align="center" prop="">
-            <template slot-scope="scope">
-              {{ profitLossQuantity(scope.row.countQuantity, scope.row.stock.itemQuantity) }}
-            </template>
-          </el-table-column>
+            <el-table-column label="盈亏数量" align="center">
+              <template slot-scope="scope" :style="{color: profitLossQuantity===0 ? 'black' : (profitLossQuantity >0 ? 'green' : 'red')}">
+                {{ profitLossQuantity(scope.row.countQuantity, scope.row.stock.itemQuantity) }}
+              </template>
+            </el-table-column>
 
           <el-table-column label="盘点状态"  align="center" prop="isStatus" width="100px">
             <template slot-scope="scope">
@@ -141,7 +141,7 @@
           <el-table-column label="入库单价" align="center"  prop="goods.wrPrice" width="100px"/>
           <el-table-column label="盈亏金额" align="center" prop="">
             <template slot-scope="scope">
-              {{ profitLossAmount(scope.row.countQuantity, scope.row.goods.wrPrice) }}
+              {{ profitLossAmount(scope.row.profitLossQuantity, scope.row.goods.wrPrice) }}
             </template>
           </el-table-column>
           <el-table-column label="备注" align="center" prop="remark" width="140px"/>
@@ -174,7 +174,9 @@
 
       <!--      出库记录-->
       <div  v-show="openOut" style="border-top: 1px solid #eeeeee;padding-top: 40px;padding-left: 30px;margin-top: 74px">
-        <el-table style="margin-top: 20px"  v-loading="loading"  max-height="520px" @selection-change="handleSelectionChange">
+        <el-table style="margin-top: 20px"  v-loading="loading"  max-height="520px"
+                  @selection-change="handleSelectionChange"
+                 >
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="序号"  prop="sl_id" width="120" />
           <el-table-column label="出库单号"  prop="sl_code" :show-overflow-tooltip="true" width="150" />
@@ -250,13 +252,9 @@
 </template>
 <script>
 
-import { delWarehouse, listStorage} from "@/api/wms/warehouse/warehouse.js";
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import {listInventory} from "@/api/wms/warehouse/InventorySheet/inventory";
 
 export default {
-  components: {Treeselect},
   dicts: ['wh_status','sys_normal_disable','pd_status_check','g_unit_goods'],
   data() {
     return {
@@ -275,13 +273,10 @@ export default {
       isId:undefined,
       //盘点单详情数据
       InventoryDetails:[],
-      // // 盘点明细表格数据
-      // detailsList:[],
       //操作记录表格数据
       operateList:[],
       // 总条数
       total: 0,
-      sl_names:[],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -299,8 +294,6 @@ export default {
   },
   watch: {},
   created() {
-    // this.locations();
-
   },
   mounted() {
     this.isId=this.$route.params.isId;
@@ -328,13 +321,12 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.sl_id)
-      this.sl_names=selection.map(item => item.sl_name)
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
     //关闭窗口
     cancle(){
-      this.$router.push(`/warehousemanager`);
+      this.$router.push(`/InventorySheet`);
     },
     // //查询仓库下的所有库位
     // getStorageList(){
@@ -361,8 +353,8 @@ export default {
 
     //账面金额
     handlerCountAmount(row){
-      let wr = row.goods.wrPrice || 0;
-      let iq = row.stock.itemQuantity || 0;
+      let wr = row.goods.wrPrice;
+      let iq = row.stock.itemQuantity;
       let ca = wr * iq;
       row.ca = ca;
       return ca.toFixed(2);
@@ -370,25 +362,17 @@ export default {
 
     //盈亏数量
     profitLossQuantity(countQuantity, itemQuantity) {
-      return countQuantity - itemQuantity || 0;
+      return countQuantity - itemQuantity ;
     },
     //盈亏金额
-    profitLossAmount(profitlossQuantity,wrPrice){
-      return profitlossQuantity||0 * wrPrice||0;
+    profitLossAmount(profitLossQuantity,wrPrice){
+      console.log(profitLossQuantity+",,,,"+wrPrice);
+      return profitLossQuantity * wrPrice;
     },
 
 
 
-    /** 删除按钮操作 */
-    handleDelete() {
-      const w_ids = this.w_id;
-      this.$modal.confirm('是否确认删除仓库编号为"' + w_ids + '"的数据项？').then(function() {
-        return delWarehouse(w_ids);
-      }).then(() => {
-        this.$modal.msgSuccess("删除成功");
-        this.$router.push(`/warehousemanager`);
-      }).catch(() => {});
-    },
+
     //盘点明细
     details(){
       this.open = true;
