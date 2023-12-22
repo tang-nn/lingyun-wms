@@ -51,7 +51,7 @@
             <result column="g_code" property="gCode"/>
             <result column="spec_code" property="specCode"/>
         </association>
-        <association property="stock" javaType="com.lingyun.wh.warehouse.domain.Stock">
+        <association property="stock" javaType="com.lingyun.wh.goods.api.domain.Stock">
             <result column="unit" property="unit"/>
             <result column="item_quantity" property="itemQuantity"/>
         </association>

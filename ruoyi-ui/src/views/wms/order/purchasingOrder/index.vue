@@ -216,7 +216,7 @@
     <el-dialog :visible.sync="reviewFormVisible" title="订单审核">
       <el-form :model="reviewForm">
         <el-form-item label="审核结果">
-          <el-radio v-model="reviewForm.status" label="pending_review">通过</el-radio>
+          <el-radio v-model="reviewForm.status" label="not_in_stock">通过</el-radio>
           <el-radio v-model="reviewForm.status" label="turn_down">驳回</el-radio>
         </el-form-item>
         <el-form-item label="审核意见">
@@ -395,6 +395,7 @@ export default {
       if (code === 200) {
         this.$message.success("审核成功！");
         await this.getList();
+        this.reviewFormVisible = false;
       } else {
         console.log("审核失败信息：", msg)
         this.$message.error("审核失败！");

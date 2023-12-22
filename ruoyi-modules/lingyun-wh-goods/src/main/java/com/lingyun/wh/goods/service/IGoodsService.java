@@ -3,6 +3,7 @@ package com.lingyun.wh.goods.service;
 
 import com.lingyun.wh.goods.api.domain.Goods;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +26,10 @@ public interface IGoodsService {
     /**
      * 根据多个 ID 获取多个货品信息详细信息
      * @param ids 货品 ID 数组
+     * @author Tang
      * @return
      */
-    List<HashMap<String, Object>> queryGoodsByIds(String[] ids);
+    ArrayList<Goods> queryGoodsByIds(String[] ids);
 
     /**
      * 根据商品名称查询是否存在

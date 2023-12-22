@@ -9,7 +9,7 @@ export function TypesList(){
 }
 
 
-// 查询仓库列表
+// 查询仓库列表，主要用于下拉框
 export function listsWarehouse(query) {
   return request({
     url: '/wms/wh/warehouse/lists',

@@ -32,7 +32,7 @@ public class AnnexController extends BaseController {
      */
     @RequiresPermissions("annex:annex:list")
     @GetMapping("/list")
-    public R<Object> list(@RequestParam("type") String type, @RequestParam("formId") String formId, @RequestParam(value = "content", required = false, defaultValue = "") String content) {
+    public R<List<Annex>> list(@RequestParam("type") String type, @RequestParam("formId") String formId, @RequestParam(value = "content", required = false, defaultValue = "") String content) {
         // startPage();
         List<Annex> list = annexService.selectAnnexList(new Annex(type, formId, content));
         list.forEach(System.out::println);

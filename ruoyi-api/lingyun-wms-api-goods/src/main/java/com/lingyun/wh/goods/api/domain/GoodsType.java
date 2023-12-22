@@ -1,5 +1,6 @@
 package com.lingyun.wh.goods.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,6 +14,7 @@ import java.util.List;
  * @author Lijin
  * @date 2023-11-21
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GoodsType extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -53,6 +55,8 @@ public class GoodsType extends BaseEntity
     private Date updateTime;
     /** 逻辑删除，0：存在；1：已删除，不存在 */
     private Boolean isDelete;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<GoodsType> children;
 
     public String getCreater() {

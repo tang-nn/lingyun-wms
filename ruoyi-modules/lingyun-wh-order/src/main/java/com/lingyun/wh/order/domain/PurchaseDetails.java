@@ -50,8 +50,8 @@ public class PurchaseDetails extends BaseEntity {
     /**
      * 入库数量
      */
-    @Excel(name = "入库数量")
-    private BigDecimal quantityInStock;
+    @Excel(name = "已入库数量")
+    private BigDecimal receivedQuantity;
     /**
      * 进货数量
      */
@@ -78,25 +78,25 @@ public class PurchaseDetails extends BaseEntity {
     public PurchaseDetails() {
     }
 
-    public PurchaseDetails(String pdId, String poId, String goodsId, String specCode, String unit, BigDecimal quantityInStock, BigDecimal purchaseQuantity, BigDecimal puPrice, Boolean isDelete, Goods goods) {
+    public PurchaseDetails(String pdId, String poId, String goodsId, String specCode, String unit, BigDecimal receivedQuantity, BigDecimal purchaseQuantity, BigDecimal puPrice, Boolean isDelete, Goods goods) {
         this.pdId = pdId;
         this.poId = poId;
         this.goodsId = goodsId;
         this.specCode = specCode;
         this.unit = unit;
-        this.quantityInStock = quantityInStock;
+        this.receivedQuantity = receivedQuantity;
         this.purchaseQuantity = purchaseQuantity;
         this.puPrice = puPrice;
         this.isDelete = isDelete;
         this.goods = goods;
     }
 
-    public BigDecimal getQuantityInStock() {
-        return quantityInStock;
+    public BigDecimal getReceivedQuantity() {
+        return receivedQuantity;
     }
 
-    public void setQuantityInStock(BigDecimal quantityInStock) {
-        this.quantityInStock = quantityInStock;
+    public void setReceivedQuantity(BigDecimal receivedQuantity) {
+        this.receivedQuantity = receivedQuantity;
     }
 
     public Boolean getDelete() {
@@ -181,21 +181,17 @@ public class PurchaseDetails extends BaseEntity {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("pdId", getPdId())
-                .append("poId", getPoId())
-                .append("goodsId", getGoodsId())
-                .append("specCode", getSpecCode())
-                .append("unit", getUnit())
-                .append("purchaseQuantity", getPurchaseQuantity())
-                .append("puPrice", getPuPrice())
-                .append("remark", getRemark())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .append("isDelete", getIsDelete())
-                .append("goods", getGoods())
-                .toString();
+        return "PurchaseDetails{" +
+                "pdId='" + pdId + '\'' +
+                ", poId='" + poId + '\'' +
+                ", goodsId='" + goodsId + '\'' +
+                ", specCode='" + specCode + '\'' +
+                ", unit='" + unit + '\'' +
+                ", receivedQuantity=" + receivedQuantity +
+                ", purchaseQuantity=" + purchaseQuantity +
+                ", puPrice=" + puPrice +
+                ", isDelete=" + isDelete +
+                ", goods=" + goods +
+                '}';
     }
 }

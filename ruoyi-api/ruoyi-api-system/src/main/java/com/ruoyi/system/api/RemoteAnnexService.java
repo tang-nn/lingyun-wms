@@ -24,7 +24,7 @@ public interface RemoteAnnexService {
     R<?> add(@RequestBody List<Annex> annexes);
 
     @GetMapping("/whcomm/annex/list")
-    R<Object> list(@RequestParam("type") String type, @RequestParam("formId") String formId, @RequestParam(value = "content", required = false, defaultValue = "") String content);
+    R<List<Annex>> list(@RequestParam("type") String type, @RequestParam("formId") String formId, @RequestParam(value = "content", required = false, defaultValue = "") String content);
 
     @DeleteMapping("/whcomm/annex/rm")
     AjaxResult remove(@RequestParam("formId") String[] formId, @RequestParam("type") String type);

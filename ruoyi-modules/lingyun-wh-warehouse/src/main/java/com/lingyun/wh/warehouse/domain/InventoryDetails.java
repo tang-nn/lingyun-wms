@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import com.lingyun.wh.goods.api.domain.Stock;
 
 /**
  * 盘点明细对象 wh_is_details
@@ -55,6 +56,9 @@ public class InventoryDetails extends BaseEntity
 
     /*货品*/
     private Goods goods;
+    /** 0：存在；1：已删除，不存在 */
+    @Excel(name = "0：存在；1：已删除，不存在")
+    private Boolean isDelete;
 
     public Stock getStock() {
         return stock;
@@ -80,40 +84,34 @@ public class InventoryDetails extends BaseEntity
         isDelete = delete;
     }
 
-    /** 0：存在；1：已删除，不存在 */
-    @Excel(name = "0：存在；1：已删除，不存在")
-    private Boolean isDelete;
+    public String getIsdId()
+    {
+        return isdId;
+    }
 
     public void setIsdId(String isdId)
     {
         this.isdId = isdId;
     }
 
-    public String getIsdId()
-    {
-        return isdId;
-    }
-    public void setIsId(String isId)
-    {
-        this.isId = isId;
-    }
-
     public String getIsId()
     {
         return isId;
     }
-    public void setIsCode(String isCode)
+
+    public void setIsId(String isId)
     {
-        this.isCode = isCode;
+        this.isId = isId;
     }
 
     public String getIsCode()
     {
         return isCode;
     }
-    public void setsId(String sId)
+
+    public void setIsCode(String isCode)
     {
-        this.sId = sId;
+        this.isCode = isCode;
     }
 
     public String getsId()
@@ -121,50 +119,59 @@ public class InventoryDetails extends BaseEntity
         return sId;
     }
 
-    public void setCountQuantity(BigDecimal countQuantity)
+    public void setsId(String sId)
     {
-        this.countQuantity = countQuantity;
+        this.sId = sId;
     }
 
     public BigDecimal getCountQuantity()
     {
         return countQuantity;
     }
-    public void setProfitLossQuantity(Integer profitLossQuantity)
+
+    public void setCountQuantity(BigDecimal countQuantity)
     {
-        this.profitLossQuantity = profitLossQuantity;
+        this.countQuantity = countQuantity;
     }
 
     public Integer getProfitLossQuantity()
     {
         return profitLossQuantity;
     }
-    public void setIsStatus(Integer isStatus)
+
+    public void setProfitLossQuantity(Integer profitLossQuantity)
     {
-        this.isStatus = isStatus;
+        this.profitLossQuantity = profitLossQuantity;
     }
 
     public Integer getIsStatus()
     {
         return isStatus;
     }
-    public void setCountAmount(BigDecimal countAmount)
+
+    public void setIsStatus(Integer isStatus)
     {
-        this.countAmount = countAmount;
+        this.isStatus = isStatus;
     }
 
     public BigDecimal getCountAmount()
     {
         return countAmount;
     }
-    public void setIsDelete(Boolean isDelete)
+
+    public void setCountAmount(BigDecimal countAmount)
     {
-        this.isDelete = isDelete;
+        this.countAmount = countAmount;
     }
 
     public Boolean getIsDelete()
     {
         return isDelete;
+    }
+
+    public void setIsDelete(Boolean isDelete)
+    {
+        this.isDelete = isDelete;
     }
 
     @Override

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.service.IStorageLocationService;
 import com.lingyun.wh.warehouse.service.IWareHouseService;
+import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.log.annotation.Log;
@@ -42,7 +43,21 @@ public class StorageLocationController extends BaseController
         List<StorageLocation> list = storageLocationService.selectStorageLocationList(storageLocation);
         return getDataTable(list);
     }
-
+    /**
+     * 查询某个仓库下的库位列表 - 用于下拉框
+     */
+    @RequiresPermissions("system:location:list")
+    @GetMapping("/list/wid/{wid}")
+    public AjaxResult listByWid(@PathVariable String wid)
+    {
+        if(!StringUtils.isNumericSpace(wid)){
+            return AjaxResult.error("仓库编号错误");
+        }
+        StorageLocation sl = new StorageLocation();
+        sl.setwId(wid);
+        List<StorageLocation> list = storageLocationService.selectStorageLocationList(sl);
+        return success(list);
+    }
     /**
      * 导出库位信息列表
      */

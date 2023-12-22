@@ -1,17 +1,22 @@
 package com.lingyun.wh.warehouse.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.lingyun.wh.goods.api.domain.Goods;
-import com.ruoyi.common.core.annotation.Excel;
-import com.ruoyi.common.core.web.domain.BaseEntity;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.util.JacksonFeatureSet;
+import com.lingyun.wh.goods.api.domain.Goods;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import com.ruoyi.common.core.annotation.Excel;
+import com.ruoyi.common.core.web.domain.BaseEntity;
+
 /**
- * @Author : Tang
- * @Description : 入库管理明细对象 wh_im_details
- * @CreateDate : 2023/12/12 13:01
+ * 入库管理明细对象 wh_inbound_details
+ *
+ * @author Tang
+ * @date 2023-12-18
  */
 public class InboundDetails extends BaseEntity {
     private static final long serialVersionUID = 1L;
@@ -19,24 +24,26 @@ public class InboundDetails extends BaseEntity {
     /**
      * 入库明细单ID
      */
-    private String imdId;
+    private String indId;
 
     /**
      * 入库ID
      */
     @Excel(name = "入库ID")
-    private String inId;
+    private String inid;
 
     /**
      * 进货明细 ID 或销售退货明细 ID
      */
     @Excel(name = "进货明细 ID 或销售退货明细 ID")
-    private String odId;
+    private String odid;
 
     /**
      * 货品 ID
      */
+    @Excel(name = "货品 ID")
     private String goodsId;
+
     /**
      * 单位
      */
@@ -44,22 +51,40 @@ public class InboundDetails extends BaseEntity {
     private String unit;
 
     /**
-     * 已入库数量，已废弃
-     */
-    @Deprecated
-    private BigDecimal quantityInStock;
-
-    /**
      * 入库仓位
      */
     @Excel(name = "入库仓位")
-    private String slId;
+    private String slid;
+
+    /**
+     * 库存数量，入库货品在库存的数量
+     */
+    private BigDecimal stockQuantity;
+
+    /**
+     * 已入库入库数量
+     */
+    @Excel(name = "已入库入库数量")
+    private BigDecimal receivedQuantity;
+
+    /**
+     * 未入库数量
+     */
+    @Excel(name = "未入库数量")
+    private BigDecimal unreceivedQuantity;
 
     /**
      * 本次入库数量
      */
     @Excel(name = "本次入库数量")
-    private BigDecimal thisQuantity;
+    private BigDecimal quantityInbound;
+
+    /**
+     * 进货单价
+     */
+    @Excel(name = "进货单价")
+    private BigDecimal puPrice;
+
 
     /**
      * 生产日期
@@ -75,29 +100,10 @@ public class InboundDetails extends BaseEntity {
     private String batchNumber;
 
     /**
-     * 0：存在；1：已删除，不存在
+     * 入库货品对象
      */
-    private Boolean isDelete;
-    /**
-     * 入库货品信息
-     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Goods goods;
-
-    public String getGoodsId() {
-        return goodsId;
-    }
-
-    public void setGoodsId(String goodsId) {
-        this.goodsId = goodsId;
-    }
-
-    public Boolean getDelete() {
-        return isDelete;
-    }
-
-    public void setDelete(Boolean delete) {
-        isDelete = delete;
-    }
 
     public Goods getGoods() {
         return goods;
@@ -107,28 +113,36 @@ public class InboundDetails extends BaseEntity {
         this.goods = goods;
     }
 
-    public String getImdId() {
-        return imdId;
+    public String getIndId() {
+        return indId;
     }
 
-    public void setImdId(String imdId) {
-        this.imdId = imdId;
+    public void setIndId(String indId) {
+        this.indId = indId;
     }
 
-    public String getInId() {
-        return inId;
+    public String getInid() {
+        return inid;
     }
 
-    public void setInId(String inId) {
-        this.inId = inId;
+    public void setInid(String inid) {
+        this.inid = inid;
     }
 
-    public String getOdId() {
-        return odId;
+    public String getOdid() {
+        return odid;
     }
 
-    public void setOdId(String odId) {
-        this.odId = odId;
+    public void setOdid(String odid) {
+        this.odid = odid;
+    }
+
+    public String getGoodsId() {
+        return goodsId;
+    }
+
+    public void setGoodsId(String goodsId) {
+        this.goodsId = goodsId;
     }
 
     public String getUnit() {
@@ -139,28 +153,55 @@ public class InboundDetails extends BaseEntity {
         this.unit = unit;
     }
 
-    public BigDecimal getQuantityInStock() {
-        return quantityInStock;
+    public String getSlid() {
+        return slid;
     }
 
-    public void setQuantityInStock(BigDecimal quantityInStock) {
-        this.quantityInStock = quantityInStock;
+    public void setSlid(String slid) {
+        this.slid = slid;
     }
 
-    public String getSlId() {
-        return slId;
+    public BigDecimal getStockQuantity() {
+        return stockQuantity;
     }
 
-    public void setSlId(String slId) {
-        this.slId = slId;
+    public void setStockQuantity(BigDecimal stockQuantity) {
+        if (stockQuantity == null) {
+            stockQuantity = BigDecimal.ZERO;
+        }
+        this.stockQuantity = stockQuantity;
     }
 
-    public BigDecimal getThisQuantity() {
-        return thisQuantity;
+    public BigDecimal getReceivedQuantity() {
+        return receivedQuantity;
     }
 
-    public void setThisQuantity(BigDecimal thisQuantity) {
-        this.thisQuantity = thisQuantity;
+    public void setReceivedQuantity(BigDecimal receivedQuantity) {
+        this.receivedQuantity = receivedQuantity;
+    }
+
+    public BigDecimal getUnreceivedQuantity() {
+        return unreceivedQuantity;
+    }
+
+    public void setUnreceivedQuantity(BigDecimal unreceivedQuantity) {
+        this.unreceivedQuantity = unreceivedQuantity;
+    }
+
+    public BigDecimal getQuantityInbound() {
+        return quantityInbound;
+    }
+
+    public void setQuantityInbound(BigDecimal quantityInbound) {
+        this.quantityInbound = quantityInbound;
+    }
+
+    public BigDecimal getPuPrice() {
+        return puPrice;
+    }
+
+    public void setPuPrice(BigDecimal puPrice) {
+        this.puPrice = puPrice;
     }
 
     public Date getProductionDate() {
@@ -179,27 +220,22 @@ public class InboundDetails extends BaseEntity {
         this.batchNumber = batchNumber;
     }
 
-    public Boolean getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Boolean isDelete) {
-        this.isDelete = isDelete;
-    }
-
     @Override
     public String toString() {
-        return "InventoryDetails{" +
-                "imdId='" + imdId + '\'' +
-                ", inId='" + inId + '\'' +
-                ", odId='" + odId + '\'' +
+        return "InboundDetails{" +
+                "indId='" + indId + '\'' +
+                ", inid='" + inid + '\'' +
+                ", odid='" + odid + '\'' +
                 ", goodsId='" + goodsId + '\'' +
                 ", unit='" + unit + '\'' +
-                ", slId='" + slId + '\'' +
-                ", thisQuantity=" + thisQuantity +
+                ", slid='" + slid + '\'' +
+                ", stockQuantity=" + stockQuantity +
+                ", receivedQuantity=" + receivedQuantity +
+                ", unreceivedQuantity=" + unreceivedQuantity +
+                ", quantityInbound=" + quantityInbound +
+                ", puPrice=" + puPrice +
                 ", productionDate=" + productionDate +
                 ", batchNumber='" + batchNumber + '\'' +
-                ", isDelete=" + isDelete +
                 ", goods=" + goods +
                 '}';
     }

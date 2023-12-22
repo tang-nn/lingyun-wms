@@ -31,7 +31,7 @@ public class PurchaseDetailVo {
     /**
      * 入库数量
      */
-    private BigDecimal quantityInStock;
+    private BigDecimal receivedQuantity;
 
     /**
      * 进货数量
@@ -54,12 +54,12 @@ public class PurchaseDetailVo {
      */
     private String unit;
 
-    public BigDecimal getQuantityInStock() {
-        return quantityInStock;
+    public BigDecimal getReceivedQuantity() {
+        return receivedQuantity;
     }
 
-    public void setQuantityInStock(BigDecimal quantityInStock) {
-        this.quantityInStock = quantityInStock;
+    public void setReceivedQuantity(BigDecimal receivedQuantity) {
+        this.receivedQuantity = receivedQuantity;
     }
 
     public String getPdId() {

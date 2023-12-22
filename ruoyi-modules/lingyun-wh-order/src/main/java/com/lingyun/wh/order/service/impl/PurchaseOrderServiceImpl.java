@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.lingyun.wh.goods.api.RemoteGoodsService;
 import com.lingyun.wh.goods.api.domain.Goods;
 import com.lingyun.wh.order.domain.PurchaseDetails;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @Author : Tang
@@ -59,54 +61,35 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
      * @return 进货订单
      */
     @Override
-    public JSONObject selectPurchaseOrderByPoId(String poId) {
+    public PurchaseOrder selectPurchaseOrderByPoId(String poId) {
         PurchaseOrder purchaseOrder = purchaseOrderMapper.selectPurchaseOrderByPoId(poId);
-        JSONObject po = JSONObject.from(purchaseOrder);
+        // JSONObject po = JSONObject.from(purchaseOrder);
         List<PurchaseDetails> detailsList = purchaseOrder.getPurchaseDetailsList();
         String[] ids = detailsList.stream().map(PurchaseDetails::getGoodsId).toArray(String[]::new);
         if (ids.length > 0) {
-            AjaxResult infoByIds = remoteGoodsService.getInfoByIds(ids);
-            System.out.println("获取货物数据：" + infoByIds);
-            if ("200".equals(String.valueOf(infoByIds.get(AjaxResult.CODE_TAG)))) {
-                // List<Goods> goodsList = JSONArray.from(infoByIds.get(AjaxResult.DATA_TAG)).toList(Goods.class);
-                // detailsList.forEach(e -> {
-                //     System.out.println("e.getGoodsId(): " + e.getGoodsId());
-                //     goodsList.forEach(g -> {
-                //         System.out.println("g.getGId(): " + g.getGId());
-                //         if (e.getGoodsId().equals(g.getGId())) {
-                //             System.out.println("进货订单 ID：" + e.getPoId() + "商品id：" + g.getGId() + "商品名称：" + g.getGName());
-                //             e.setGoods(g);
-                //         }
-                //     });
-                // });
-                JSONArray goodsList = JSONArray.from(infoByIds.get(AjaxResult.DATA_TAG));
-                JSONArray dl = JSONArray.from(detailsList);
-                dl.forEach(e -> {
-                    JSONObject d = (JSONObject) e;
-                    goodsList.forEach(i -> {
-                        JSONObject g = (JSONObject) i;
-                        // System.out.println("d.get('goodsId'): " + d.get("goodsId"));
-                        // System.out.println("g.get('g_id'): " + g.get("g_id"));
-                        if (d.get("goodsId").equals(String.valueOf(g.get("g_id")))) {
-                            d.put("goods", g);
-                            // System.out.println("g: " + g);
-                        }
-                    });
-                });
-                po.put("purchaseDetailsList", dl);
-                System.out.println("goodsList: " + goodsList);
-                System.out.println("dl: " + dl);
+            R<ArrayList<Goods>> res = remoteGoodsService.getInfoByIds(ids);
+            System.out.println("ids：" + ids);
+            System.out.println("获取货物库存数据：" + res);
+            if ("200".equals(String.valueOf(res.getCode()))) {
+                ArrayList<Goods> goodsList = res.getData();
+                if (goodsList != null && goodsList.size() > 0) {
+                    purchaseOrder.setPurchaseDetailsList(
+                            detailsList.stream().map(dl -> goodsList.stream().filter(g -> Objects.equals(dl.getGoodsId(), g.getGId())).map(g -> {
+                                dl.setGoods(g);
+                                return dl;
+                            }).collect(Collectors.toList())).flatMap(List::stream).collect(Collectors.toList())
+                    );
+                }
             }
         }
-        R<Object> list = remoteAnnexService.list(AttachmentType.PURCHASE_ANNEX, poId, null);
-        System.out.println("remoteAnnexService list: " + list);
+        R<List<Annex>> list = remoteAnnexService.list(AttachmentType.PURCHASE_ANNEX, poId, null);
+        // System.out.println("remoteAnnexService list: " + list);
         if (list != null && list.getCode() == 200) {
-            // purchaseOrder.setAnnexes((List<Annex>) list.getRows());
-            po.put("annexes", list.getData());
+            purchaseOrder.setAnnexes(list.getData());
         } else {
             log.error("进货 ID：{}，查询附件失败", poId);
         }
-        return po;
+        return purchaseOrder;
     }
 
     /**
@@ -246,6 +229,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
 
     /**
      * 审核进货
+     *
      * @param dto
      * @return
      */
@@ -260,7 +244,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         purchaseOrder.setUpdateBy(userId);
         purchaseOrder.setUpdateTime(nowDate);
         purchaseOrder.setPoId(dto.getPoId());
-        System.out.println("purchaseOrder = "+ purchaseOrder);
+        System.out.println("purchaseOrder = " + purchaseOrder);
         return purchaseOrderMapper.updatePurchaseOrder(purchaseOrder) > 0;
     }
 }

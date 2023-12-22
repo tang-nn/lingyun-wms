@@ -58,7 +58,7 @@
       <el-form-item>
         <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-<!--        <el-button icon="el-icon-search" plain size="mini" type="primary">高级搜索</el-button>-->
+        <!--        <el-button icon="el-icon-search" plain size="mini" type="primary">高级搜索</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -82,7 +82,7 @@
           plain
           size="mini"
           type="success"
-          @click="handleUpdate"
+          @click="handleUpdate(undefined)"
         >修改
         </el-button>
       </el-col>
@@ -153,7 +153,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="inventoryList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="inboundList" @selection-change="handleSelectionChange">
       <el-table-column align="center" fixed type="selection" width="50"/>
       <el-table-column align="center" fixed type="index" width="40">
         <template slot="header">
@@ -162,7 +162,7 @@
       </el-table-column>
       <el-table-column fixed label="入库单号" prop="inCode" width="100">
         <template slot-scope="scope">
-          <router-link :to="'/order/inventory/details/' + scope.row.inCode" class="link-type">
+          <router-link :to="'/inOutbound/inbound/details/' + scope.row.inid" class="link-type">
             <span>{{ scope.row.inCode }}</span>
           </router-link>
         </template>
@@ -183,8 +183,9 @@
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" align="center" label="仓库名称" prop="whName" width="100"/>
-      <el-table-column align="center" label="关联单号" prop="relatedOrder" width="80"/>
-      <el-table-column :formatter="handlerProductName" align="center" label="入库货品" prop="contactNumber" width="110"/>
+      <el-table-column align="center" label="关联单号" prop="relatedOrder" width="120"/>
+      <el-table-column :formatter="handlerProductName" :show-overflow-tooltip="true" align="center" label="入库货品"
+                       prop="contactNumber" width="110"/>
       <el-table-column align="center" label="经办人" prop="managerName" width="100"/>
       <el-table-column :formatter="handlerFormatPrice" align="center" label="入库金额" width="100"/>
       <el-table-column :show-overflow-tooltip="true" align="center" label="制单人" prop="creatorName"
@@ -204,7 +205,7 @@
             icon="el-icon-edit"
             size="mini"
             type="text"
-            @click="handleUpdate(scope.row)"
+            @click="handleUpdate(scope.row.inid)"
           >修改
           </el-button>
           <el-button
@@ -212,7 +213,7 @@
             icon="el-icon-delete"
             size="mini"
             type="text"
-            @click="handleDelete(scope.row)"
+            @click="handleDelete(scope.row.inid)"
           >删除
           </el-button>
         </template>
@@ -250,11 +251,11 @@
 
 <script>
 
-import { listInventory } from "@/api/wms/inboundOutbound/inboundMgt";
+import {listInbound} from "@/api/wms/inboundOutbound/inboundMgt";
 
 export default {
   name: "purchaseList",
-  dicts: ['incoming_type','inbound_status', 'inbound_status'],
+  dicts: ['incoming_type', 'inbound_status', 'inbound_status'],
   data() {
     return {
       // 遮罩层
@@ -272,7 +273,7 @@ export default {
       // 总条数
       total: 0,
       // 入库数据
-      inventoryList: [],
+      inboundList: [],
       // 仓库数据
       whList: [],
       // 弹出层标题
@@ -316,11 +317,10 @@ export default {
         params.beginTime = this.dateRange[0];
         params.endTime = this.dateRange[1];
       }
-      console.log("query params: ", params);
       ({
-        rows: this.inventoryList,
+        rows: this.inboundList,
         total: this.total
-      } = (await listInventory(params)));
+      } = (await listInbound(params)));
       this.loading = false;
     },
     /** 搜索按钮操作 */
@@ -339,7 +339,7 @@ export default {
     handlerFormatQuantity(row) {
       try {
         return row.purchaseDetails?.reduce((accumulator, currentValue) => {
-          return accumulator + (currentValue.purchaseQuantity || 0);
+          return accumulator + (currentValue.puQuantity || 0);
         }, 0);
       } catch (e) {
         return '计算出错';
@@ -348,30 +348,32 @@ export default {
     //  处理表格金额展示
     handlerFormatPrice(row) {
       try {
-        return row.inventoryDetailsList?.reduce((accumulator, currentValue) => {
-          return accumulator + (currentValue.goods.wrPrice || 0);
+        return row.inboundDetails?.reduce((accumulator, currentValue) => {
+          return accumulator + (currentValue.quantityInbound || 0) * (currentValue.puPrice || 0);
         }, 0);
       } catch (e) {
         return '计算出错';
       }
     },
-    //  处理表格货品展示
+    //  处理表格货品名称展示
     handlerProductName(row) {
       try {
-        let arr = row.inventoryDetailsList?.map((e) => (e?.goods?.gname || ''));
+        let arr = row.inboundDetails?.map((e) => (e?.goods?.gname || ''));
         return arr.slice(0, Boolean(arr?.slice(-1)[0]) ? arr.length : -1).join("，");
       } catch (e) {
         return '计算出错';
       }
     },
     handleAdd() {
-      this.$tab.openPage("添加进货单据", '/order/purchase/add');
+      this.$tab.openPage("添加入库单据", '/inOutbound/inbound/add');
     },
-    handleUpdate() {
-      this.$tab.openPage("编辑进货单据", '/order/purchase/edit/' + this.ids?.[0]);
+    handleUpdate(id) {
+      id = id || this.ids?.[0];
+      console.log("id: ", id)
+      this.$tab.openPage("编辑入库单据", '/inOutbound/inbound/edit/' + id);
     },
     handleDelete(row) {
-      const poIds = row.poId || this.ids;
+      const poIds = row.inid || this.ids;
       this.$confirm('是否删除 ' + poIds + ' 的进货订单？', '确认信息', {
         distinguishCancelAndClose: true,
         confirmButtonText: '确认删除',
@@ -407,7 +409,8 @@ export default {
       }
     },
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.poId);
+      this.ids = selection.map(item => item.inid);
+      console.log("this.ids: ", this.ids)
       this.single = selection.length !== 1;
       this.multiple = !selection.length;
     },

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.html.ObjectView;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -50,11 +51,29 @@ public class PurchaseOrderController extends BaseController {
      */
     @RequiresPermissions("order:purchase:list")
     @GetMapping("/list")
-    public TableDataInfo list(@RequestParam Map<String, Object> params) {
+    public TableDataInfo list(@RequestParam Map<String, Object> params, @RequestParam(required = false) List<String> status) {
         System.out.println("params: " + params);
         startPage();
+        if(status != null && status.size() > 0){
+            params.put("status", status);
+        }
         List<PurchaseOrderVo> list = purchaseOrderService.selectPurchaseOrderList(params);
         return getDataTable(list);
+    }
+
+    /**
+     * 查询进货订单列表 - 单个查询
+     */
+    @RequiresPermissions("order:purchase:list")
+    @GetMapping("/list/single")
+    public AjaxResult single(@RequestParam String id) {
+        if(!StringUtils.isAlphanumericSpace(id)){
+            return AjaxResult.error("进货 ID 错误");
+        }
+        HashMap<String, Object> param = new HashMap<>();
+        param.put("id", id);
+        List<PurchaseOrderVo> list = purchaseOrderService.selectPurchaseOrderList(param);
+        return list != null && list.size() > 0 ? success(list.get(0)): error();
     }
 
     /**

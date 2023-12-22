@@ -1,6 +1,7 @@
 package com.lingyun.wh.goods.api.factory;
 
 import com.lingyun.wh.goods.api.RemoteGoodsService;
+import com.lingyun.wh.goods.api.domain.Goods;
 import com.ruoyi.common.core.constant.HttpStatus;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,8 +28,8 @@ public class RemoteGoodsFallbackFactory implements FallbackFactory<RemoteGoodsSe
         log.error("货品服务调用失败: {}", throwable.getMessage());
         return new RemoteGoodsService() {
             @Override
-            public AjaxResult getInfoByIds(String[] ids) {
-                return AjaxResult.error(HttpStatus.ERROR, "货物数据获取失败");
+            public R<ArrayList<Goods>> getInfoByIds(String[] ids) {
+                return R.fail(HttpStatus.ERROR, "货物数据获取失败");
             }
         };
     }

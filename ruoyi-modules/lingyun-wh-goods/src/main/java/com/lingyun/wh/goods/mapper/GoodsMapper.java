@@ -2,7 +2,9 @@ package com.lingyun.wh.goods.mapper;
 
 
 import com.lingyun.wh.goods.api.domain.Goods;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,11 +24,12 @@ public interface GoodsMapper {
      */
     public Goods selectGoodsByGId(String gId);
     /**
-     * 根据多个 ID 获取多个货品信息详细信息
+     * 根据多个 ID 获取多个货品库存信息详细信息，主要用于入库相关，不能用于出库相关
      * @param ids 货品 ID 数组
+     * @author tang-nn
      * @return
      */
-    List<HashMap<String, Object>> selectGoodsByIds(String[] ids);
+    ArrayList<Goods> selectGoodsByIds(@Param("ids") String[] ids);
     /**
      * 根据商品名称查询是否存在
      * @param gname

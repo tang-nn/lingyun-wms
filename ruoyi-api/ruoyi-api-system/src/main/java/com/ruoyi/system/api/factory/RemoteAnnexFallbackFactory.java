@@ -34,7 +34,7 @@ public class RemoteAnnexFallbackFactory implements FallbackFactory<RemoteAnnexSe
             }
 
             @Override
-            public R<Object> list(String type, String formId, String content) {
+            public R<List<Annex>> list(String type, String formId, String content) {
                 return R.fail("查询错误");
             }
 

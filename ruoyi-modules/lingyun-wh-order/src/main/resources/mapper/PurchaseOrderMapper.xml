@@ -33,7 +33,7 @@
         <result property="goodsId" column="sub_goods_id"/>
         <result property="specCode" column="sub_spec_code"/>
         <result property="unit" column="sub_unit"/>
-        <result property="quantityInStock" column="sub_quantity_in_stock"/>
+        <result property="receivedQuantity" column="sub_received_quantity"/>
         <result property="purchaseQuantity" column="sub_purchase_quantity"/>
         <result property="puPrice" column="sub_pu_price"/>
         <result property="remark" column="sub_remark"/>
@@ -77,7 +77,7 @@
         <result property="purchaseQuantity" column="pod_purchase_quantity"/>
         <result property="puPrice" column="pod_pu_price"/>
         <result property="goodsName" column="goodsName"/>
-        <result property="quantityInStock" column="quantity_in_stock"/>
+        <result property="receivedQuantity" column="received_quantity"/>
     </resultMap>
     <sql id="selectPurchaseOrderVo">
         select po_id,
@@ -121,6 +121,15 @@
         <where>
             po.is_delete = 0
             <if test="params != null">
+                <if test="params.status != null and params.status != ''">
+                    and po.status in
+                    <foreach collection="params.status" item="s" open=" (" close=")" separator=",">
+                        #{s}
+                    </foreach>
+                </if>
+                <if test="params.id != null and params.id != ''">
+                    and po.po_id = #{params.id}
+                </if>
                 <if test="params.purOrderSn != null and params.purOrderSn != ''">
                     and po.po_code like concat('%',#{params.purOrderSn},'%')
                 </if>
@@ -148,7 +157,7 @@
     <select id="selectOrderDetailsList" resultMap="purchaseDetailsVO">
         select
             g.g_name goodsName,
-            pod.pd_id pod_pd_id,pod.goods_id pod_goods_id,pod.purchase_quantity pod_purchase_quantity,pod.pu_price pod_pu_price, pod.quantity_in_stock
+            pod.pd_id pod_pd_id,pod.goods_id pod_goods_id,pod.purchase_quantity pod_purchase_quantity,pod.pu_price pod_pu_price, pod.received_quantity
         from wh_purchase_details pod
         INNER JOIN wh_goods g on g.g_id = pod.goods_id
         where pod.po_id = #{poId,jdbcType=BIGINT}
@@ -219,7 +228,7 @@
                b.goods_id          as sub_goods_id,
                b.spec_code         as sub_spec_code,
                b.unit              as sub_unit,
-               b.quantity_in_stock as sub_quantity_in_stock,
+               b.received_quantity as sub_received_quantity,
                b.purchase_quantity as sub_purchase_quantity,
                b.pu_price          as sub_pu_price,
                b.remark            as sub_remark,
@@ -284,6 +293,7 @@
             <if test="isDelete != null and isDelete != ''">is_delete = #{isDelete},</if>
         </trim>
         where po_id = #{poId}
+        <if test="remark != null and remark != ''">status = 'pending_review'"'</if>
     </update>
 
     <delete id="deletePurchaseOrderByPoId" parameterType="String">

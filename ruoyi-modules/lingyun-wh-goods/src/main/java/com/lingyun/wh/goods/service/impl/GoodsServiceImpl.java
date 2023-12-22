@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Validator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -49,15 +46,12 @@ public class GoodsServiceImpl implements IGoodsService {
     }
 
     /**
-     * 根据多个 ID 获取多个货品信息详细信息
-     * @param ids 货品 ID 数组
+     * 根据多个 ID 获取多个货品信息详细信息，主要用于入库相关，不能用于出库相关
+     * @param ids 货品 ID 数组，如果 ids 为空则查询所有货品库存信息
      * @return
      */
     @Override
-    public List<HashMap<String, Object>>  queryGoodsByIds(String[] ids) {
-        if(ids == null|| ids.length == 0){
-            return null;
-        }
+    public ArrayList<Goods> queryGoodsByIds(String[] ids) {
         return goodsMapper.selectGoodsByIds(ids);
     }
 

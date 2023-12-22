@@ -53,6 +53,7 @@ module.exports = {
   },
   configureWebpack: {
     name: name,
+    devtool:"source map", // 允许浏览器调试
     resolve: {
       alias: {
         '@': resolve('src')

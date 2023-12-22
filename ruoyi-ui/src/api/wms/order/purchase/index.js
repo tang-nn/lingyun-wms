@@ -1,11 +1,21 @@
 import request from '@/utils/request'
+import qs from "qs";
 
 // 进货单列表
-export function listPurchase(query) {
+export function listPurchase(params) {
+  let query = qs.stringify(params, {arrayFormat: 'repeat'});
+  // console.log("query: ", query);
   return request({
-    url: '/wms/order/purchase/list',
-    method: 'get',
-    params: query
+    url: '/wms/order/purchase/list?' + query,
+    method: 'get'
+  })
+}
+
+// 进货单列表 - 单个查询
+export function getSinglePurchase(id) {
+  return request({
+    url: '/wms/order/purchase/list/single?id=' + id,
+    method: 'get'
   })
 }
 

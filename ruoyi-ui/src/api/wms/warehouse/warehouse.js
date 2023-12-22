@@ -93,3 +93,11 @@ export function listStorage(query) {
 }
 
 
+//查询仓库下的所有库位 - 用于下拉框
+export function listStorageByWid(wid) {
+  return request({
+    url: '/wms/wh/location/list/wid/' + wid,
+    method: 'get'
+  })
+}
+

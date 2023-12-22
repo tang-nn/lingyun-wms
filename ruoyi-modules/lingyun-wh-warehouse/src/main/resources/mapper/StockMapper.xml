@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingyun.wh.warehouse.mapper.StockMapper">
+
+    <resultMap type="com.lingyun.wh.goods.api.domain.Stock" id="StockResult">
+        <result property="sid" column="s_id"/>
+        <result property="wid" column="w_id"/>
+        <result property="slid" column="sl_id"/>
+        <result property="unit" column="unit"/>
+        <result property="itemQuantity" column="item_quantity"/>
+        <result property="numberPlans" column="number_plans"/>
+        <result property="gid" column="g_id"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectStockVo">
+        select s_id,
+               w_id,
+               sl_id,
+               unit,
+               item_quantity,
+               number_plans,
+               g_id,
+               remark,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        from wh_stock
+    </sql>
+
+    <select id="selectStockList" parameterType="com.lingyun.wh.goods.api.domain.Stock" resultMap="StockResult">
+        <include refid="selectStockVo"/>
+        <where>
+            <if test="wid != null  and wid != ''">and w_id = #{wid}</if>
+            <if test="slid != null  and slid != ''">and sl_id = #{slid}</if>
+            <if test="unit != null  and unit != ''">and unit = #{unit}</if>
+            <if test="itemQuantity != null  and itemQuantity != ''">and item_quantity = #{itemQuantity}</if>
+            <if test="numberPlans != null  and numberPlans != ''">and number_plans = #{numberPlans}</if>
+            <if test="gid != null  and gid != ''">and g_id = #{gid}</if>
+        </where>
+    </select>
+
+    <select id="selectStockBySid" parameterType="String" resultMap="StockResult">
+        <include refid="selectStockVo"/>
+        where s_id = #{sid}
+    </select>
+
+    <insert id="insertStock" parameterType="com.lingyun.wh.goods.api.domain.Stock" useGeneratedKeys="true" keyProperty="sid">
+        insert into wh_stock
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="wid != null and wid != ''">w_id,</if>
+            <if test="slid != null and slid != ''">sl_id,</if>
+            <if test="unit != null and unit != ''">unit,</if>
+            <if test="itemQuantity != null and itemQuantity != ''">item_quantity,</if>
+            <if test="numberPlans != null and numberPlans != ''">number_plans,</if>
+            <if test="gid != null and gid != ''">g_id,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="wid != null and wid != ''">#{wid},</if>
+            <if test="slid != null and slid != ''">#{slid},</if>
+            <if test="unit != null and unit != ''">#{unit},</if>
+            <if test="itemQuantity != null and itemQuantity != ''">#{itemQuantity},</if>
+            <if test="numberPlans != null and numberPlans != ''">#{numberPlans},</if>
+            <if test="gid != null and gid != ''">#{gid},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="batchInsertStock">
+        insert into
+        wh_stock(w_id,sl_id,unit,item_quantity,number_plans,g_id,create_by,create_time,update_by,update_time)
+        <foreach collection="list" separator="," open="values " item="s" close=";">
+            (#{s.wid},#{s.slid},#{s.unit},#{s.itemQuantity},#{s.numberPlans},#{s.gid},#{s.createBy},#{s.createTime},#{s.updateBy},#{s.updateTime})
+        </foreach>
+    </insert>
+
+    <update id="updateStock" parameterType="com.lingyun.wh.goods.api.domain.Stock">
+        update wh_stock
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="wid != null and wid != ''">w_id = #{wid},</if>
+            <if test="slid != null and slid != ''">sl_id = #{slid},</if>
+            <if test="unit != null and unit != ''">unit = #{unit},</if>
+            <if test="itemQuantity != null and itemQuantity != ''">item_quantity = #{itemQuantity},</if>
+            <if test="numberPlans != null and numberPlans != ''">number_plans = #{numberPlans},</if>
+            <if test="gid != null and gid != ''">g_id = #{gid},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where s_id = #{sid}
+    </update>
+
+    <delete id="deleteStockBySid" parameterType="String">
+        delete
+        from wh_stock
+        where s_id = #{sid}
+    </delete>
+
+    <delete id="deleteStockBySids" parameterType="String">
+        delete from wh_stock where s_id in
+        <foreach item="sid" collection="array" open="(" separator="," close=")">
+            #{sid}
+        </foreach>
+    </delete>
+</mapper>

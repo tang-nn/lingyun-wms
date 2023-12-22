@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" :inline="true" size="small">
+    <el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" size="small">
       <el-form-item label="货品">
         <el-input
           v-model="queryParams.g_name"
@@ -160,7 +160,7 @@
           <span>{{ parseTime(scope.row.create_time) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center"  class-name="small-padding fixed-width" fixed="right" label="操作">
+      <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="130">
         <template slot-scope="scope" >
           <el-button
             v-hasPermi="['system:role:edit']"

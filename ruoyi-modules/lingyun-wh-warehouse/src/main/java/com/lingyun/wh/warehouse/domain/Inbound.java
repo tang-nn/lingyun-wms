@@ -1,25 +1,27 @@
 package com.lingyun.wh.warehouse.domain;
 
+import java.util.List;
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 
-import java.util.Date;
-import java.util.List;
-
 /**
- * 入库管理对象 wh_inbound_mag
+ * 入库管理对象 wh_inbound
  *
  * @author Tang
- * @date 2023-12-12
+ * @date 2023-12-18
  */
-public class InboundManager extends BaseEntity {
+public class Inbound extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
      * 入库ID
      */
-    private String inId;
+    private String inid;
 
     /**
      * 入库单号
@@ -46,15 +48,15 @@ public class InboundManager extends BaseEntity {
     private String whName;
 
     /**
-     * 入库状态
+     * 入库状态，数据字典
      */
-    @Excel(name = "入库状态")
+    @Excel(name = "入库状态，数据字典")
     private String status;
 
     /**
-     * 供应商 ID
+     * 供应商 ID，不需要
      */
-    @Excel(name = "供应商 ID")
+    @Excel(name = "供应商 ID，不需要")
     private String sid;
 
     /**
@@ -66,7 +68,7 @@ public class InboundManager extends BaseEntity {
     /**
      * 入库经办人
      */
-    @Excel(name = "入库经办人 ID")
+    @Excel(name = "入库经办人")
     private String manager;
 
     /**
@@ -78,13 +80,15 @@ public class InboundManager extends BaseEntity {
     /**
      * 审核人
      */
-    @Excel(name = "审核人 ID")
+    @Excel(name = "审核人")
     private String reviewer;
+
     /**
      * 审核人
      */
     @Excel(name = "审核人姓名")
     private String reviewerName;
+
     /**
      * 审核时间
      */
@@ -100,6 +104,11 @@ public class InboundManager extends BaseEntity {
     private Date storageDate;
 
     /**
+     * 是否关联 订单；false：不关联；true：关联
+     */
+    private Boolean associated;
+
+    /**
      * 销售退货 ID 或进货订单 ID
      */
     @Excel(name = "销售退货 ID 或进货订单 ID")
@@ -108,8 +117,8 @@ public class InboundManager extends BaseEntity {
     /**
      * 0：存在；1：已删除，不存在
      */
-    @Excel(name = "0：存在；1：已删除，不存在")
-    private String deleted;
+    private Boolean deleted;
+
     /**
      * 入库管理明细信息
      */
@@ -139,12 +148,20 @@ public class InboundManager extends BaseEntity {
         this.reviewerName = reviewerName;
     }
 
-    public String getInId() {
-        return inId;
+    public Boolean getAssociated() {
+        return associated;
     }
 
-    public void setInId(String inId) {
-        this.inId = inId;
+    public void setAssociated(Boolean associated) {
+        this.associated = associated;
+    }
+
+    public String getInid() {
+        return inid;
+    }
+
+    public void setInid(String inid) {
+        this.inid = inid;
     }
 
     public String getInCode() {
@@ -235,11 +252,11 @@ public class InboundManager extends BaseEntity {
         this.orderId = orderId;
     }
 
-    public String getDeleted() {
+    public Boolean getDeleted() {
         return deleted;
     }
 
-    public void setDeleted(String deleted) {
+    public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -253,8 +270,8 @@ public class InboundManager extends BaseEntity {
 
     @Override
     public String toString() {
-        return "InboundManager{" +
-                "inId='" + inId + '\'' +
+        return "Inbound{" +
+                "inid='" + inid + '\'' +
                 ", inCode='" + inCode + '\'' +
                 ", inType='" + inType + '\'' +
                 ", wid='" + wid + '\'' +
@@ -268,8 +285,9 @@ public class InboundManager extends BaseEntity {
                 ", reviewerName='" + reviewerName + '\'' +
                 ", reviewerTime=" + reviewerTime +
                 ", storageDate=" + storageDate +
+                ", associated=" + associated +
                 ", orderId='" + orderId + '\'' +
-                ", deleted='" + deleted + '\'' +
+                ", deleted=" + deleted +
                 ", inboundDetails=" + inboundDetails +
                 '}';
     }

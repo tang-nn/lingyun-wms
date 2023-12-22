@@ -225,7 +225,7 @@
             clearable
             placeholder="请输入货品编号/名称"
             style="width: 200px"
-            @keyup.enter.native="handleGoodsQuery"
+            @keyup.enter.native="getGoodsList"
           />
         </el-form-item>
         <el-form-item>
@@ -237,7 +237,7 @@
                 row-key="g_id" @selection-change="handlerSelectionChange">
         <el-table-column :reserve-selection="true" align="center" fixed type="selection" width="50"/>
         <el-table-column align="center" fixed label="序号" type="index" width="60"/>
-        <el-table-column align="center" fixed label="货品编号" prop="g_code" width="80"/>
+        <el-table-column align="center" fixed label="货品编号" prop="g_code"/>
         <el-table-column align="center" fixed label="货品名称" prop="g_name" width="110"/>
         <el-table-column align="center" label="规格型号" prop="spec_code" width="100"/>
         <el-table-column align="center" label="单位" width="60">
@@ -269,6 +269,7 @@ import {deptTreeSelect, listUser} from "@/api/system/user";
 import {listGood} from "@/api/wms/good/goodsinfo";
 import {getToken} from "@/utils/auth";
 import {listSupplier} from "@/api/wms/contactUnits/supplier";
+import {resetForm} from "@/utils/ruoyi";
 
 export default {
   name: "PurchaseFrom",
@@ -440,12 +441,15 @@ export default {
           this.goodsTotal = response.total;
           this.$nextTick(() => {
             console.log("nextTick selectGoods: ", this.purchaseOrderInf.selectGoods)
-            this.purchaseOrderInf.selectGoods.map(vl => {
-              this.goodsList.map(item => {
-                if (item.g_id === vl.g_id) {
-                  this.$refs.goodsTable.toggleRowSelection(item, true)
-                }
-              })
+            this.purchaseOrderInf.selectGoods?.map(vl => {
+              if (vl?.g_id) {
+                this.goodsList.map(item => {
+                  console.log("item: ", item)
+                  if (item.g_id === vl.g_id) {
+                    this.$refs.goodsTable.toggleRowSelection(item, true)
+                  }
+                })
+              }
             })
           });
           this.loading = false;
@@ -475,7 +479,7 @@ export default {
         // this.purchaseOrderInf.selectAnnex = fileList;
         this.purchaseOrderInf.selectAnnex.push({name: file.name, url: data.url})
         this.$message.success(`${file.name}附件上传完成！`);
-      }else{
+      } else {
         this.$message.error(`[${file.name}]附件上传失败！`);
       }
     },

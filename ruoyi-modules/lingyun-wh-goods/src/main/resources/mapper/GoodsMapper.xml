@@ -9,7 +9,6 @@
        <result property="gCode"    column="g_code"    />
        <result property="gName"    column="g_name"    />
        <result property="gtId"    column="gt_id"    />
-       <result property="sId"    column="s_id"    />
        <result property="sort"    column="sort"    />
        <result property="status"    column="status"    />
        <result property="specCode"    column="spec_code"    />
@@ -27,12 +26,34 @@
        <result property="updateTime"    column="update_time"    />
        <result property="isDelete"    column="is_delete"    />
    </resultMap>
+   <!-- Tang -->
+   <resultMap id="goodsStocksMap" type="com.lingyun.wh.goods.api.domain.Goods" extends="GoodsResult" autoMapping="true">
+       <association property="goodsType" javaType="com.lingyun.wh.goods.api.domain.GoodsType">
+           <result property="gtId"    column="gt_id"    />
+           <result property="gtCode"    column="gt_code"    />
+           <result property="gtName"    column="gt_name"    />
+           <result property="sort"    column="sort"    />
+           <result property="status"    column="gtStatus"    />
+           <result property="remark"    column="gtRemark"    />
+           <result property="parentId"    column="parent_id"    />
+       </association>
+       <collection property="stockList" ofType="com.lingyun.wh.goods.api.domain.Stock" select="selectGoodsStocksByGid" column="gt_id"/>
+   </resultMap>
+    <resultMap id="stockMap" type="com.lingyun.wh.goods.api.domain.Stock">
+        <result property="sid" column="stockId"/>
+        <result property="wid" column="w_id"/>
+        <result property="slid" column="sl_id"/>
+        <result property="unit" column="unit"/>
+        <result property="itemQuantity" column="item_quantity"/>
+        <result property="numberPlans" column="number_plans"/>
+        <result property="gid" column="stock_goodsId"/>
+    </resultMap>
 
     <sql id="selectGoodsVo">
         select wg.g_id, wg.g_code, wg.g_name, wg.gt_id, wg.sort, wg.`status`,
                wg.spec_code, wg.remark, wg.or_price, wg.wr_price, wg.has_shelf_life,shelf_life,
                wg.item_limit, wg.lower_limit, wg.warning_id,  wg.is_delete,
-               w_days,gt_name,s_name,item_quantity,(item_quantity*or_price) stocktotalmoney,su.user_name oneuser,
+               w_days,gt_name,s_name,(item_quantity*or_price) stocktotalmoney,su.user_name oneuser,
                wg.create_time,su2.user_name twouser,wg.update_time,wsk.unit,wsk.item_quantity, wsk.number_plans
                from wh_goods wg
                  inner join wh_warning_info wwi
@@ -76,25 +97,26 @@
        where g_id = #{gId} and is_delete = 0
    </select>
 
-    <select id="selectGoodsByIds" resultType="map">
-        select wg.g_id, wg.g_code, wg.g_name, wg.gt_id, wg.sort, wg.`status`,
-        wg.spec_code, wg.remark, wg.or_price, wg.wr_price, wg.has_shelf_life,shelf_life,
-        wg.item_limit, wg.lower_limit, wg.warning_id,  wg.is_delete,
-        w_days,gt_name,s_name,item_quantity,
-        wg.create_time,wg.update_time,wsk.unit,wsk.item_quantity, wsk.number_plans
-        from wh_goods wg
-        inner join wh_warning_info wwi
-        on wg.warning_id=wwi.w_id
-        inner join wh_goods_type wgt
-        on wg.gt_id=wgt.gt_id
-        left join wh_supplier ws
-        on ws.s_id=wg.s_id
-        left join wh_stock wsk
-        on wsk.g_id=wg.g_id
-        and wg.is_delete = b'0' and wg.g_id in
-        <foreach collection="array" item="gId" open="(" separator="," close=")">
-            #{gId}
-        </foreach>
+    <!-- 用于查询货品库存信息 tang 【主要用于入库相关系，不能用于出库】-->
+    <select id="selectGoodsByIds" resultMap="goodsStocksMap">
+        SELECT g.g_id, g.g_code, g.g_name, g.status, g.spec_code, g.remark, g.or_price, g.wr_price, g.warning_id,
+        g.has_shelf_life, g.shelf_life, g.item_limit, g.lower_limit, g.create_by, g.create_time, g.update_by,
+        g.update_time,
+        gt.gt_id, gt.gt_code, gt.gt_name, gt.status gtStatus, gt.remark gtRemark, gt.parent_id
+        FROM wh_goods g
+        INNER JOIN wh_goods_type gt on gt.gt_id = g.gt_id
+        <where>g.`status` = 0
+        <if test="ids != null and ids.length > 0">
+            <foreach collection="ids" item="gId" open="and g.g_id in (" separator="," close=")">
+                #{gId}
+            </foreach>
+        </if>
+        </where>
+    </select>
+    <select id="selectGoodsStocksByGid" resultMap="stockMap">
+        select stock.s_id stockId, stock.w_id, stock.sl_id, stock.unit, stock.g_id stock_goodsId, stock.item_quantity, stock.number_plans
+        from wh_stock stock
+        where g_id = #{gt_id}
     </select>
 
     <select id="selectGoodsByGname" parameterType="String" resultType="integer">

@@ -20,7 +20,7 @@ public interface IPurchaseOrderService {
      * @param poId 进货订单主键
      * @return 进货订单
      */
-    public JSONObject selectPurchaseOrderByPoId(String poId);
+    public PurchaseOrder selectPurchaseOrderByPoId(String poId);
 
     /**
      * 查询进货订单列表

@@ -44,7 +44,7 @@ public class WareHouseController extends BaseController
     }
 
     /**
-     * 查询仓库
+     * 查询仓库，主要用于下拉框
      */
     @RequiresPermissions("system:warehouse:lists")
     @GetMapping("/lists")

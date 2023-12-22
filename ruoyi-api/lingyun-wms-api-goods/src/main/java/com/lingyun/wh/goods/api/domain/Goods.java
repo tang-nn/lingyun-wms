@@ -1,5 +1,8 @@
 package com.lingyun.wh.goods.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,6 +17,7 @@ import java.util.List;
  * @author lijin
  * @date 2023-11-21
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Goods extends BaseEntity {
 
     /**
@@ -36,80 +40,138 @@ public class Goods extends BaseEntity {
     @Excel(name = "货品名称")
     private String gName;
 
-    /** 货品类_货品类型 ID */
-    @Excel(name = "货品类型ID")
     private String gtId;
+
+    /** 货品类_货品类型 ID */
+    @Excel(name = "货品类型")
+    private String gtName;
+
+    /**
+     * 货品类型对象
+     */
+    private GoodsType goodsType;
 
     /** 供应商 ID */
     @Excel(name = "供应商ID")
     private String sId;
-
     /** 排序 */
     @Excel(name = "排序")
     private Long sort;
-
     /** 状态，0:default，启用；1：禁用 */
     @Excel(name = "状态")
     private Integer status;
-
     /** 规格型号 */
     @Excel(name = "规格型号")
     private String specCode;
-
     /** 出库参考价 */
     @Excel(name = "出库参考价")
     private BigDecimal orPrice;
-
     /** 入库参考价 */
     @Excel(name = "入库参考价")
     private BigDecimal wrPrice;
-
     /** 预警 ID */
     @Excel(name = "预警ID")
     private String warningId;
-
     /** 有保质期，0:default，没有保质期；1：有保质期 */
     @Excel(name = "是否有保质期")
     private Integer hasShelfLife;
-
-
     /** 保质期 */
     @Excel(name = "保质期")
     private String shelfLife;
-
     /** 货品上限 */
     @Excel(name = "货品上限")
     private String itemLimit;
-
     /** 货品下限 */
     @Excel(name = "货品下限")
     private String lowerLimit;
-
-
     /**
      * 备注
      */
 //    @Excel(name = "备注")
     private String remark;
-
     /** 创建人 **/
     private String createBy;
-
     /** 操作时间 **/
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
-
     /** 修改人 **/
     private  String updateBy;
-
     /** 修改时间 **/
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
-
     /** 逻辑删除，0：存在；1：已删除，不存在 */
     private Boolean isDelete;
 
+    /**
+     * 货品列表，一个货品对应多个库存
+     */
+    private List<Stock> stockList;
 
+    public GoodsType getGoodsType() {
+        return goodsType;
+    }
+
+    public void setGoodsType(GoodsType goodsType) {
+        this.goodsType = goodsType;
+    }
+
+    public String getGtName() {
+        return gtName;
+    }
+
+    public void setGtName(String gtName) {
+        this.gtName = gtName;
+    }
+
+    public List<GoodsType> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<GoodsType> children) {
+        this.children = children;
+    }
+
+    public String getgId() {
+        return gId;
+    }
+
+    public void setgId(String gId) {
+        this.gId = gId;
+    }
+
+    public String getgCode() {
+        return gCode;
+    }
+
+    public void setgCode(String gCode) {
+        this.gCode = gCode;
+    }
+
+    public String getgName() {
+        return gName;
+    }
+
+    public void setgName(String gName) {
+        this.gName = gName;
+    }
+
+    public String getsId() {
+        return sId;
+    }
+
+    public void setsId(String sId) {
+        this.sId = sId;
+    }
+
+    @Override
+    public String getRemark() {
+        return remark;
+    }
+
+    @Override
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
     public String getGId() {
         return gId;
@@ -262,7 +324,6 @@ public class Goods extends BaseEntity {
         this.createTime = createTime;
     }
 
-
     public String getUpdateBy() {
         return updateBy;
     }
@@ -290,13 +351,25 @@ public class Goods extends BaseEntity {
         isDelete = delete;
     }
 
+
+    public List<Stock> getStockList() {
+        return stockList;
+    }
+
+    public void setStockList(List<Stock> stockList) {
+        this.stockList = stockList;
+    }
+
     @Override
     public String toString() {
         return "Goods{" +
-                "gId='" + gId + '\'' +
+                "children=" + children +
+                ", gId='" + gId + '\'' +
                 ", gCode='" + gCode + '\'' +
                 ", gName='" + gName + '\'' +
                 ", gtId='" + gtId + '\'' +
+                ", gtName='" + gtName + '\'' +
+                ", goodsType=" + goodsType +
                 ", sId='" + sId + '\'' +
                 ", sort=" + sort +
                 ", status=" + status +
@@ -314,7 +387,7 @@ public class Goods extends BaseEntity {
                 ", updateBy='" + updateBy + '\'' +
                 ", updateTime=" + updateTime +
                 ", isDelete=" + isDelete +
+                ", stockList=" + stockList +
                 '}';
     }
-
 }

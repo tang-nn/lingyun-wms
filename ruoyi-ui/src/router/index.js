@@ -297,7 +297,7 @@ export const dynamicRoutes = [
     ]
   },
   {
-    path: '/inboundOutbound',
+    path: '/inOutbound',
     component: Layout,
     hidden: true,
     permissions: ['inbound'],
@@ -305,21 +305,21 @@ export const dynamicRoutes = [
       {
         path: 'inbound/add',
         permissions: ['inbound:add'],
-        component: () => import('@/views/wms/warehouse/outboundInbound/inbound/add.vue'),
+        component: () => import('@/views/wms/warehouse/inOutbound/inbound/add.vue'),
         name: '添加入库单',
         meta: { title: '添加入库单', activeMenu: 'inbound/add' }
       },
       {
         path: 'inbound/edit/:inid(\\d+)',
         permissions: ['inbound:editor'],
-        component: () => import('@/views/wms/warehouse/outboundInbound/inbound/editor.vue'),
+        component: () => import('@/views/wms/warehouse/inOutbound/inbound/editor.vue'),
         name: '编辑入库单',
         meta: { title: '编辑入库单', activeMenu: 'inbound/editor' }
       },
       {
         path: 'inbound/details/:inid(\\d+)',
         permissions: ['inbound:details'],
-        component: () => import('@/views/wms/warehouse/outboundInbound/inbound/details.vue'),
+        component: () => import('@/views/wms/warehouse/inOutbound/inbound/details.vue'),
         name: '入库单明细',
         meta: { title: '入库单明细', activeMenu: 'inbound/details' }
       }

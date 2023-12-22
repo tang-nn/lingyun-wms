@@ -2,10 +2,10 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lingyun.wh.warehouse.mapper.InboundManagerMapper">
+<mapper namespace="com.lingyun.wh.warehouse.mapper.InboundMapper">
 
-    <resultMap type="InboundManager" id="InboundManagerResult">
-        <result property="inId" column="in_id"/>
+    <resultMap type="Inbound" id="InboundResult" autoMapping="true">
+        <result property="inid" column="in_id"/>
         <result property="inCode" column="in_code"/>
         <result property="inType" column="in_type"/>
         <result property="wid" column="w_id"/>
@@ -25,27 +25,29 @@
         <result property="deleted" column="is_delete"/>
     </resultMap>
 
-    <resultMap id="InboundManagerInboundDetailsResult" type="InboundManager" extends="InboundManagerResult">
-        <collection property="inboundDetailsList" notNullColumn="sub_imd_id" javaType="java.util.List"
-                    resultMap="InboundDetailsResult"/>
+    <resultMap id="InboundInboundDetailsResult" type="Inbound" extends="InboundResult" autoMapping="true">
+        <collection property="inboundDetails" column="in_id"
+                    select="inboundDetailsListVo"/>
     </resultMap>
 
-    <resultMap type="inboundDetails" id="InboundDetailsResult">
-        <result property="imdId" column="imd_id"/>
-        <result property="inId" column="in_id"/>
-        <result property="odId" column="od_id"/>
+    <resultMap type="InboundDetails" id="InboundDetailsResult" autoMapping="true">
+        <result property="indId" column="ind_id"/>
+        <result property="inid" column="in_id"/>
+        <result property="odid" column="od_id"/>
         <result property="goodsId" column="goods_id"/>
         <result property="unit" column="unit"/>
-        <result property="slId" column="sl_id"/>
-        <result property="thisQuantity" column="this_quantity"/>
+        <result property="slid" column="sl_id"/>
+        <result property="receivedQuantity" column="received_quantity"/>
+        <result property="unreceivedQuantity" column="unreceived_quantity"/>
+        <result property="quantityInbound" column="quantity_inbound"/>
+        <result property="puPrice" column="pu_price"/>
         <result property="productionDate" column="production_date"/>
         <result property="batchNumber" column="batch_number"/>
-        <result property="remark" column="imd_remark"/>
-        <result property="createBy" column="imd_create_by"/>
-        <result property="createTime" column="imd_create_time"/>
-        <result property="updateBy" column="imd_update_by"/>
-        <result property="updateTime" column="imd_update_time"/>
-        <result property="isDelete" column="is_delete"/>
+        <result property="remark" column="sub_remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
         <association property="goods" javaType="com.lingyun.wh.goods.api.domain.Goods">
             <id property="gId" column="g_id"/>
             <result property="gCode" column="g_code"/>
@@ -63,15 +65,11 @@
             <result property="shelfLife" column="shelf_life"/>
             <result property="itemLimit" column="item_limit"/>
             <result property="lowerLimit" column="lower_limit"/>
+            <result property="gtName" column="gt_name"/>
         </association>
     </resultMap>
-    <resultMap id="InboundResultVo" type="InboundManager" autoMapping="true">
-        <id property="inId" column="in_id"/>
-        <collection property="inboundDetails" select="inboundDetailsListVo" column="in_id">
-        </collection>
-    </resultMap>
 
-    <sql id="selectInboundManagerVo">
+    <sql id="selectInboundVo">
         select in_id,
                in_code,
                in_type,
@@ -89,61 +87,62 @@
                create_time,
                update_by,
                update_time,
-               is_delete
-        from wh_inbound_mag
+               deleted
+        from wh_inbound
     </sql>
 
-    <select id="selectInboundManagerList" parameterType="InboundManager" resultMap="InboundResultVo">
-        SELECT im.in_id,
-               im.in_code       inCode,
-               im.in_type       inType,
-               im.w_id          wid,
-               im.status,
-               im.s_id          sid,
-               im.related_order relatedOrder,
-               im.w_manager     manager,
-               im.remark,
-               im.reviewer,
-               im.reviewer_time reviewerTime,
-               im.storage_date  storageDate,
-               im.order_id      orderId,
-               im.create_by     createBy,
-               im.create_time   createTime,
-               im.update_by     updateBy,
-               im.update_time   updateTime,
-               pu.nick_name     managerName,
-               cu.nick_name     creatorName,
-               cdt.dept_name    creatorDept,
-               cdt.dept_id      creatorDeptId,
-               ru.nick_name     reviewerName,
-               wh.w_name whName
-        FROM wh_inbound_mag im
-                 # 经办人
-                 INNER JOIN sys_user pu on pu.user_id = im.w_manager
-            # 制单人和所在部门
-                 INNER JOIN sys_user cu on cu.user_id = im.create_by
-                 INNER JOIN sys_dept cdt on cdt.dept_id = cu.dept_id
-            # 审核人
-                 INNER JOIN sys_user ru on ru.user_id = im.reviewer
-            # 仓库
-                 INNER JOIN wh_warehouse wh on wh.w_id = im.w_id
+    <select id="selectInboundList" parameterType="Inbound" resultMap="InboundInboundDetailsResult">
+        SELECT inb.in_id,
+        inb.in_code ,
+        inb.in_type ,
+        inb.w_id ,
+        inb.status,
+        inb.s_id ,
+        inb.related_order ,
+        inb.w_manager ,
+        inb.remark,
+        inb.reviewer,
+        inb.reviewer_time ,
+        inb.storage_date ,
+        inb.associated,
+        inb.order_id ,
+        inb.create_by ,
+        inb.create_time ,
+        inb.update_by ,
+        inb.update_time ,
+        pu.nick_name managerName,
+        cu.nick_name creatorName,
+        cdt.dept_name creatorDept,
+        cdt.dept_id creatorDeptId,
+        ru.nick_name reviewerName,
+        wh.w_name whName
+        from wh_inbound inb
+        # 经办人
+        INNER JOIN sys_user pu on pu.user_id = inb.w_manager
+        # 制单人和所在部门
+        INNER JOIN sys_user cu on cu.user_id = inb.create_by
+        INNER JOIN sys_dept cdt on cdt.dept_id = cu.dept_id
+        # 审核人
+        left JOIN sys_user ru on ru.user_id = inb.reviewer
+        # 仓库
+        INNER JOIN wh_warehouse wh on wh.w_id = inb.w_id
         <where>
-            <if test="inId != null and inId != ''">
-                and im.in_id = #{inId}
+            <if test="inid != null and inid != ''">
+                and inb.in_id = #{inid}
             </if>
             <if test="inCode != null and inCode != ''">
-                and im.in_code like concat('%', #{inCode}, '%')
+                and inb.in_code like concat('%', #{inCode}, '%')
             </if>
             <if test="inType != null and inType != ''">
-                and im.in_type = #{inType}
+                and inb.in_type = #{inType}
             </if>
             <if test="status != null and status != ''">
-                and im.status = #{status}
+                and inb.status = #{status}
             </if>
             <if test="wid != null and wid != ''">
-                im.w_id = #{wid}
+                inb.w_id = #{wid}
             </if>
-            and im.is_delete = b'0'
+            and inb.deleted = b'0'
         </where>
     </select>
 
@@ -159,33 +158,90 @@
                g.shelf_life,
                g.item_limit,
                g.lower_limit,
-               imd.imd_id,
-               imd.in_id,
-               imd.od_id,
-               imd.goods_id,
-               imd.unit,
-               imd.quantity_in_stock,
-               imd.sl_id,
-               imd.this_quantity,
-               imd.production_date,
-               imd.batch_number,
-               imd.remark      imd_remark,
-               imd.create_by   imd_create_by,
-               imd.create_time imd_create_time,
-               imd.update_by   imd_update_by,
-               imd.update_time imd_update_time
-        FROM wh_im_details imd
-                 INNER JOIN wh_goods g on g.g_id = imd.goods_id
-        where imd.in_id = #{in_id}
-          and imd.is_delete = b'0'
+               gt.gt_name,
+               ind.ind_id,
+               ind.in_id,
+               ind.od_id,
+               ind.goods_id,
+               ind.unit,
+               ind.sl_id,
+               ind.received_quantity,
+               ind.unreceived_quantity,
+               ind.quantity_inbound,
+               ind.pu_price,
+               ind.production_date,
+               ind.batch_number,
+               ind.remark                  sub_remark,
+               ind.create_by               create_by,
+               ind.create_time             create_time,
+               ind.update_by               update_by,
+               ind.update_time             update_time,
+               (select sum(item_quantity) stockQuantity
+                from wh_stock
+                where g_id = ind.goods_id) stockQuantity
+        FROM wh_inbound_details ind
+                 INNER JOIN wh_goods g on g.g_id = ind.goods_id
+                 inner join wh_goods_type gt on gt.gt_id = g.gt_id
+        where ind.in_id = #{in_id}
     </select>
 
-    <select id="selectInboundManagerByInId" parameterType="String" resultMap="InboundManagerInboundDetailsResult">
-
+    <resultMap id="InboundDetailsResultInfo" type="Inbound" extends="InboundResult" autoMapping="true">
+        <collection property="inboundDetails" ofType="inboundDetails" resultMap="InboundDetailsResult"/>
+    </resultMap>
+    <!-- selectInboundByInid 有问题 -->
+    <select id="selectInboundByInid" resultMap="InboundDetailsResultInfo">
+        SELECT inb.in_id,
+        inb.in_code ,
+        inb.in_type ,
+        inb.w_id ,
+        inb.status,
+        inb.s_id ,
+        inb.related_order ,
+        inb.w_manager ,
+        inb.storage_date ,
+        inb.associated,
+        inb.order_id ,
+        inb.remark ,
+        g.g_id,
+        g.g_code,
+        g.g_name,
+        g.spec_code,
+        g.or_price,
+        g.wr_price,
+        g.warning_id,
+        g.has_shelf_life,
+        g.shelf_life,
+        g.item_limit,
+        g.lower_limit,
+        ind.ind_id,
+        ind.in_id,
+        ind.od_id,
+        ind.goods_id,
+        ind.unit,
+        ind.sl_id,
+        ind.quantity_inbound,
+        ind.pu_price,
+        ind.production_date,
+        ind.batch_number,
+        ind.remark sub_remark,
+        (select sum(item_quantity) stockQuantity from wh_stock
+        where g_id=ind.goods_id) stockQuantity
+        from wh_inbound inb
+        INNER JOIN wh_inbound_details ind on ind.in_id = inb.in_id
+        INNER JOIN wh_goods g on g.g_id = ind.goods_id
+        <where>
+            <if test="inid != null and inid != ''">
+                AND inb.in_id = #{inid}
+            </if>
+            <if test="orderId != null and orderId != ''">
+                AND inb.order_id = #{orderId}
+            </if>
+            and inb.deleted = b'0'
+        </where>
     </select>
 
-    <insert id="insertInboundManager" parameterType="InboundManager" useGeneratedKeys="true" keyProperty="inId">
-        insert into wh_inbound_mag
+    <insert id="insertInbound" parameterType="Inbound" useGeneratedKeys="true" keyProperty="inid">
+        insert into wh_inbound
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="inCode != null and inCode != ''">in_code,</if>
             <if test="inType != null and inType != ''">in_type,</if>
@@ -203,7 +259,7 @@
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null and updateBy != ''">update_by,</if>
             <if test="updateTime != null">update_time,</if>
-            <if test="deleted != null and deleted != ''">is_delete,</if>
+            <if test="deleted != null">is_delete,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="inCode != null and inCode != ''">#{inCode},</if>
@@ -222,69 +278,66 @@
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
-            <if test="deleted != null and deleted != ''">#{deleted},</if>
+            <if test="deleted != null">#{deleted},</if>
         </trim>
     </insert>
 
-    <update id="updateInboundManager" parameterType="InboundManager">
-        update wh_inbound_mag
+    <update id="updateInbound" parameterType="Inbound">
+        update wh_inbound
         <trim prefix="SET" suffixOverrides=",">
-            <if test="inCode != null and inCode != ''">in_code = #{inCode},</if>
-            <if test="inType != null and inType != ''">in_type = #{inType},</if>
             <if test="wid != null and wid != ''">w_id = #{wid},</if>
             <if test="status != null and status != ''">status = #{status},</if>
-            <if test="sid != null and sid != ''">s_id = #{sid},</if>
-            <if test="relatedOrder != null">related_order = #{relatedOrder},</if>
             <if test="manager != null and manager != ''">w_manager = #{manager},</if>
             <if test="remark != null">remark = #{remark},</if>
             <if test="reviewer != null">reviewer = #{reviewer},</if>
             <if test="reviewerTime != null">reviewer_time = #{reviewerTime},</if>
             <if test="storageDate != null">storage_date = #{storageDate},</if>
-            <if test="orderId != null and orderId != ''">order_id = #{orderId},</if>
             <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
-            <if test="deleted != null and deleted != ''">is_delete = #{deleted},</if>
+            <if test="deleted != null">is_delete = #{deleted},</if>
         </trim>
-        where in_id = #{inId}
+        where in_id = #{inid}
     </update>
 
-    <delete id="deleteInboundManagerByInId" parameterType="String">
+    <delete id="deleteInboundByInid" parameterType="String">
         delete
-        from wh_inbound_mag
-        where in_id = #{inId}
+        from wh_inbound
+        where in_id = #{inid}
     </delete>
 
-    <delete id="deleteInboundManagerByInIds" parameterType="String">
-        delete from wh_inbound_mag where in_id in
-        <foreach item="inId" collection="array" open="(" separator="," close=")">
-            #{inId}
+    <delete id="deleteInboundByInids" parameterType="String">
+        delete from wh_inbound where in_id in
+        <foreach item="inid" collection="array" open="(" separator="," close=")">
+            #{inid}
         </foreach>
     </delete>
 
     <delete id="deleteInboundDetailsByInIds" parameterType="String">
-        delete from wh_im_details where in_id in
-        <foreach item="inId" collection="array" open="(" separator="," close=")">
-            #{inId}
+        delete from wh_inbound_details where in_id in
+        <foreach item="inid" collection="array" open="(" separator="," close=")">
+            #{inid}
         </foreach>
     </delete>
 
     <delete id="deleteInboundDetailsByInId" parameterType="String">
         delete
-        from wh_im_details
-        where in_id = #{inId}
+        from wh_inbound_details
+        where in_id = #{inid}
     </delete>
 
     <insert id="batchInboundDetails">
-        insert into wh_im_details( imd_id, in_id, od_id, unit, quantity_in_stock, unstocked_quantity, sl_id,
-        this_quantity, production_date, batch_number, remark, create_by, create_time, update_by, update_time, is_delete)
+        insert into wh_inbound_details(in_id, od_id, goods_id, unit, sl_id, received_quantity, unreceived_quantity,
+        quantity_inbound, pu_price, production_date, batch_number, remark, create_by, create_time, update_by,
+        update_time)
         values
         <foreach item="item" index="index" collection="list" separator=",">
-            ( #{item.imdId}, #{item.inId}, #{item.odId}, #{item.unit}, #{item.quantityInStock},
-            #{item.unstockedQuantity}, #{item.slId}, #{item.thisQuantity}, #{item.productionDate}, #{item.batchNumber},
-            #{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime},
-            #{item.isDelete})
+            (#{item.inid}, #{item.odid}, #{item.goodsId}, #{item.unit}, #{item.slid}, #{item.receivedQuantity},
+            #{item.unreceivedQuantity},
+            #{item.quantityInbound}, #{item.puPrice}, #{item.productionDate}, #{item.batchNumber}, #{item.remark},
+            #{item.createBy}, #{item.createTime},
+            #{item.updateBy}, #{item.updateTime})
         </foreach>
     </insert>
 </mapper>

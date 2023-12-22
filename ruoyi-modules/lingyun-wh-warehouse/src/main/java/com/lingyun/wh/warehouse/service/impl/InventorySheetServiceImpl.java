@@ -37,15 +37,12 @@ import javax.validation.Validator;
 public class InventorySheetServiceImpl implements IInventorySheetService 
 {
     private static final Logger log = LoggerFactory.getLogger(IInventorySheetService.class);
-
-    @Autowired
-    private InventorySheetMapper inventorySheetMapper;
-
-    @Autowired
-    private RemoteEncodeRuleService remoteEncodeRuleService;
-
     @Autowired
     protected Validator validator;
+    @Autowired
+    private InventorySheetMapper inventorySheetMapper;
+    @Autowired
+    private RemoteEncodeRuleService remoteEncodeRuleService;
 
     /**
      * 查询盘点单
@@ -66,7 +63,7 @@ public class InventorySheetServiceImpl implements IInventorySheetService
      * @return 盘点单
      */
     @Override
-    public List<InventorySheet> selectInventorySheetList(Map<String,Object>map)
+    public List<InventorySheet> selectInventorySheetList(Map<String,Object> map)
     {
         return inventorySheetMapper.selectInventorySheetList(map);
     }
