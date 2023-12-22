@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import com.lingyun.wh.warehouse.domain.Stock;
 import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.service.IInventorySheetService;
 import com.ruoyi.common.core.constant.OrderType;
@@ -40,13 +39,11 @@ import javax.validation.Validator;
 public class TransferServiceImpl implements ITransferService {
     private static final Logger log = LoggerFactory.getLogger(TransferServiceImpl.class);
     @Autowired
+    protected Validator validator;
+    @Autowired
     private TransferMapper transferMapper;
-
     @Autowired
     private RemoteEncodeRuleService remoteEncodeRuleService;
-
-    @Autowired
-    protected Validator validator;
 
     /**
      * 查询调拨单

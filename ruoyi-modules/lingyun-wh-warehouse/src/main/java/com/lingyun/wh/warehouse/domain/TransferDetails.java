@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.lingyun.wh.goods.api.domain.Goods;
+import com.lingyun.wh.goods.api.domain.Stock;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.annotation.Excel;
@@ -47,6 +48,14 @@ public class TransferDetails extends BaseEntity
 
     /*入库仓库货品的库位id*/
     private String inLocationId;
+    /*库存*/
+    private Stock stock;
+    private String sl_id;
+    /*货品*/
+    private Goods goods;
+    private String g_id;
+    //库位
+    private StorageLocation location;
 
     public String getInLocationId() {
         return inLocationId;
@@ -64,13 +73,6 @@ public class TransferDetails extends BaseEntity
         this.totalItemQuantity = totalItemQuantity;
     }
 
-    /*库存*/
-    private Stock stock;
-    private String sl_id;
-
-    /*货品*/
-    private Goods goods;
-
     public String getSl_id() {
         return sl_id;
     }
@@ -79,8 +81,6 @@ public class TransferDetails extends BaseEntity
         this.sl_id = sl_id;
     }
 
-    private String g_id;
-
     public String getG_id() {
         return g_id;
     }
@@ -88,9 +88,6 @@ public class TransferDetails extends BaseEntity
     public void setG_id(String g_id) {
         this.g_id = g_id;
     }
-
-    //库位
-    private StorageLocation location;
 
     public StorageLocation getLocation() {
         return location;

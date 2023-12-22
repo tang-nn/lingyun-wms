@@ -31,7 +31,76 @@ public class Goods extends BaseEntity {
     private String gId;
 
     private Integer wDays;//预警天数
+    /** 货品编号 */
+    @Excel(name = "货品编号")
+    private String gCode;
+    /** 货品名称 */
+    @Excel(name = "货品名称")
+    private String gName;
+    private String gtId;
 
+//    private Integer warningDays;
+    /** 货品类_货品类型 ID */
+    @Excel(name = "货品类型")
+    private String gtName;
+    /**
+     * 货品类型对象
+     */
+    private GoodsType goodsType;
+    /** 供应商 ID */
+    @Excel(name = "供应商ID")
+    private String sId;
+    /** 排序 */
+    @Excel(name = "排序")
+    private Long sort;
+    /** 状态，0:default，启用；1：禁用 */
+    @Excel(name = "状态")
+    private Integer status;
+    /** 规格型号 */
+    @Excel(name = "规格型号")
+    private String specCode;
+    /** 出库参考价 */
+    @Excel(name = "出库参考价")
+    private BigDecimal orPrice;
+    /** 入库参考价 */
+    @Excel(name = "入库参考价")
+    private BigDecimal wrPrice;
+    /** 预警 ID */
+    @Excel(name = "预警ID")
+    private String warningId;
+    /** 有保质期，0:default，没有保质期；1：有保质期 */
+    @Excel(name = "是否有保质期")
+    private Integer hasShelfLife;
+    /** 保质期 */
+    @Excel(name = "保质期")
+    private String shelfLife;
+    /** 货品上限 */
+    @Excel(name = "货品上限")
+    private String itemLimit;
+    /** 货品下限 */
+    @Excel(name = "货品下限")
+    private String lowerLimit;
+    /**
+     * 备注
+     */
+//    @Excel(name = "备注")
+    private String remark;
+    /** 创建人 **/
+    private String createBy;
+    /** 操作时间 **/
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+    /** 修改人 **/
+    private  String updateBy;
+    /** 修改时间 **/
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
+    /** 逻辑删除，0：存在；1：已删除，不存在 */
+    private Boolean isDelete;
+    /**
+     * 货品列表，一个货品对应多个库存
+     */
+    private List<Stock> stockList;
 
     public Integer getwDays() {
         return wDays;
@@ -40,120 +109,6 @@ public class Goods extends BaseEntity {
     public void setwDays(Integer wDays) {
         this.wDays = wDays;
     }
-
-    /** 货品编号 */
-    @Excel(name = "货品编号")
-    private String gCode;
-
-//    private Integer warningDays;
-
-    /** 货品名称 */
-    @Excel(name = "货品名称")
-    private String gName;
-
-    private String gtId;
-
-    /** 货品类_货品类型 ID */
-    @Excel(name = "货品类型")
-    private String gtName;
-
-    /**
-     * 货品类型对象
-     */
-    private GoodsType goodsType;
-
-    /** 供应商 ID */
-    @Excel(name = "供应商ID")
-    private String sId;
-
-    /** 排序 */
-    @Excel(name = "排序")
-    private Long sort;
-
-    /** 状态，0:default，启用；1：禁用 */
-    @Excel(name = "状态")
-    private Integer status;
-
-    /** 规格型号 */
-    @Excel(name = "规格型号")
-    private String specCode;
-
-    /** 出库参考价 */
-    @Excel(name = "出库参考价")
-    private BigDecimal orPrice;
-
-    /** 入库参考价 */
-    @Excel(name = "入库参考价")
-    private BigDecimal wrPrice;
-
-    /** 预警 ID */
-    @Excel(name = "预警ID")
-    private String warningId;
-
-    /** 有保质期，0:default，没有保质期；1：有保质期 */
-    @Excel(name = "是否有保质期")
-    private Integer hasShelfLife;
-
-
-    /** 保质期 */
-    @Excel(name = "保质期")
-    private String shelfLife;
-
-    /** 货品上限 */
-    @Excel(name = "货品上限")
-    private String itemLimit;
-
-    /** 货品下限 */
-    @Excel(name = "货品下限")
-    private String lowerLimit;
-
-
-    /**
-     * 备注
-     */
-//    @Excel(name = "备注")
-    private String remark;
-
-    /** 创建人 **/
-    private String createBy;
-
-    /** 操作时间 **/
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
-
-    /** 修改人 **/
-    private  String updateBy;
-
-    /** 修改时间 **/
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updateTime;
-
-    /** 逻辑删除，0：存在；1：已删除，不存在 */
-    private Boolean isDelete;
-
-    public String getGtName() {
-        return gtName;
-    }
-
-    public void setGtName(String gtName) {
-        this.gtName = gtName;
-    }
-
-    public List<GoodsType> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<GoodsType> children) {
-        this.children = children;
-    }
-
-    public String getgId() {
-        return gId;
-    }
-    /**
-     * 货品列表，一个货品对应多个库存
-     */
-    private List<Stock> stockList;
 
     public GoodsType getGoodsType() {
         return goodsType;

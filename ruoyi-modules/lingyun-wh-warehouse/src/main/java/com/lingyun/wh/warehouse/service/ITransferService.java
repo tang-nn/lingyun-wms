@@ -2,7 +2,6 @@ package com.lingyun.wh.warehouse.service;
 
 import java.util.List;
 
-import com.lingyun.wh.warehouse.domain.Stock;
 import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.domain.Transfer;
 import org.apache.ibatis.annotations.Param;

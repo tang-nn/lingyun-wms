@@ -3,7 +3,6 @@ package com.lingyun.wh.warehouse.mapper;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.lingyun.wh.warehouse.domain.Stock;
 import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.domain.Transfer;
 import com.lingyun.wh.warehouse.domain.TransferDetails;
