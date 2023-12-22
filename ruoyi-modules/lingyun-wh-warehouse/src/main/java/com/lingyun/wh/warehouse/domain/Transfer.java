@@ -1,0 +1,296 @@
+package com.lingyun.wh.warehouse.domain;
+
+import java.util.List;
+import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import com.ruoyi.common.core.annotation.Excel;
+import com.ruoyi.common.core.web.domain.BaseEntity;
+
+/**
+ * 调拨单对象 wh_transfer
+ * 
+ * @author LIJin
+ * @date 2023-12-18
+ */
+public class Transfer extends BaseEntity
+{
+    private static final long serialVersionUID = 1L;
+
+    /** 调拨ID */
+    private String tid;
+
+    /** 调拨单号 */
+    @Excel(name = "调拨单号")
+    private String tdCode;
+
+    /** 单据状态 */
+    @Excel(name = "单据状态")
+    private String docStatus;
+
+    /** 调拨申请日期 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Excel(name = "调拨申请日期", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date date;
+
+//    查询参数 - 调出申请时间时
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private List<Date> dates;
+
+
+    /** 调出库，仓库 ID */
+    private String outWId;
+
+    /** 调出库，仓库 */
+    @Excel(name = "调出库")
+    private String outName;
+
+    /** 调入库，仓库 ID */
+    @Excel(name = "调入库，仓库 ID")
+    private String inWId;
+
+    /** 调入库，仓库 */
+    @Excel(name = "调入库")
+    private String inName;
+
+    /** 出库状态 */
+    @Excel(name = "出库状态")
+    private String outStatus;
+
+    /** 数据字典,调拨类型 */
+    @Excel(name = "数据字典,调拨类型")
+    private String type;
+
+    /** 入库状态 */
+    @Excel(name = "入库状态")
+    private String inStatus;
+
+    /** 调拨经办人id */
+    @Excel(name = "外键，关联用户表,调拨经办人")
+    private String manager;
+
+    /** 调拨经办人 */
+    @Excel(name = "调拨经办人")
+    private String managerName;
+
+    /** 0：存在；1：已删除，不存在 */
+    @Excel(name = "0：存在；1：已删除，不存在")
+    private Boolean deleted;
+
+
+    /** 外键，关联用户表,审核人 */
+    private String reviewer;
+
+    /**审核人 */
+    private String revieerName;
+
+    /*审核时间*/
+    private Date reviewer_time;
+
+
+    /*审核意见*/
+    private String comments;
+
+    /** 调拨明细信息 */
+    private List<TransferDetails> transferDetailsList;
+
+    public void setTid(String tid) 
+    {
+        this.tid = tid;
+    }
+
+    public String getTid() 
+    {
+        return tid;
+    }
+    public void setTdCode(String tdCode) 
+    {
+        this.tdCode = tdCode;
+    }
+
+    public String getOutName() {
+        return outName;
+    }
+
+    public void setOutName(String outName) {
+        this.outName = outName;
+    }
+
+    public String getInName() {
+        return inName;
+    }
+
+    public void setInName(String inName) {
+        this.inName = inName;
+    }
+
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
+    }
+
+    public String getRevieerName() {
+        return revieerName;
+    }
+
+    public void setRevieerName(String revieerName) {
+        this.revieerName = revieerName;
+    }
+
+    public String getTdCode()
+    {
+        return tdCode;
+    }
+    public void setDocStatus(String docStatus) 
+    {
+        this.docStatus = docStatus;
+    }
+
+    public String getDocStatus() 
+    {
+        return docStatus;
+    }
+    public void setDate(Date date) 
+    {
+        this.date = date;
+    }
+
+    public Date getDate() 
+    {
+        return date;
+    }
+    public void setOutWId(String outWId) 
+    {
+        this.outWId = outWId;
+    }
+
+    public String getOutWId() 
+    {
+        return outWId;
+    }
+    public void setInWId(String inWId) 
+    {
+        this.inWId = inWId;
+    }
+
+    public String getInWId() 
+    {
+        return inWId;
+    }
+    public void setOutStatus(String outStatus)
+    {
+        this.outStatus = outStatus;
+    }
+
+    public String getOutStatus()
+    {
+        return outStatus;
+    }
+    public void setType(String type) 
+    {
+        this.type = type;
+    }
+
+    public String getType() 
+    {
+        return type;
+    }
+    public void setInStatus(String inStatus)
+    {
+        this.inStatus = inStatus;
+    }
+
+    public String getInStatus()
+    {
+        return inStatus;
+    }
+    public void setManager(String manager) 
+    {
+        this.manager = manager;
+    }
+
+    public String getManager() 
+    {
+        return manager;
+    }
+    public void setDeleted(Boolean deleted) 
+    {
+        this.deleted = deleted;
+    }
+
+    public Boolean getDeleted() 
+    {
+        return deleted;
+    }
+
+    public List<TransferDetails> getTransferDetailsList()
+    {
+        return transferDetailsList;
+    }
+
+    public void setTransferDetailsList(List<TransferDetails> transferDetailsList)
+    {
+        this.transferDetailsList = transferDetailsList;
+    }
+    public List<Date> getDates() {
+        return dates;
+    }
+
+    public void setDates(List<Date> dates) {
+        this.dates = dates;
+    }
+
+    public String getReviewer() {
+        return reviewer;
+    }
+
+    public void setReviewer(String reviewer) {
+        this.reviewer = reviewer;
+    }
+
+    public Date getReviewer_time() {
+        return reviewer_time;
+    }
+
+    public void setReviewer_time(Date reviewer_time) {
+        this.reviewer_time = reviewer_time;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    @Override
+    public String toString() {
+        return "Transfer{" +
+                "tid='" + tid + '\'' +
+                ", tdCode='" + tdCode + '\'' +
+                ", docStatus='" + docStatus + '\'' +
+                ", date=" + date +
+                ", dates=" + dates +
+                ", outWId='" + outWId + '\'' +
+                ", outName='" + outName + '\'' +
+                ", inWId='" + inWId + '\'' +
+                ", inName='" + inName + '\'' +
+                ", outStatus='" + outStatus + '\'' +
+                ", type='" + type + '\'' +
+                ", inStatus='" + inStatus + '\'' +
+                ", manager='" + manager + '\'' +
+                ", managerName='" + managerName + '\'' +
+                ", deleted=" + deleted +
+                ", reviewer='" + reviewer + '\'' +
+                ", revieerName='" + revieerName + '\'' +
+                ", reviewer_time=" + reviewer_time +
+                ", comments='" + comments + '\'' +
+                ", transferDetailsList=" + transferDetailsList +
+                '}';
+    }
+}

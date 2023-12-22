@@ -1,5 +1,6 @@
 package com.lingyun.wh.warehouse.service.impl;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -83,7 +84,7 @@ public class InventorySheetServiceImpl implements IInventorySheetService
      * @param inventorySheet 盘点单
      * @return 结果
      */
-    @Transactional
+    @Transactional(rollbackFor = SQLException.class)
     @Override
     public int insertInventorySheet(InventorySheet inventorySheet)
     {
@@ -93,7 +94,6 @@ public class InventorySheetServiceImpl implements IInventorySheetService
         inventorySheet.setCreateBy(uid);
         inventorySheet.setUpdateBy(uid);
         inventorySheet.setUpdateTime(nowDate);
-        inventorySheet.setCreateTime(DateUtils.getNowDate());
         R<String[]> res = remoteEncodeRuleService.genSpecifyEncoding(OrderType.INVENTORY_ORDER, 1, SecurityConstants.INNER);
         System.out.println("盘点编码获取 res: " + res);
         if (res == null || res.getCode() != 200) {
@@ -125,9 +125,11 @@ public class InventorySheetServiceImpl implements IInventorySheetService
      *
      * @param inventorySheet 盘点单对象
      */
-    @Transactional
+    @Transactional(rollbackFor = SQLException.class)
     public void insertInventoryDetails(InventorySheet inventorySheet)
     {
+        Date nowDate = DateUtils.getNowDate();
+        String uid = SecurityUtils.getUserId().toString();
         List<InventoryDetails> inventoryDetailsList = inventorySheet.getInventoryDetailsList();
         String isId = inventorySheet.getIsId();
         if (StringUtils.isNotNull(inventoryDetailsList))
@@ -136,6 +138,10 @@ public class InventorySheetServiceImpl implements IInventorySheetService
             for (InventoryDetails inventoryDetails : inventoryDetailsList)
             {
                 inventoryDetails.setIsId(isId);
+                inventoryDetails.setCreateBy(uid);
+                inventoryDetails.setCreateTime(nowDate);
+                inventoryDetails.setUpdateBy(uid);
+                inventoryDetails.setUpdateTime(nowDate);
                 list.add(inventoryDetails);
             }
             if (list.size() > 0)

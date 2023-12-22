@@ -34,7 +34,7 @@ import javax.validation.Validator;
  */
 @Service
 public class WareHouseServiceImpl implements IWareHouseService {
-    private static final Logger log = LoggerFactory.getLogger(IWareHouseService.class);
+    private static final Logger log = LoggerFactory.getLogger(WareHouseServiceImpl.class);
     @Autowired
     private WareHouseMapper wareHouseMapper;
 

@@ -4,6 +4,11 @@ import java.util.List;
 import java.io.IOException;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+
+import com.alibaba.nacos.common.utils.MapUtil;
+import com.lingyun.wh.warehouse.mapper.TransferMapper;
+import com.lingyun.wh.warehouse.service.ITransferService;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.log.annotation.Log;
@@ -28,7 +33,8 @@ public class InventorySheetController extends BaseController
 {
     @Autowired
     private IInventorySheetService inventorySheetService;
-
+    @Autowired
+    private ITransferService transferMapper;
     /**
      * 查询盘点单列表
      */
@@ -36,12 +42,23 @@ public class InventorySheetController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(@RequestParam Map<String,Object>map)
     {
-        System.out.println("inventoryListMap==========="+map);
+        System.out.println("inventoryListMap0000==========="+map);
         startPage();
         List<InventorySheet> list = inventorySheetService.selectInventorySheetList(map);
-        System.out.println("inventoryList*******************"+list.size());
         return getDataTable(list);
     }
+
+
+
+//    @RequiresPermissions("InventorySheet:inventory:list")
+//    @GetMapping("/listByIsId")
+//    public AjaxResult listbyIsId(@RequestParam Map<String,Object>map)
+//    {
+//        System.out.println("inventoryListMap==========="+map);
+//        startPage();
+//        List<InventorySheet> list = inventorySheetService.selectInventorySheetList(map);
+//        return success(list);
+//    }
 
     /**
      * 导出盘点单列表
@@ -59,12 +76,12 @@ public class InventorySheetController extends BaseController
     /**
      * 获取盘点单详细信息
      */
-    @RequiresPermissions("InventorySheet:inventory:query")
-    @GetMapping(value = "/{isId}")
-    public AjaxResult getInfo(@PathVariable("isId") String isId)
-    {
-        return success(inventorySheetService.selectInventorySheetByIsId(isId));
-    }
+//    @RequiresPermissions("InventorySheet:inventory:query")
+//    @GetMapping(value = "/{isId}")
+//    public AjaxResult getInfo(@PathVariable("isId") String isId)
+//    {
+//        return success(inventorySheetService.selectInventorySheetByIsId(isId));
+//    }
 
     /**
      * 新增盘点单-盘点明细
@@ -105,9 +122,19 @@ public class InventorySheetController extends BaseController
     @GetMapping("/getByWid")
     public TableDataInfo goodsByWid(@RequestParam Map<String,Object> map)
     {
-        System.out.println("goodsByWid map"+map);
-        System.out.println("selectInventorySheetByWid "+inventorySheetService.selectInventorySheetByWid(map));
-        return getDataTable(inventorySheetService.selectInventorySheetByWid(map));
+        startPage();
+        List<Map<String, Object>> list = inventorySheetService.selectInventorySheetByWid(map);
+        System.out.println("ppppppppppp[][][]"+list);
+        // 入库仓库的 ID
+        String w_id = MapUtils.getString(map, "inWId");
+        list.forEach(e->{
+            // 货品 ID
+            String goodsId = MapUtils.getString(e, "g_id");
+            // 去数据库查询
+            int totalItemQuantity = transferMapper.InItemQuantity(w_id, goodsId);
+            e.put("stockQuantity",totalItemQuantity );
+        });
+        return getDataTable(list);
     }
 
 

@@ -30,6 +30,17 @@ public class Goods extends BaseEntity {
     @Excel(name = "货品ID")
     private String gId;
 
+    private Integer wDays;//预警天数
+
+
+    public Integer getwDays() {
+        return wDays;
+    }
+
+    public void setwDays(Integer wDays) {
+        this.wDays = wDays;
+    }
+
     /** 货品编号 */
     @Excel(name = "货品编号")
     private String gCode;
@@ -54,54 +65,91 @@ public class Goods extends BaseEntity {
     /** 供应商 ID */
     @Excel(name = "供应商ID")
     private String sId;
+
     /** 排序 */
     @Excel(name = "排序")
     private Long sort;
+
     /** 状态，0:default，启用；1：禁用 */
     @Excel(name = "状态")
     private Integer status;
+
     /** 规格型号 */
     @Excel(name = "规格型号")
     private String specCode;
+
     /** 出库参考价 */
     @Excel(name = "出库参考价")
     private BigDecimal orPrice;
+
     /** 入库参考价 */
     @Excel(name = "入库参考价")
     private BigDecimal wrPrice;
+
     /** 预警 ID */
     @Excel(name = "预警ID")
     private String warningId;
+
     /** 有保质期，0:default，没有保质期；1：有保质期 */
     @Excel(name = "是否有保质期")
     private Integer hasShelfLife;
+
+
     /** 保质期 */
     @Excel(name = "保质期")
     private String shelfLife;
+
     /** 货品上限 */
     @Excel(name = "货品上限")
     private String itemLimit;
+
     /** 货品下限 */
     @Excel(name = "货品下限")
     private String lowerLimit;
+
+
     /**
      * 备注
      */
 //    @Excel(name = "备注")
     private String remark;
+
     /** 创建人 **/
     private String createBy;
+
     /** 操作时间 **/
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
+
     /** 修改人 **/
     private  String updateBy;
+
     /** 修改时间 **/
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
+
     /** 逻辑删除，0：存在；1：已删除，不存在 */
     private Boolean isDelete;
 
+    public String getGtName() {
+        return gtName;
+    }
+
+    public void setGtName(String gtName) {
+        this.gtName = gtName;
+    }
+
+    public List<GoodsType> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<GoodsType> children) {
+        this.children = children;
+    }
+
+    public String getgId() {
+        return gId;
+    }
     /**
      * 货品列表，一个货品对应多个库存
      */
@@ -139,13 +187,13 @@ public class Goods extends BaseEntity {
         this.gId = gId;
     }
 
-    public String getgCode() {
-        return gCode;
-    }
-
-    public void setgCode(String gCode) {
-        this.gCode = gCode;
-    }
+//    public String getgCode() {
+//        return gCode;
+//    }
+//
+//    public void setgCode(String gCode) {
+//        this.gCode = gCode;
+//    }
 
     public String getgName() {
         return gName;
@@ -324,6 +372,7 @@ public class Goods extends BaseEntity {
         this.createTime = createTime;
     }
 
+
     public String getUpdateBy() {
         return updateBy;
     }
@@ -365,11 +414,15 @@ public class Goods extends BaseEntity {
         return "Goods{" +
                 "children=" + children +
                 ", gId='" + gId + '\'' +
+                "children=" + children +
+                ", gId='" + gId + '\'' +
+                ", wDays=" + wDays +
                 ", gCode='" + gCode + '\'' +
                 ", gName='" + gName + '\'' +
                 ", gtId='" + gtId + '\'' +
                 ", gtName='" + gtName + '\'' +
                 ", goodsType=" + goodsType +
+                ", gtName='" + gtName + '\'' +
                 ", sId='" + sId + '\'' +
                 ", sort=" + sort +
                 ", status=" + status +

@@ -60,6 +60,12 @@ public class InventoryDetails extends BaseEntity
     @Excel(name = "0：存在；1：已删除，不存在")
     private Boolean isDelete;
 
+
+
+    /*库位*/
+    private StorageLocation storageLocation;
+
+
     public Stock getStock() {
         return stock;
     }
@@ -167,6 +173,14 @@ public class InventoryDetails extends BaseEntity
     public Boolean getIsDelete()
     {
         return isDelete;
+    }
+
+    public StorageLocation getStorageLocation() {
+        return storageLocation;
+    }
+
+    public void setStorageLocation(StorageLocation storageLocation) {
+        this.storageLocation = storageLocation;
     }
 
     public void setIsDelete(Boolean isDelete)

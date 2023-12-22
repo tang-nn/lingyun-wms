@@ -85,6 +85,20 @@ public class GoodsController extends BaseController {
         util.exportExcel(response, goodsList, "货品信息数据");
     }
 
+
+    /**
+     * 新增货品信息
+     */
+    @RequiresPermissions("lingyun-wh-goods:goods:add")
+    @Log(title = "货品信息", businessType = BusinessType.INSERT)
+    @PostMapping("/agds")
+    public AjaxResult add(@RequestBody Goods goods)
+    {
+        return toAjax(goodsService.insertGoods(goods));
+    }
+
+
+
     /**
      * 导入货品信息列表
      *
@@ -153,16 +167,6 @@ public class GoodsController extends BaseController {
         startPage();
         List<Goods> goodsList = goodsService.queryGoodsByIds(null);
         return getDataTable(goodsList);
-    }
-
-    /**
-     * 新增货品信息
-     */
-    @RequiresPermissions("lingyun-wh-goods:goods:add")
-    @Log(title = "货品信息", businessType = BusinessType.INSERT)
-    @PostMapping
-    public AjaxResult add(@RequestBody Goods goods) {
-        return toAjax(goodsService.insertGoods(goods));
     }
 
     /**

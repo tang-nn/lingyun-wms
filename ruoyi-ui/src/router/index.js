@@ -70,6 +70,32 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
+        path: '/gdsedit',
+        component: () => import('@/views/wms/goodsmanager/goodsinfo/goodsedit'),
+        name: 'goodsedit',
+        meta: { title: '商品管理 / 编辑货品信息', icon: 'dashboard' }
+      }
+    ]
+  },
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/goods',
+        component: () => import('@/views/wms/goodsmanager/goodsinfo/index.vue'),
+        name: 'gdpage',
+        meta: { title: '货品信息', icon: 'dashboard' }
+      }
+    ]
+  },
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
         path: '/housedetails/:w_id',
         component: () => import('@/views/wms/warehouse/warehousedetails/index'),
         name: 'warehousedetail',
@@ -85,7 +111,7 @@ export const constantRoutes = [
       {
         path: 'warehousemanager',
         component: () => import('@/views/wms/warehouse/index'),
-        name: 'whdetail',
+        name: 'whmanager',
         meta: { title: '仓库管理', icon: 'dashboard'}
       }
     ]
@@ -98,7 +124,7 @@ export const constantRoutes = [
       {
         path: 'addwarehouse',
         component: () => import('@/views/wms/warehouse/addwarehouse/index'),
-        name: 'whdetail',
+        name: 'whadd',
         meta: { title: '新增仓库', icon: 'dashboard'}
       }
     ]
@@ -110,10 +136,10 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: '/gdsedit',
-        component: () => import('@/views/wms/goodsmanager/goodsinfo/goodsedit'),
-        name: 'goodsedit',
-        meta: { title: '商品管理 / 编辑货品信息', icon: 'dashboard' }
+        path: '/InventorySheet',
+        component: () => import('@/views/wms/warehouse/inventory/index'),
+        name: 'InSheet',
+        meta: { title: '库存盘点', icon: 'dashboard' }
       }
     ]
   },
@@ -123,10 +149,10 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: '/InventorySheet',
-        component: () => import('@/views/wms/warehouse/inventory/index'),
-        name: 'InSheet',
-        meta: { title: '库存盘点', icon: 'dashboard' }
+        path: '/addInventorySheet',
+        component: () => import('@/views/wms/warehouse/inventory/addIndex'),
+        name: 'addInSheet',
+        meta: { title: '库存盘点 / 新增盘点', icon: 'dashboard' }
       }
     ]
   },
@@ -149,10 +175,49 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: '/addInventorySheet',
-        component: () => import('@/views/wms/warehouse/inventory/addIndex'),
-        name: 'addInSheet',
-        meta: { title: '库存盘点 / 新增盘点', icon: 'dashboard' }
+        path: '/addtransfer',
+        component: () => import('@/views/wms/warehouse/Transfer/addIndex'),
+        name: 'addtransferOrder',
+        meta: { title: '库存调拨/新增调拨', icon: 'dashboard'}
+      }
+    ]
+  },
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/transfer',
+        component: () => import('@/views/wms/warehouse/Transfer/index'),
+        name: 'transfer',
+        meta: { title: '库存调拨', icon: 'dashboard' }
+      }
+    ]
+  },
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/Transferdetails/:tid',
+        component: () => import('@/views/wms/warehouse/Transfer/detailsIndex'),
+        name: 'tfdetails',
+        meta: { title: '库存调拨/调拨详情', icon: 'dashboard'}
+      }
+    ]
+  },
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/updateTransfer/:tid',
+        component: () => import('@/views/wms/warehouse/Transfer/editIndex.vue'),
+        name: 'updetails',
+        meta: { title: '库存调拨/修改调拨', icon: 'dashboard'}
       }
     ]
   },

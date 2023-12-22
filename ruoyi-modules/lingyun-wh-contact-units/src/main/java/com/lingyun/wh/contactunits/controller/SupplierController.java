@@ -41,6 +41,15 @@ public class SupplierController extends BaseController {
     }
 
     /**
+     * 查询供应商下拉框(货品新增)
+     */
+    @RequiresPermissions("supplier:supplier:list")
+    @GetMapping("/supplierList")
+    public AjaxResult consumerList() {
+        return success(supplierService.selectSupplierList(new Supplier()));
+    }
+
+    /**
      * 导出供应商列表
      */
     @RequiresPermissions("supplier:supplier:export")

@@ -54,6 +54,10 @@ public interface InventorySheetMapper
      */
     public  List<Map<String,Object>> selectInventorySheetByWid(Map<String,Object> map);
 
+
+
+
+
     /**
      * 新增盘点单
      *

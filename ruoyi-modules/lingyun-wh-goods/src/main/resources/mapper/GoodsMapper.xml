@@ -79,14 +79,6 @@
             <if test="gt_id != null "> and wg.gt_id = #{gt_id}</if>
             <if test="gtId != null  and gtId != ''"> and wg.gt_id = #{gtId}</if>
             <if test="unit != null  and unit != ''"> and wsk.unit = #{unit}</if>
-<!--            <if test="gCode != null  and gCode != ''"> and wg.g_code = #{gCode}</if>-->
-<!--            <if test="sort != null "> and wg.sort = #{sort}</if>-->
-<!--            <if test="specCode != null  and specCode != ''"> and wg.spec_code = #{specCode}</if>-->
-<!--            <if test="orPrice != null "> and wg.or_price = #{orPrice}</if>-->
-<!--            <if test="wrPrice != null "> and wg.wr_price = #{wrPrice}</if>-->
-<!--            <if test="hasShelfLife != null "> and wg.has_shelf_life = #{hasShelfLife}</if>-->
-<!--            <if test="itemLimit != null "> and wg.item_limit = #{itemLimit}</if>-->
-<!--            <if test="lowerLimit != null "> and wg.lower_limit = #{lowerLimit}</if>-->
             and wg.is_delete = 0
         </where>
         order by wg.sort asc
@@ -123,6 +115,8 @@
         select count(*) from wh_goods where g_name=#{gname}
     </select>
 
+
+<!--    新增货品信息-->
     <insert id="insertGoods" parameterType="com.lingyun.wh.goods.api.domain.Goods" useGeneratedKeys="true" keyProperty="gId">
         insert into wh_goods
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -138,14 +132,13 @@
             <if test="wrPrice != null">wr_price,</if>
             <if test="warningId != null">warning_id,</if>
             <if test="hasShelfLife != null">has_shelf_life,</if>
-            <if test="shelfLife != null">shelf_life,</if>
-            <if test="itemLimit != null">item_limit,</if>
-            <if test="lowerLimit != null">lower_limit,</if>
+             shelf_life,
+            item_limit,
+            lower_limit,
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
-            <if test="isDelete != null and isDelete != ''">is_delete,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="gCode != null and gCode != ''">#{gCode},</if>
@@ -160,17 +153,31 @@
             <if test="wrPrice != null">#{wrPrice},</if>
             <if test="warningId != null">#{warningId},</if>
             <if test="hasShelfLife != null">#{hasShelfLife},</if>
-            <if test="shelfLife != null">#{shelfLife},</if>
-            <if test="itemLimit != null">#{itemLimit},</if>
-            <if test="lowerLimit != null">#{lowerLimit},</if>
+            #{shelfLife},
+            #{itemLimit},
+            #{lowerLimit},
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null " >#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
-            <if test="isDelete != null and isDelete != ''">#{isDelete},</if>
         </trim>
     </insert>
 
+
+<!--    新增预警-->
+    <insert id="insertWarning" parameterType="com.lingyun.wh.goods.api.domain.WarningInfo" useGeneratedKeys="true" keyProperty="wareId">
+        insert into wh_warning_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="wDays != null and wDays != ''">w_days,</if>
+        warning_notifier,
+        warning_info,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <if test="wDays != null and wDays != ''">#{wDays},</if>
+            #{warningNotifier},
+            #{warningInfo},
+        </trim>
+    </insert>
 
     <update id="updateGoods" parameterType="com.lingyun.wh.goods.api.domain.Goods">
         update wh_goods

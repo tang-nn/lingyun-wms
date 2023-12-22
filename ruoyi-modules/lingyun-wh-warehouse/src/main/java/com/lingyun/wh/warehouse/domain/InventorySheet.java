@@ -69,6 +69,7 @@ public class InventorySheet extends BaseEntity
     @Excel(name = "0：存在；1：已删除，不存在")
     private Boolean isDelete;
 
+
     /** 盘点明细信息 */
     private List<InventoryDetails> inventoryDetailsList;
 

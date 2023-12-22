@@ -21,10 +21,12 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="isDelete" column="is_delete"/>
+
 <!--        盘点明细表 InventoryDetails 集合-->
         <collection property="inventoryDetailsList" autoMapping="true"
                     select="selectInventoryDetailsByIsId" column="is_id">
         </collection>
+
     </resultMap>
 
 
@@ -54,6 +56,9 @@
         <association property="stock" javaType="com.lingyun.wh.goods.api.domain.Stock">
             <result column="unit" property="unit"/>
             <result column="item_quantity" property="itemQuantity"/>
+        </association>
+        <association property="storageLocation" javaType="com.lingyun.wh.warehouse.domain.StorageLocation">
+            <result column="sl_name" property="slName"/>
         </association>
         </resultMap>
 
@@ -86,10 +91,11 @@
         SELECT
         pdmxb.count_quantity,pdmxb.profit_loss_quantity,
         pdmxb.is_status,pdmxb.count_amount, gdb.g_name, gdb.wr_price,
-        gdb.g_name,gdb.g_code,gdb.spec_code,kcb.unit,kcb.item_quantity
+        gdb.g_code,gdb.spec_code,kcb.unit,kcb.item_quantity,sl.sl_name
         from wh_is_details pdmxb
         inner join wh_stock kcb on pdmxb.s_id=kcb.s_id
         inner join wh_goods gdb on kcb.g_id=gdb.g_id
+        inner join wh_storage_location sl on sl.sl_id=kcb.sl_id
         <where>
             pdmxb.is_id = #{is_id}
         </where>
@@ -158,7 +164,8 @@
 
     <!--  根据仓库查询下面的货品  -->
     <select id="selectInventorySheetByWid" resultType="map">
-        select gd.g_name,gd.g_code,gd.spec_code,ws.unit,ws.s_id,gt_name,ws.item_quantity,
+        select gd.g_id,gd.g_name,gd.g_code,gd.spec_code,ws.unit,ws.s_id sId,
+               ws.s_id stockId,gt_name,ws.item_quantity,ws.number_plans outNums,
                gd.wr_price,ws.sl_id,ws.remark,sl.sl_name from wh_stock ws
                  inner join wh_goods gd
                             on gd.g_id=ws.g_id
@@ -166,14 +173,14 @@
                             on  gt.gt_id=gd.gt_id
                  inner join wh_storage_location sl
                             on sl.sl_id=ws.sl_id
-        where ws.w_id=#{w_id}
+        where ws.w_id=#{w_id} and ws.number_plans > 0
         <if test="g_name!=null and g_name!=''">
             and gd.g_name like concat('%',#{g_name},'%')
         </if>
         <if test="unit!=null and unit!=''">
             and ws.unit = #{unit}
         </if>
-        and ws.is_delete=0
+        and gd.is_delete=0
     </select>
 
 
@@ -193,11 +200,11 @@
         <if test="createBy != null and createBy != ''">create_by,</if>
         <if test="createTime != null">create_time,</if>
         <if test="updateBy != null and updateBy != ''">update_by,</if>
-        <if test="updateTime != null">update_time,</if>
+        <if test="updateTime != null">update_time</if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
         <if test="isCode != null and isCode != ''">#{isCode},</if>
-        <if test="isResult != null and isResult != ''">no</if>
+        <if test="isResult != null and isResult != ''">#{isResult},</if>
         <if test="wId != null and wId != ''">#{wId},</if>
         <if test="isType != null and isType != ''">#{isType},</if>
         <if test="isStartTime != null">#{isStartTime},</if>
@@ -207,7 +214,7 @@
         <if test="createBy != null and createBy != ''">#{createBy},</if>
         <if test="createTime != null">#{createTime},</if>
         <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
-        <if test="updateTime != null">#{updateTime},</if>
+        <if test="updateTime != null">#{updateTime}</if>
     </trim>
 </insert>
 
