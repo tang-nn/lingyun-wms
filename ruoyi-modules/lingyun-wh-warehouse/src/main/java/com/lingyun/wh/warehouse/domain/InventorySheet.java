@@ -29,6 +29,10 @@ public class InventorySheet extends BaseEntity
     @Excel(name = "盘点结果")
     private String isResult;
 
+    /*审核状态*/
+    @Excel(name = "审核状态")
+    private String reviewStatus;
+
     /** 仓库 ID */
     private String wId;
 
@@ -53,11 +57,11 @@ public class InventorySheet extends BaseEntity
 
     /** 出库状态 */
     @Excel(name = "出库状态")
-    private Integer outStatus;
+    private String outStatus;
 
     /** 入库状态 */
     @Excel(name = "入库状态")
-    private Integer inStatus;
+    private String inStatus;
 
     /** 关联用户表,盘点经办人 ID*/
     private String isManager;
@@ -69,9 +73,52 @@ public class InventorySheet extends BaseEntity
     @Excel(name = "0：存在；1：已删除，不存在")
     private Boolean isDelete;
 
+    //审核人
+    private String reviewer;
+
+    //审核时间
+    @Excel(name = "审核时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date reviewerTime;
+
+    //审核意见
+    private String comments;
+    private String createBy;
+
+    @Excel(name = "创建时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date  createTime;
+    private String updateBy;
+
+    @Excel(name = "修改时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date updateTime;
+
+
 
     /** 盘点明细信息 */
     private List<InventoryDetails> inventoryDetailsList;
+
+    public String getReviewer() {
+        return reviewer;
+    }
+
+    public void setReviewer(String reviewer) {
+        this.reviewer = reviewer;
+    }
+
+    public Date getReviewerTime() {
+        return reviewerTime;
+    }
+
+    public void setReviewerTime(Date reviewerTime) {
+        this.reviewerTime = reviewerTime;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
 
     public String getManagerName() {
         return managerName;
@@ -107,7 +154,16 @@ public class InventorySheet extends BaseEntity
     {
         return isCode;
     }
-    public void setIsResult(String isResult) 
+
+    public String getReviewStatus() {
+        return reviewStatus;
+    }
+
+    public void setReviewStatus(String reviewStatus) {
+        this.reviewStatus = reviewStatus;
+    }
+
+    public void setIsResult(String isResult)
     {
         this.isResult = isResult;
     }
@@ -152,25 +208,24 @@ public class InventorySheet extends BaseEntity
     {
         return isEndTime;
     }
-    public void setOutStatus(Integer outStatus) 
-    {
+
+    public String getOutStatus() {
+        return outStatus;
+    }
+
+    public void setOutStatus(String outStatus) {
         this.outStatus = outStatus;
     }
 
-    public Integer getOutStatus() 
-    {
-        return outStatus;
+    public String getInStatus() {
+        return inStatus;
     }
-    public void setInStatus(Integer inStatus) 
-    {
+
+    public void setInStatus(String inStatus) {
         this.inStatus = inStatus;
     }
 
-    public Integer getInStatus() 
-    {
-        return inStatus;
-    }
-    public void setIsManager(String isManager) 
+    public void setIsManager(String isManager)
     {
         this.isManager = isManager;
     }
@@ -207,25 +262,70 @@ public class InventorySheet extends BaseEntity
     }
 
     @Override
+    public String getCreateBy() {
+        return createBy;
+    }
+
+    @Override
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
+
+    @Override
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    @Override
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    @Override
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    @Override
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    @Override
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    @Override
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    @Override
     public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("isId", getIsId())
-            .append("isCode", getIsCode())
-            .append("isResult", getIsResult())
-            .append("wId", getwId())
-            .append("isType", getIsType())
-            .append("isStartTime", getIsStartTime())
-            .append("isEndTime", getIsEndTime())
-            .append("outStatus", getOutStatus())
-            .append("inStatus", getInStatus())
-            .append("remark", getRemark())
-            .append("isManager", getIsManager())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateBy", getUpdateBy())
-            .append("updateTime", getUpdateTime())
-            .append("isDelete", getIsDelete())
-            .append("inventoryDetailsList", getInventoryDetailsList())
-            .toString();
+        return "InventorySheet{" +
+                "isId='" + isId + '\'' +
+                ", isCode='" + isCode + '\'' +
+                ", isResult='" + isResult + '\'' +
+                ", reviewStatus='" + reviewStatus + '\'' +
+                ", wId='" + wId + '\'' +
+                ", whName='" + whName + '\'' +
+                ", isType='" + isType + '\'' +
+                ", isStartTime=" + isStartTime +
+                ", isEndTime=" + isEndTime +
+                ", outStatus=" + outStatus +
+                ", inStatus=" + inStatus +
+                ", isManager='" + isManager + '\'' +
+                ", managerName='" + managerName + '\'' +
+                ", isDelete=" + isDelete +
+                ", reviewer='" + reviewer + '\'' +
+                ", reviewerTime=" + reviewerTime +
+                ", comments='" + comments + '\'' +
+                ", createBy='" + createBy + '\'' +
+                ", createTime=" + createTime +
+                ", updateBy='" + updateBy + '\'' +
+                ", updateTime=" + updateTime +
+                ", inventoryDetailsList=" + inventoryDetailsList +
+                '}';
     }
 }

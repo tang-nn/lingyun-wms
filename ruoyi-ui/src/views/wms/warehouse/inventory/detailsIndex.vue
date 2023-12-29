@@ -5,12 +5,6 @@
    padding-bottom: 10px;margin-left: 200px;width: 1280px">
       <h4 style="margin-left: 25px;padding-top:10px;font-weight: bold;font-size: 20px">盘点单号:{{InventoryDetails[0] && InventoryDetails[0].isCode}}</h4>
     <div style="position: relative;top: -50px;left: -26px">
-      <el-button  style="float:right;margin-right: 5px;margin-top: 12px;padding-right: 14px;margin-left: 14px"
-                  plain size="small"
-                  @click="" v-hasPermi="['gd:good:add']" >入库</el-button>
-      <el-button  style="float:right;margin-right: 5px;margin-top: 12px;padding-right: 16px"
-                  plain size="small"
-                  @click=""  v-hasPermi="['wh:house:delete']">出库</el-button>
     </div>
       <div style="padding-top: 30px;padding-left: 30px">
         <el-form ref="elForm" size="medium" label-width="95px" style="margin-top: 14px">
@@ -128,8 +122,11 @@
           </el-table-column>
           <el-table-column label="盘点金额" align="center" prop="countAmount"/>
             <el-table-column label="盈亏数量" align="center">
-              <template slot-scope="scope" :style="{color: profitLossQuantity===0 ? 'black' : (profitLossQuantity >0 ? 'green' : 'red')}">
-                {{ profitLossQuantity(scope.row.countQuantity, scope.row.stock.itemQuantity) }}
+              <template slot-scope="scope">
+              <span :style="{ color: scope.row.profitLossQuantity >0 ?
+               'lightseagreen' : scope.row.profitLossQuantity<0?'red':'black' }">
+                {{ scope.row.profitLossQuantity }}
+              </span>
               </template>
             </el-table-column>
 
@@ -141,7 +138,10 @@
           <el-table-column label="入库单价" align="center"  prop="goods.wrPrice" width="100px"/>
           <el-table-column label="盈亏金额" align="center" prop="">
             <template slot-scope="scope">
-              {{ profitLossAmount(scope.row.profitLossQuantity, scope.row.goods.wrPrice) }}
+              <span :style="{ color: scope.row.profitLossAmount > 0 ?
+               'lightseagreen' : scope.row.profitLoossAmount <0 ?'red':'black' }">
+                {{ profitLossAmount(scope.row.profitLossQuantity, scope.row.goods.wrPrice) }}
+              </span>
             </template>
           </el-table-column>
           <el-table-column label="备注" align="center" prop="remark" width="140px"/>

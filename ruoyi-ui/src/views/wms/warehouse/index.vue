@@ -114,7 +114,8 @@
     <el-table v-loading="loading" max-height="520px" :data="warehouseList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" align="center" prop="w_id" />
-      <el-table-column label="仓库编号" align="center" prop="w_code" >
+      <el-table-column label="仓库下库存num" align="center" v-if="false" prop="WareStockNum" ref="WareStockNum"/>
+      <el-table-column label="仓库编号" align="center" prop="w_code" width="150px">
         <template slot-scope="{ row }">
           <span @click="goToDetails(row)">{{ row.w_code }}</span>
         </template>
@@ -122,7 +123,7 @@
       <el-table-column label="仓库名称" align="center" prop="w_name" />
       <el-table-column label="仓库容量/m³" align="center" prop="w_capacity" />
       <el-table-column label="仓库地址" align="center" prop="w_address" width="300px"/>
-      <el-table-column label="库管部门" align="center" prop="deptName" />
+      <el-table-column label="库管部门" align="center" prop="deptName" width="150px"/>
       <el-table-column label="仓库主管" align="center" prop="threeuser" />
       <el-table-column label="库位数量" align="center" prop="storageNum" />
       <el-table-column label="仓库状态" align="center"  width="180">
@@ -214,8 +215,6 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
-      // 子表选中数据
-      checkedStorageLocation: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -243,7 +242,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 5,
         w_name: null,
         status: null,
         w_supervisor: null,
@@ -255,55 +254,10 @@ export default {
         children: "children",
         label: "label"
       },
-      // 表单校验
-      rules: {
-        wCode: [
-          { required: true, message: "仓库编号不能为空", trigger: "blur" }
-        ],
-        wName: [
-          { required: true, message: "仓库名称不能为空", trigger: "blur" }
-        ],
-        wCapacity: [
-          { required: true, message: "仓库容量不能为空", trigger: "blur" }
-        ],
-        status: [
-          { required: true, message: "仓库状态,,,0：default，启用；1：禁用不能为空", trigger: "change" }
-        ],
-        wAddress: [
-          { required: true, message: "仓库地址不能为空", trigger: "blur" }
-        ],
-        isDefault: [
-          { required: true, message: "是否默认,,,,0：不是默认的；1：是默认的不能为空", trigger: "blur" }
-        ],
-        isLock: [
-          { required: true, message: "仓库锁定,,,,0：没有锁库；1：锁库，冻结仓库不能为空", trigger: "blur" }
-        ],
-        wSupervisor: [
-          { required: true, message: "关联至用户表，仓库主管不能为空", trigger: "blur" }
-        ],
-        remark: [
-          { required: true, message: "备注不能为空", trigger: "blur" }
-        ],
-        sort: [
-          { required: true, message: "排序不能为空", trigger: "blur" }
-        ],
-        createBy: [
-          { required: true, message: "关联至用户表，创建人不能为空", trigger: "blur" }
-        ],
-        createTime: [
-          { required: true, message: "操作时间不能为空", trigger: "blur" }
-        ],
-        updateBy: [
-          { required: true, message: "关联至用户表，修改人不能为空", trigger: "blur" }
-        ],
-        updateTime: [
-          { required: true, message: "修改时间不能为空", trigger: "blur" }
-        ],
-        isDelete: [
-          { required: true, message: "0：存在；1：已删除，不存在不能为空", trigger: "blur" }
-        ]
-      }
     };
+  },
+  mounted() {
+    const WareStockNum = this.$refs.WareStockNum;
   },
   created() {
     this.getList();
@@ -403,35 +357,7 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
-      const wId = row.wId || this.ids
-      getWarehouse(wId).then(response => {
-        this.form = response.data;
-        this.storageLocationList = response.data.storageLocationList;
-        this.open = true;
-        this.title = "修改仓库";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          this.form.storageLocationList = this.storageLocationList;
-          if (this.form.wId != null) {
-            updateWarehouse(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addWarehouse(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
+      this.$router.push({ path: `/edithouse/${row.w_id}` }); // 将 row.w_id 参数传递给路径占位符
     },
     //更改仓库状态(start)
     changeWareHouseStatusz(row) {
@@ -442,7 +368,7 @@ export default {
         return changeStatus(left.buttonValuez,w_ids);
       }).then(() => {
         this.getList();
-        this.$modal.msgSuccess("操作成功");
+        this.$modal.msgSuccess("启用成功");
       }).catch(() => {});
     },
     changeWareHouseStatuso(row) {
@@ -453,7 +379,7 @@ export default {
         return changeStatus(left.buttonValueo,w_ids);
       }).then(() => {
         this.getList();
-        this.$modal.msgSuccess("操作成功");
+        this.$modal.msgSuccess("停用成功");
       }).catch(() => {});
     },
     changeWareHouseStatust(row) {
@@ -464,21 +390,27 @@ export default {
         return changeStatus(left.buttonValuet,w_ids);
       }).then(() => {
         this.getList();
-        this.$modal.msgSuccess("操作成功");
+        this.$modal.msgSuccess("锁定成功");
       }).catch(() => {
       });
     },
 
 
     /** 删除按钮操作 */
-    handleDeletehandleDelete(row) {
+    handleDelete(row) {
       const w_ids = row.w_id || this.ids;
-      this.$modal.confirm('是否确认删除仓库编号为"' + w_ids + '"的数据项？').then(function() {
-        return delWarehouse(w_ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      const WareStockNum=row.WareStockNum;
+      if (WareStockNum>0){
+        this.$modal.msgError("不允许操作改仓库！");
+      }else {
+        this.$modal.confirm('是否确认删除仓库编号为"' + w_ids + '"的数据项？').then(function() {
+          return delWarehouse(w_ids);
+        }).then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        }).catch(() => {});
+      }
+
     },
   }
 };

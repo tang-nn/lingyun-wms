@@ -36,16 +36,8 @@ public interface GoodsMapper {
 
     //新增预警
     public int insertWarning(WarningInfo warningInfo);
-
-
-
-
-
-
-
-
-
-
+    //删除预警
+    public int deleteWarnId(String warnId);
     /**
      * 查询货品信息
      *
@@ -60,12 +52,7 @@ public interface GoodsMapper {
      * @return
      */
     ArrayList<Goods> selectGoodsByIds(@Param("ids") String[] ids);
-    /**
-     * 根据商品名称查询是否存在
-     * @param gname
-     * @return
-     */
-    public int selectGoodsByGname(String gname);
+
 
     /**
      * 修改货品信息
@@ -75,13 +62,7 @@ public interface GoodsMapper {
      */
     public int updateGoods(Goods goods);
 
-    /**
-     * 删除货品信息
-     *
-     * @param gId 货品信息主键
-     * @return 结果
-     */
-    public int deleteGoodsByGId(String gId);
+
 
     /**
      * 批量删除货品信息
@@ -92,6 +73,11 @@ public interface GoodsMapper {
     public int deleteGoodsByGIds(String[] gIds);
 
 
-
+    /**
+     * 根据商品名称查询是否存在
+     * @param gname
+     * @return
+     */
+    public int selectGoodsByGname(String gname);
 
 }

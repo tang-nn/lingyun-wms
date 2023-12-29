@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.domain.WareHouse;
+import com.lingyun.wh.warehouse.service.IStorageLocationService;
 import com.lingyun.wh.warehouse.service.IWareHouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,9 @@ public class WareHouseController extends BaseController
 {
     @Autowired
     private IWareHouseService wareHouseService;
+    @Autowired
+    private IStorageLocationService iStorageLocationService;
+
 
     /**
      * 查询仓库列表
@@ -86,7 +90,21 @@ public class WareHouseController extends BaseController
     @GetMapping(value = "/{wId}")
     public AjaxResult getInfo(@PathVariable("wId") String wId)
     {
+
+        System.out.println("ooooouuuu"+wareHouseService.selectWareHouseByWId(wId));
         return success(wareHouseService.selectWareHouseByWId(wId));
+    }
+
+    /**
+     * 获取仓库详细信息(修改回显数据)
+     */
+    @RequiresPermissions("wh:house:details")
+    @GetMapping(value = "/getby/{wId}")
+    public AjaxResult getInfoUpdate(@PathVariable("wId") String wId)
+    {
+
+        System.out.println("qqqqqqqq"+wareHouseService.selectWareHouseByWIdupdate(wId));
+        return success(wareHouseService.selectWareHouseByWIdupdate(wId));
     }
 
     /**
@@ -113,6 +131,17 @@ public class WareHouseController extends BaseController
     }
 
     /**
+     * 删除库位
+     * @param slIds
+     * @return
+     */
+    @DeleteMapping("/location/{slIds}")
+    public AjaxResult removeLocation(@PathVariable String[] slIds)
+    {
+        return toAjax(iStorageLocationService.deleteStorageLocationBySlIds(slIds));
+    }
+
+    /**
      * 删除仓库和旗下的库位
      */
     @RequiresPermissions("wh:house:delete")
@@ -135,5 +164,95 @@ public class WareHouseController extends BaseController
     {
         System.out.println("map==="+map);
         return toAjax(wareHouseService.changeStatus(map));
+    }
+
+
+//    首页数据的查询
+    @Log(title = "首页-库存数量占比", businessType = BusinessType.OTHER)
+    @RequiresPermissions("wh:house:home")
+    @GetMapping("/stockNumber")
+    public AjaxResult stockNumber()
+    {
+        List<Map<String, Object>> list = wareHouseService.StockNumber();
+        return success(list);
+    }
+
+    @Log(title = "首页-库存金额占比", businessType = BusinessType.OTHER)
+    @RequiresPermissions("wh:house:home")
+    @GetMapping("/stockPrice")
+    public AjaxResult stockPrice()
+    {
+        List<Map<String, Object>> list = wareHouseService.StockPrice();
+        return success(list);
+    }
+    @Log(title = "首页-入库统计", businessType = BusinessType.OTHER)
+    @RequiresPermissions("wh:house:home")
+    @GetMapping("/ibStatistics")
+    public AjaxResult ibStatistics()
+    {
+        List<Map<String, Object>> list = wareHouseService.inboundStatistics();
+        return success(list);
+    }
+
+    @Log(title = "首页-出库统计", businessType = BusinessType.OTHER)
+    @RequiresPermissions("wh:house:home")
+    @GetMapping("/obStatistics")
+    public AjaxResult obStatistics()
+    {
+        List<Map<String, Object>> list = wareHouseService.outBoundStatistics();
+        return success(list);
+    }
+
+    @Log(title = "首页-入库排名", businessType = BusinessType.OTHER)
+    @RequiresPermissions("wh:house:home")
+    @GetMapping("/ibRank")
+    public AjaxResult ibRank()
+    {
+        List<Map<String, Object>> list = wareHouseService.inboundRank();
+        return success(list);
+    }
+
+    @Log(title = "首页-出库排名", businessType = BusinessType.OTHER)
+    @RequiresPermissions("wh:house:home")
+    @GetMapping("/obRank")
+    public AjaxResult obRank()
+    {
+        List<Map<String, Object>> list = wareHouseService.outboundRank();
+        return success(list);
+    }
+    @Log(title = "首页-今日概况（入库）", businessType = BusinessType.OTHER)
+    @RequiresPermissions("wh:house:home")
+    @GetMapping("/itdetails")
+    public AjaxResult itdetails()
+    {
+        Map<String, Object> list = wareHouseService.inTodaydetails();
+        return success(list);
+    }
+
+    @Log(title = "首页-今日概况（入库）", businessType = BusinessType.OTHER)
+    @RequiresPermissions("wh:house:home")
+    @GetMapping("/otdetails")
+    public AjaxResult otdetails()
+    {
+        Map<String, Object> list = wareHouseService.outTodaydetails();
+        return success(list);
+    }
+
+    @Log(title = "首页-昨日概况（入库）", businessType = BusinessType.OTHER)
+    @RequiresPermissions("wh:house:home")
+    @GetMapping("/iydetails")
+    public AjaxResult iydetails()
+    {
+        Map<String, Object> list = wareHouseService.inYesterdaydetails();
+        return success(list);
+    }
+
+    @Log(title = "首页-昨日概况（入库）", businessType = BusinessType.OTHER)
+    @RequiresPermissions("wh:house:home")
+    @GetMapping("/oydetails")
+    public AjaxResult oydetails()
+    {
+        Map<String, Object> list = wareHouseService.outYesterdaydetails();
+        return success(list);
     }
 }

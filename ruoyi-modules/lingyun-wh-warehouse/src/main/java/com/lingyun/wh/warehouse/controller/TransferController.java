@@ -1,5 +1,6 @@
 package com.lingyun.wh.warehouse.controller;
 
+import com.lingyun.wh.warehouse.domain.InventorySheet;
 import org.apache.commons.collections4.MapUtils;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
 public class TransferController extends BaseController {
     @Autowired
     private ITransferService transferService;
+
 
     /**
      * 查询调拨单列表
@@ -68,16 +70,15 @@ public class TransferController extends BaseController {
             for (TransferDetails transferDetails : t) {
                 String gId = transferDetails.getGoods().getGId(); // 获取gId属性值
                 transferDetails.setTotalItemQuantity(transferService.InItemQuantity(transfer.getInWId(), gId));
-                List<StorageLocation> location = transferService.getLocation(transfer.getInWId(), gId);
-                System.out.println("location======="+location+";;;;"+transfer.getInWId()+"[][][]"+gId);
-
-                if (location!=null){
-                    for (StorageLocation s : location) {
-                        String slId = s.getSlId();
-                        transferDetails.setInLocationId(slId);
-                    }
-
-                }
+//                List<StorageLocation> location = transferService.getLocation(transfer.getInWId(), gId);
+//                System.out.println("location======="+location+";;;;"+transfer.getInWId()+"[][][]"+gId);
+//
+//                if (location!=null){
+//                    for (StorageLocation s : location) {
+//                        String slId = s.getSlId();
+//                        transferDetails.setInLocationId(slId);
+//                    }
+//                }
 
             }
         return success(transfer);
@@ -100,7 +101,7 @@ public class TransferController extends BaseController {
      */
     @RequiresPermissions("transfer:transfer:edit")
     @Log(title = "调拨单", businessType = BusinessType.UPDATE)
-    @PutMapping
+    @PutMapping("/editTransfer")
     public AjaxResult edit(@RequestBody Transfer transfer) {
         return toAjax(transferService.updateTransfer(transfer));
     }
@@ -115,6 +116,16 @@ public class TransferController extends BaseController {
         return toAjax(transferService.deleteTransferByTids(tids));
     }
 
+
+    /**
+     * 删除调拨单明细
+     */
+    @RequiresPermissions("transfer:transfer:remove")
+    @Log(title = "调拨单", businessType = BusinessType.DELETE)
+    @DeleteMapping("/deleteDetails/{tdId}")
+    public AjaxResult deleteDetails(@PathVariable String[] tdId) {
+        return toAjax(transferService.deleteTransferDetailsByTdIds(tdId));
+    }
 
     /*根据调拨仓库id查询所有库位*/
     @PostMapping(value = "/{w_id}")
@@ -154,4 +165,14 @@ public class TransferController extends BaseController {
         util.exportExcel(response, list, "调拨单数据");
     }
 
+
+    /**
+     * 审核调拨单
+     */
+    @RequiresPermissions("transfer:transfer:reviewInventory")
+    @PostMapping("/reviewInventory")
+    public AjaxResult reviewInventory(@RequestBody Transfer transfer)
+    {
+        return toAjax(transferService.reviewInventory(transfer));
+    }
 }

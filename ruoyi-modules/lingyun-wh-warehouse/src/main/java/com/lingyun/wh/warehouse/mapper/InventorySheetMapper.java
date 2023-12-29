@@ -96,6 +96,8 @@ public interface InventorySheetMapper
 
 
 
+    //审核盘点单
+    public int reviewInventory(InventorySheet inventorySheet);
     
 
     

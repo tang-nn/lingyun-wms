@@ -56,8 +56,8 @@ public interface ITransferService
 
 
 
-    //查询调入仓库货品的库位(调入仓库id 货品id)
-    public List<StorageLocation> getLocation( String w_id, String g_id);
+//    //查询调入仓库货品的库位(调入仓库id 货品id)
+//    public List<StorageLocation> getLocation( String w_id, String g_id);
 
 
     /**
@@ -75,5 +75,12 @@ public interface ITransferService
      * @return 结果
      */
     public int deleteTransferByTids(String[] tids);
+
+    public int deleteTransferDetailsByTdIds(String[]tdIds);
+
+
+
+    //审核调拨单
+    public int reviewInventory(Transfer transfer);
 
 }

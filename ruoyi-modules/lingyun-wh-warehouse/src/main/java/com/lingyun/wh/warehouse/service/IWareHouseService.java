@@ -22,10 +22,6 @@ public interface IWareHouseService
      */
     public List<Map<String,Object>> selectWareHouseByWId(String wId);
 
-    /**
-     * 查询仓库
-     */
-    public List<WareHouse> lists();
 
     /**
      * 查询仓库列表
@@ -33,6 +29,14 @@ public interface IWareHouseService
      */
     public List<Map<String,Object>> selectWareHouseList(Map<String,Object>map);
 
+
+    /**
+     * 根据wId查询仓库详情(联查,升级版)
+     *
+     * @param wId 仓库主键
+     * @return 仓库
+     */
+    public WareHouse selectWareHouseByWIdupdate(String wId);
 
     /**
      * 修改仓库状态
@@ -87,4 +91,42 @@ public interface IWareHouseService
      * @return
      */
     public List<StorageLocation>selectStorageListfindByWid(Map<String,Object>map);
+
+    /**
+     * 查询仓库
+     */
+    public List<WareHouse> lists();
+
+
+    //首页显示数据
+
+//    1.库存数量占比
+
+    public List<Map<String,Object>> StockNumber();
+    //    2.库存金额占比
+    public List<Map<String,Object>> StockPrice();
+
+    //    3.入库统计
+    public List<Map<String,Object>> inboundStatistics();
+
+    //    4.出库统计
+    public List<Map<String,Object>> outBoundStatistics();
+
+    //5.入库排名
+    public List<Map<String,Object>> inboundRank();
+
+    //6.出库排名
+    public List<Map<String,Object>> outboundRank();
+
+    //今日概况（入库）
+    public Map<String,Object> inTodaydetails();
+    //    (出库)
+    public Map<String,Object> outTodaydetails();
+
+
+
+    //昨日概况（入库）
+    public Map<String,Object> inYesterdaydetails();
+    //    (出库)
+    public Map<String,Object> outYesterdaydetails();
 }

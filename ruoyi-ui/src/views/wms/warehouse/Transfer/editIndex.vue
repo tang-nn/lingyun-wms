@@ -34,18 +34,18 @@
           <el-row>
             <el-col :span="9">
               <el-form-item label="调拨申请日期" prop="date" label-width="100">
-                <el-date-picker
-                  v-model="formData.date"
-                  type="date"
-                  value-format="yyyy-MM-dd mm:HH:ss"
-                  placeholder="请选择盘点开始时间">
+                <el-date-picker clearable
+                                v-model="formData.date"
+                                type="date"
+                                value-format="yyyy-MM-dd"
+                                placeholder="请选择调拨申请日期">
                 </el-date-picker>
               </el-form-item>
             </el-col>
             <el-col :span="9" style="margin-left: 180px">
               <el-form-item label="经办人" prop="usera">
                 <el-input
-                  v-model="formData.creatorName"
+                  v-model="formData.usera"
                   placeholder="请输入"
                   @focus="handleUsera"
                   suffix-icon="el-icon-more"
@@ -61,6 +61,7 @@
                            v-model="formData.inWId"
                            placeholder="请选择"
                            style="width: 240px"
+                           disabled
                            @change="handleSelectChangeIn"
                 >
                   <el-option
@@ -81,6 +82,7 @@
                            v-model="formData.outWId"
                            placeholder="请选择"
                            style="width: 240px"
+                           disabled
                            @change="handleSelectChangeOut"
                 >
                   <el-option
@@ -150,6 +152,8 @@
                   @selection-change="handleSelectionChange"
                   :row-class-name="rowStorageLocationIndex">
           <el-table-column type="selection" fixed="left" width="55" align="center"/>
+          <el-table-column label="调拨明细id" v-if="false"  width="55" ref="tdId" prop="tdId" align="center"/>
+
           <el-table-column label="序号" fixed="left" align="center" prop="index" width="50"/>
           <el-table-column label="货品名称" fixed="left" prop="goods.gname" width="100"/>
           <el-table-column label="货品编号" fixed="left" align="center" prop="goods.gcode"/>
@@ -162,9 +166,9 @@
           <el-table-column label="调出仓库当前库存" width="130" align="center" prop="stock.itemQuantity"/>
           <el-table-column label="调出仓库当前库位" align="center" width="130px" prop="location.slName"/>
           <el-table-column label="调入仓库当前库存" align="center" prop="totalItemQuantity" width="130px"/>
-          <el-table-column label="调入仓库当前库位" align="center" width="130px">
+          <el-table-column label="调入仓库当前库位" align="center" width="155px">
             <template slot-scope="scope">
-              <el-select v-model="scope.row.inLocationId" placeholder="请选择">
+              <el-select v-model="scope.row.inSlId" placeholder="请选择">
                 <el-option v-for="location in slNameList"
                            :key="location.slId + ''" :label="location.slName" :value="location.slId + ''"/>
               </el-select>
@@ -311,7 +315,7 @@
         :total="goodsTotal"
         @pagination="getGoodsList"
       />
-      <el-button type="primary" @click="handleGoodsDefine">确定</el-button>
+      <el-button type="primary" @click="handleTransferGoodsDefine">确定</el-button>
       <el-button @click="closeGoodsSelect">取消</el-button>
     </el-dialog>
   </div>
@@ -325,11 +329,9 @@ import {listWarehouse} from "@/api/wms/warehouse/warehouse.js";
 import {
   listGoodByWid,
   listSlName,
-  inNumsPlan,
-  getTransfer
+  getTransfer, deleteTransferDetails, updateTransfer
 } from "@/api/wms/warehouse/transfer/transfer";
 import {MessageBox} from "element-ui";
-import item from "@/layout/components/Sidebar/Item.vue";
 
 export default {
   components: {Treeselect},
@@ -456,14 +458,15 @@ export default {
   },
   mounted() {
     this.tid = this.$route.params.tid;
+    const tdId = this.$refs.tdId;
     this.getDetailsByTid();
-
   },
   methods: {
     //根据tid查询调拨单
     getDetailsByTid() {
       getTransfer(this.tid).then(response => {
         this.formData = response.data;
+        this.formData.usera=response.data.creatorName;
         // console.log(" this.formData", this.formData)
         this.getSlName();
         this.inventorysheetInf.selectGoods =this.formData.transferDetailsList
@@ -590,7 +593,6 @@ export default {
       })
     },
 
-
     //打开货品窗口
     addGoodsPage() {
       if (this.formData.outWId && this.formData.inWId) {
@@ -614,7 +616,7 @@ export default {
     },
 
     //货品确定按钮
-    handleGoodsDefine() {
+    handleTransferGoodsDefine() {
       if (this.tempSelectGoodsList.length > 0) {
         if (this.inventorysheetInf.selectGoods.length > 0) {
           this.tempSelectGoodsList.reduce((result, obj1) => {
@@ -625,6 +627,11 @@ export default {
             return result;
           }, this.inventorysheetInf.selectGoods.slice());
 
+          // 过滤掉在 tempSelectGoodsList 中已经被删除的元素
+          this.inventorysheetInf.selectGoods = this.inventorysheetInf.selectGoods.filter(obj1 =>
+            this.tempSelectGoodsList.some(obj2 => obj2.sId === obj1.sId)
+          );
+
           console.info(this.tempSelectGoodsList + "*****************");
           console.log(" this.inventorysheetInf.selectGoods", this.inventorysheetInf.selectGoods)
           this.getSlName();
@@ -633,6 +640,7 @@ export default {
 
         }
       }
+      console.log("this.inventorysheetInf.selectGoods", this.inventorysheetInf.selectGoods);
       this.closeGoodsSelect();
     },
     //货品取消按钮
@@ -650,13 +658,17 @@ export default {
       if (!Array.isArray(indexs)) {
         indexs = [indexs];
       }
+      const tdId=row.tdId;
       console.info("indexs: ", indexs);
       this.$modal.confirm('是否确认删除盘点明细编号为"' + indexs + '"的数据项？').then(() => {
-        this.inventorysheetInf.selectGoods = this.inventorysheetInf.selectGoods?.filter(e => !indexs.includes(e.index));
+        //去数据库删除
+        const result=deleteTransferDetails(tdId);
+          this.inventorysheetInf.selectGoods = this.inventorysheetInf.selectGoods?.filter(e => !indexs.includes(e.index));
       }).then(() => {
         this.$message.success("删除成功");
       }).catch(e => {
       });
+
     },
 
     //入库单价
@@ -734,40 +746,22 @@ export default {
     },
     /*最终添加*/
     submitForm() {
-      //去查询调入仓库下某仓位下的某商品的计划数量
-      this.inventorysheetInf.selectGoods.forEach((e) => {
-        this.kwId.push(e.slId);
-        this.goodsId.push(e.g_id);
-      });
-
-      console.log(this.whIn.w_id)
-      console.log("slId", this.kwId)//库位
-      console.log("goodsId", this.goodsId)//货品
-
-      inNumsPlan({
-        "w_id": this.whIn.w_id, "sl_id": this.kwId,
-        "g_id": this.goodsId
-      }).then(response => {
-        this.inNums = response.data;
-        console.log(" this.inNums", this.inNums);
-      });
-      // this.$refs['elForm'].validate(valid => {
-      //   if (valid) {
-      //     this.formData.manager=this.userIda;
-      //     this.inventorysheetInf.selectGoods[0].outNums=this.inventorysheetInf.selectGoods[0].outNums-this.inventorysheetInf.selectGoods[0].quantity;
-      //     console.log("number_plan", this.inventorysheetInf.selectGoods[0].outNums);//调出仓库的计划数量
-      //     this.inNums=this.inNums+this.inventorysheetInf.selectGoods[0].quantity;
-      //     this.formData.transferDetailsList=this.inventorysheetInf.selectGoods;
-      //
-      //     console.log("this.formData，",this.formData)
-      //     addTransfer(this.formData).then(response =>{
-      //       this.$modal.msgSuccess("新增成功");
-      //       this.$router.push(`/transfer`);
-      //     })
-      //
-      //   }
-      //
-      // })
+      this.$refs['elForm'].validate(valid => {
+        if (valid) {
+          this.formData.manager = this.userIda;
+          this.formData.transferDetailsList = this.inventorysheetInf.selectGoods;
+          console.log("this.formData，", this.formData)
+          console.log(this.formData.transferDetailsList.length)
+          if (this.formData.transferDetailsList.length==0) {
+            this.$message.error("请完善调拨货品的数据信息!");
+            return;
+          }
+          // updateTransfer(this.formData).then(response => {
+          //   this.$modal.msgSuccess("修改成功");
+          //   // this.$router.push(`/transfer`);
+          // })
+        }
+      })
 
     },
     //添加仓库货品重置

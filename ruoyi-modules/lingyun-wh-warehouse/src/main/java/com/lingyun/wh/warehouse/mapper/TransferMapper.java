@@ -2,7 +2,9 @@ package com.lingyun.wh.warehouse.mapper;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
+import com.lingyun.wh.warehouse.domain.InventorySheet;
 import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.domain.Transfer;
 import com.lingyun.wh.warehouse.domain.TransferDetails;
@@ -66,8 +68,13 @@ public interface TransferMapper
     public int changePlanNums(@Param("quantity") BigDecimal quantity, @Param("w_id") String w_id, @Param("sl_id") String sl_id, @Param("g_id") String g_id);
 
 
-    //查询调入仓库货品的库位(调入仓库id 货品id)
-    public  List<StorageLocation> getLocation(@Param("w_id") String w_id,@Param("g_id") String g_id);
+    //修改调拨明细单的调拨数量时需要查出修改前调出仓库对应的库位的货品的计划数量和调拨数量
+    public Map<String,Object> getPlansAndTquantity(Map<String,Object>map);
+
+
+
+//    //查询调入仓库货品的库位(调入仓库id 货品id)注释的原因是因为数据库加了调拨入库库位字段(in_sl_id)
+//    public  List<StorageLocation> getLocation(@Param("w_id") String w_id,@Param("g_id") String g_id);
 
 
 
@@ -86,6 +93,9 @@ public interface TransferMapper
      * @return 结果
      */
     public int deleteTransferDetailsByTIds(String[] tids);
+    /**
+     * 通过调拨明细单主键批量删除调拨明细*/
+    public int deleteTransferDetailsByTdIds(String[]tdIds);
 
     /**
      * 修改调拨单
@@ -95,6 +105,15 @@ public interface TransferMapper
      */
     public int updateTransfer(Transfer transfer);
 
+    /**
+     * 批量修改调拨明细单
+     * @param transferDetails
+     * @return
+     */
+    public int updateTransferDetails(@Param("tdId")String tdId ,@Param("transferDetails") List<TransferDetails>transferDetails);
 
+
+    //审核调拨单
+    public int reviewInventory(Transfer transfer);
 
 }

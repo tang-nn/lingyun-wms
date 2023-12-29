@@ -2,6 +2,7 @@ package com.lingyun.wh.goods.service;
 
 import com.lingyun.wh.goods.api.domain.GoodsType;
 import com.lingyun.wh.goods.doman.vo.TreeSelect;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -49,7 +50,12 @@ public interface IGoodsTypeService
 
     public List<GoodsType>selectGoodsTypes();
 
-
+    /**
+     * 查询货品下面是否有子类商品
+     * @param gtId
+     * @return
+     */
+    public int countByIsDelete(@Param("gtId") String [] gtId);
 
     /**
      * 新增货品类型

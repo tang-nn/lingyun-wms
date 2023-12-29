@@ -1,6 +1,7 @@
 package com.lingyun.wh.warehouse.mapper;
 
 import com.lingyun.wh.warehouse.domain.StorageLocation;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -40,10 +41,10 @@ public interface StorageLocationMapper
     /**
      * 修改库位信息
      * 
-     * @param storageLocation 库位信息
+     * @param storageLocations 库位信息
      * @return 结果
      */
-    public int updateStorageLocation(StorageLocation storageLocation);
+    public int updateStorageLocation(@Param("wId") String wId, @Param("storageLocations")List<StorageLocation>storageLocations);
 
 
     /**

@@ -129,7 +129,7 @@ public class GoodsController extends BaseController {
      * 获取货品信息详细信息
      */
     @RequiresPermissions("lingyun-wh-goods:goods:query")
-    @GetMapping(value = "/{gId}")
+    @GetMapping(value = "/findByGid/{gId}")
     public AjaxResult getInfo(@PathVariable("gId") String gId) {
         return success(goodsService.selectGoodsByGId(gId));
     }
@@ -170,7 +170,7 @@ public class GoodsController extends BaseController {
     }
 
     /**
-     * 修改货品信息
+     * 修改货品信息(状态)
      */
 
 //    @RequiresPermissions("lingyun-wh-goods:goods:edit")
@@ -183,6 +183,19 @@ public class GoodsController extends BaseController {
         goods.setUpdateBy(SecurityUtils.getUserId().toString());
         return toAjax(goodsService.updateGoods(goods));
     }
+
+    /**
+     * 修改货品信息
+     */
+
+    @RequiresPermissions("lingyun-wh-goods:goods:edit")
+    @Log(title = "货品信息", businessType = BusinessType.UPDATE)
+    @PostMapping("/edit")
+    public AjaxResult editGoods(@RequestBody Goods goods) {
+        System.out.println(goods+"************");
+        return toAjax(goodsService.updateGoods(goods));
+    }
+
 
     /**
      * 删除货品信息

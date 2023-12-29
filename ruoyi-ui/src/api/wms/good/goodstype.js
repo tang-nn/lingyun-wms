@@ -61,3 +61,13 @@ export function changeGoodTypeStatus(gtId, status) {
     data: data
   })
 }
+
+
+//查询货品分类下是否有子类
+export function getCountChild(gtIds) {
+  return request({
+    url: '/wms/goods/type/isExits/'+gtIds,
+    method: 'post',
+  })
+}
+

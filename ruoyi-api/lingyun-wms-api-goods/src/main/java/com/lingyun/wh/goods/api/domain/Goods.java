@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import com.ruoyi.system.api.domain.Annex;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
@@ -102,6 +103,15 @@ public class Goods extends BaseEntity {
      */
     private List<Stock> stockList;
 
+    /**
+     * 货品图片
+     */
+    private List<Annex> goodsImages;
+
+    /**
+     * 货品附件
+     */
+    private List<Annex> goodsAnnex;
     public Integer getwDays() {
         return wDays;
     }
@@ -149,6 +159,21 @@ public class Goods extends BaseEntity {
 //    public void setgCode(String gCode) {
 //        this.gCode = gCode;
 //    }
+    public List<Annex> getGoodsImages() {
+        return goodsImages;
+    }
+
+    public void setGoodsImages(List<Annex> goodsImages) {
+        this.goodsImages = goodsImages;
+    }
+
+    public List<Annex> getGoodsAnnex() {
+        return goodsAnnex;
+    }
+
+    public void setGoodsAnnex(List<Annex> goodsAnnex) {
+        this.goodsAnnex = goodsAnnex;
+    }
 
     public String getgName() {
         return gName;
@@ -369,15 +394,12 @@ public class Goods extends BaseEntity {
         return "Goods{" +
                 "children=" + children +
                 ", gId='" + gId + '\'' +
-                "children=" + children +
-                ", gId='" + gId + '\'' +
                 ", wDays=" + wDays +
                 ", gCode='" + gCode + '\'' +
                 ", gName='" + gName + '\'' +
                 ", gtId='" + gtId + '\'' +
                 ", gtName='" + gtName + '\'' +
                 ", goodsType=" + goodsType +
-                ", gtName='" + gtName + '\'' +
                 ", sId='" + sId + '\'' +
                 ", sort=" + sort +
                 ", status=" + status +
@@ -396,6 +418,8 @@ public class Goods extends BaseEntity {
                 ", updateTime=" + updateTime +
                 ", isDelete=" + isDelete +
                 ", stockList=" + stockList +
+                ", goodsImages=" + goodsImages +
+                ", goodsAnnex=" + goodsAnnex +
                 '}';
     }
 }

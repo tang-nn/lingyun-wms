@@ -70,7 +70,7 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: '/gdsedit',
+        path: '/gdsedit/:gid',
         component: () => import('@/views/wms/goodsmanager/goodsinfo/goodsedit'),
         name: 'goodsedit',
         meta: { title: '商品管理 / 编辑货品信息', icon: 'dashboard' }
@@ -129,7 +129,19 @@ export const constantRoutes = [
       }
     ]
   },
-
+  {
+    path: '',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/edithouse/:w_id',
+        component: () => import('@/views/wms/warehouse/editwarehouse/index'),
+        name: 'whedit',
+        meta: { title: '修改仓库', icon: 'dashboard'}
+      }
+    ]
+  },
   {
     path: '',
     component: Layout,
@@ -238,7 +250,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/index'),
+        component: () => import('@/views/Home'),
         name: 'Index',
         meta: { title: '首页', icon: 'dashboard', affix: true }
       }

@@ -79,6 +79,16 @@ public class Transfer extends BaseEntity
     private Boolean deleted;
 
 
+    private String createBy;
+
+    @Excel(name = "创建时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date  createTime;
+    private String updateBy;
+
+    @Excel(name = "修改时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date updateTime;
+
+
     /** 外键，关联用户表,审核人 */
     private String reviewer;
 
@@ -86,7 +96,7 @@ public class Transfer extends BaseEntity
     private String revieerName;
 
     /*审核时间*/
-    private Date reviewer_time;
+    private Date reviewerTime;
 
 
     /*审核意见*/
@@ -248,16 +258,57 @@ public class Transfer extends BaseEntity
         return reviewer;
     }
 
+
+    @Override
+    public String getCreateBy() {
+        return createBy;
+    }
+
+    @Override
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
+
+    @Override
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    @Override
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    @Override
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    @Override
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    @Override
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    @Override
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
     public void setReviewer(String reviewer) {
         this.reviewer = reviewer;
     }
 
-    public Date getReviewer_time() {
-        return reviewer_time;
+    public Date getReviewerTime() {
+        return reviewerTime;
     }
 
-    public void setReviewer_time(Date reviewer_time) {
-        this.reviewer_time = reviewer_time;
+    public void setReviewerTime(Date reviewerTime) {
+        this.reviewerTime = reviewerTime;
     }
 
     public String getComments() {
@@ -286,9 +337,13 @@ public class Transfer extends BaseEntity
                 ", manager='" + manager + '\'' +
                 ", managerName='" + managerName + '\'' +
                 ", deleted=" + deleted +
+                ", createBy='" + createBy + '\'' +
+                ", createTime=" + createTime +
+                ", updateBy='" + updateBy + '\'' +
+                ", updateTime=" + updateTime +
                 ", reviewer='" + reviewer + '\'' +
                 ", revieerName='" + revieerName + '\'' +
-                ", reviewer_time=" + reviewer_time +
+                ", reviewerTime=" + reviewerTime +
                 ", comments='" + comments + '\'' +
                 ", transferDetailsList=" + transferDetailsList +
                 '}';

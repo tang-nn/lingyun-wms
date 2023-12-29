@@ -35,9 +35,6 @@
                     style="width: 240px"/>
       </el-form-item>
 
-
-
-
       <!--      :label属性来指定在页面上显示的文本    :value属性来指定选项的值。-->
       <el-form-item label="单位"  >
           <el-select
@@ -72,17 +69,6 @@
           type="primary"
           @click="handleAdd"
         >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['gd:good:edit']"
-          :disabled="single"
-          icon="el-icon-edit-outline"
-          plain
-          size="mini"
-          type="success"
-          @click="handleEdit"
-        >编辑</el-button>
       </el-col>
       <el-col :span="1.5">
 
@@ -155,7 +141,7 @@
       <el-table-column label="保质期" prop="shelf_life" width="100" />
       <el-table-column label="预警天数(天)" prop="w_days" width="100" />
       <el-table-column label="操作人" prop="oneuser" width="100" />
-      <el-table-column label="操作时间" prop="create_time" width="100" >
+      <el-table-column label="操作时间" prop="create_time" fixed="right"  width="100" >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.create_time) }}</span>
         </template>
@@ -167,13 +153,14 @@
             icon="el-icon-edit"
             size="mini"
             type="text"
-            @click="handleUpdate(scope.row)"
+            @click="handleEdit(scope.row)"
           >编辑</el-button>
           <el-button
             v-hasPermi="['gd:good:delete']"
             icon="el-icon-delete"
             size="mini"
             type="text"
+            v-if="scope.row.item_quantity ===0"
             @click="handleDelete(scope.row)"
           >删除</el-button>
         </template>
@@ -297,18 +284,6 @@ export default {
         children: "children",
         label: "label"
       },
-      // 表单校验
-      rules: {
-        roleName: [
-          { required: true, message: "角色名称不能为空", trigger: "blur" }
-        ],
-        roleKey: [
-          { required: true, message: "权限字符不能为空", trigger: "blur" }
-        ],
-        roleSort: [
-          { required: true, message: "角色顺序不能为空", trigger: "blur" }
-        ]
-      }
     };
   },
   created() {
@@ -319,7 +294,6 @@ export default {
 
     //保留两位小数
     formatPrice(row,column) {
-      // console.info(row);
       return row.wr_price.toFixed(2);
     },
     formatPrice2(row, column) {
@@ -390,11 +364,6 @@ export default {
       this.open = false;
       this.reset();
     },
-    // 取消按钮（数据权限）
-    cancelDataScope() {
-      this.openDataScope = false;
-      this.reset();
-    },
     // 表单重置
     reset() {
       if (this.$refs.menu != undefined) {
@@ -461,7 +430,7 @@ export default {
       this.download('wms/goods/importTemplate', {
       }, `goods_template_${new Date().getTime()}.xlsx`)
     },
-// 文件上传中处理
+   // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {
       this.upload.isUploading = true;
     },
@@ -484,70 +453,10 @@ export default {
       this.$router.push('/gdsadd');
     },
 
-
     /** 修改按钮操作 */
-    handleEdit(){
-      this.$router.push('/gdsedit');
-    }
-    // handleUpdate(row) {
-    //   this.reset();
-    //
-    //   const roleId = row.roleId || this.ids
-    //   const roleMenu = this.getRoleMenuTreeselect(roleId);
-    //   getRole(roleId).then(response => {
-    //     this.form = response.data;
-    //     this.open = true;
-    //     this.$nextTick(() => {
-    //       roleMenu.then(res => {
-    //         let checkedKeys = res.checkedKeys
-    //         checkedKeys.forEach((v) => {
-    //             this.$nextTick(()=>{
-    //                 this.$refs.menu.setChecked(v, true ,false);
-    //             })
-    //         })
-    //       });
-    //     });
-    //     this.title = "修改角色";
-    //   });
-    // },
-    //
-    // /** 提交按钮 */
-    // submitForm: function() {
-    //   this.$refs["form"].validate(valid => {
-    //     if (valid) {
-    //       if (this.form.roleId != undefined) {
-    //         this.form.menuIds = this.getMenuAllCheckedKeys();
-    //         updateRole(this.form).then(response => {
-    //           this.$modal.msgSuccess("修改成功");
-    //           this.open = false;
-    //           this.getList();
-    //         });
-    //       } else {
-    //         this.form.menuIds = this.getMenuAllCheckedKeys();
-    //         addRole(this.form).then(response => {
-    //           this.$modal.msgSuccess("新增成功");
-    //           this.open = false;
-    //           this.getList();
-    //         });
-    //       }
-    //     }
-    //   });
-    // },
-    // /** 提交按钮（数据权限） */
-    // submitDataScope: function() {
-    //   if (this.form.roleId != undefined) {
-    //     this.form.deptIds = this.getDeptAllCheckedKeys();
-    //     dataScope(this.form).then(response => {
-    //       this.$modal.msgSuccess("修改成功");
-    //       this.openDataScope = false;
-    //       this.getList();
-    //     });
-    //   }
-    // },
-
-
-
-
+    handleEdit(row){
+      this.$router.push({ path: `/gdsedit/${row.g_id}` }); // 将 row.g_id 参数传递给路径占位符
+    },
 
 
   },

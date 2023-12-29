@@ -1,6 +1,7 @@
 package com.lingyun.wh.warehouse.domain;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.lingyun.wh.goods.api.domain.Goods;
@@ -36,6 +37,17 @@ public class TransferDetails extends BaseEntity
     @Excel(name = "调拨数量")
     private BigDecimal quantity;
 
+    /*调拨入库库位*/
+    private String inSlId;
+
+    private String createBy;
+
+    @Excel(name = "创建时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date createTime;
+    private String updateBy;
+
+    @Excel(name = "修改时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date updateTime;
 
     /** 0：存在；1：已删除，不存在 */
     @Excel(name = "0：存在；1：已删除，不存在")
@@ -45,9 +57,8 @@ public class TransferDetails extends BaseEntity
      * 入库仓库货品库存数
      */
     private Integer totalItemQuantity;
-
-    /*入库仓库货品的库位id*/
-    private String inLocationId;
+//    /*调入库仓库货品的库位id*/
+//    private String inLocationId;
     /*库存*/
     private Stock stock;
     private String sl_id;
@@ -57,13 +68,13 @@ public class TransferDetails extends BaseEntity
     //库位
     private StorageLocation location;
 
-    public String getInLocationId() {
-        return inLocationId;
-    }
-
-    public void setInLocationId(String inLocationId) {
-        this.inLocationId = inLocationId;
-    }
+//    public String getInLocationId() {
+//        return inLocationId;
+//    }
+//
+//    public void setInLocationId(String inLocationId) {
+//        this.inLocationId = inLocationId;
+//    }
 
     public Integer getTotalItemQuantity() {
         return totalItemQuantity;
@@ -154,15 +165,68 @@ public class TransferDetails extends BaseEntity
     }
 
     @Override
+    public String getCreateBy() {
+        return createBy;
+    }
+
+    @Override
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
+
+    @Override
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    @Override
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    @Override
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    @Override
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    @Override
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    @Override
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+
+    public String getInSlId() {
+        return inSlId;
+    }
+
+    public void setInSlId(String inSlId) {
+        this.inSlId = inSlId;
+    }
+
+    @Override
     public String toString() {
         return "TransferDetails{" +
                 "tdId='" + tdId + '\'' +
                 ", tid='" + tid + '\'' +
                 ", stockId='" + stockId + '\'' +
                 ", quantity=" + quantity +
+                ", inSlId='" + inSlId + '\'' +
+                ", createBy='" + createBy + '\'' +
+                ", createTime=" + createTime +
+                ", updateBy='" + updateBy + '\'' +
+                ", updateTime=" + updateTime +
                 ", deleted=" + deleted +
                 ", totalItemQuantity=" + totalItemQuantity +
-                ", inLocationId='" + inLocationId + '\'' +
                 ", stock=" + stock +
                 ", sl_id='" + sl_id + '\'' +
                 ", goods=" + goods +

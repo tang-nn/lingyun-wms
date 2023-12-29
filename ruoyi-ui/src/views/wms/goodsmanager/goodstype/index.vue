@@ -109,8 +109,6 @@
       <el-table-column align="center" fixed type="selection" width="55" />
       <el-table-column :show-overflow-tooltip="true" fixed="left" label="货品类型编号" prop="gtCode" width="150" />
       <el-table-column fixed="left" label='序号' prop="gtId" width="100"/>
-
-
       <el-table-column :show-overflow-tooltip="true" fixed="left"
                        label="货品类型名称" width="150" >
         <template slot-scope="scope">
@@ -225,7 +223,7 @@
           </el-form-item>
 
           <el-form-item label="货品类型编号"  prop="gtCode">
-            <el-input v-model="form.gtCode" placeholder="自动获取系统编号" readonly></el-input>
+            <el-input v-model="form.gtCode" placeholder="自动获取系统编号" disabled></el-input>
           </el-form-item>
 
           <el-form-item label="货品类型名称" prop="gtName">
@@ -275,12 +273,13 @@ import {
   addTypeGoods,
   getGoodsType,
   editTypeGoods,
-  changeGoodTypeStatus
+  changeGoodTypeStatus,
+  getCountChild
 } from "@/api/wms/good/goodstype";
 import {getToken} from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import {TypesList} from "@/api/wms/good/goodsinfo";
+import {addGoods, TypesList} from "@/api/wms/good/goodsinfo";
 
 export default {
   name: "goodsType",
@@ -320,7 +319,8 @@ export default {
       gtId: '0',
       gtCode:undefined,
       radio: '0',
-
+      //是否含有子类货品
+      count:0,
       // 商品导入参数
       upload: {
         // 是否显示弹出层（商品导入）
@@ -480,13 +480,21 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const gtIds = row.gtId || this.ids;
-      console.info(gtIds);
-      this.$modal.confirm('是否确认删除货品类型编号为"' + gtIds + '"的数据项？').then(function() {
-        return delGoodsType(gtIds);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      getCountChild(gtIds).then(response => {
+        this.count = response.data;
+        console.log(this.count  )
+        if (this.count===0){
+          this.$modal.confirm('是否确认删除货品类型编号为"' + gtIds + '"的数据项？').then(function() {
+            return delGoodsType(gtIds);
+          }).then(() => {
+            this.getList();
+            this.$modal.msgSuccess("删除成功");
+          }).catch(() => {});
+        }else {
+          this.$modal.msgError("不允许操作该货品！");
+        }
+      });
+
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -505,7 +513,7 @@ export default {
       this.download('wms/goods/type/importTemplate', {
       }, `goodsType_template_${new Date().getTime()}.xlsx`)
     },
-// 文件上传中处理
+    // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {
       this.upload.isUploading = true;
     },
@@ -535,15 +543,17 @@ export default {
       if (this.loading) {
         return;
       }
-      this.$confirm('确定要提交表单吗？')
-        .then(_ => {
+      this.$refs['form'].validate(valid => {
+        if (!valid) return
+        this.$confirm('确定要提交表单吗？')
+          .then(_ => {
             this.$refs["form"].validate(valid => {
               if (valid) {
                 this.timer = setTimeout(() => {
                   // 动画关闭需要一定的时间
                   setTimeout(() => {
                     this.loading = false;
-                    }, 10);
+                  }, 10);
                 }, 100);
                 this.loading = true;
                 if (this.form.gtId != undefined) {
@@ -562,14 +572,17 @@ export default {
 
               }
             });
-        })
+          })
+      })
+
+
+
     },
 
 
 
     /** 修改按钮操作 */
     handleUpdate(row){
-      // this.reset();
       this.dialog=true;
       this.title = "修改";
       const gt_Id = row.gtId;
@@ -580,69 +593,6 @@ export default {
       });
 
     },
-
-
-    // handleUpdate(row) {
-    //   this.reset();
-    //
-    //   const roleId = row.roleId || this.ids
-    //   const roleMenu = this.getRoleMenuTreeselect(roleId);
-    //   getRole(roleId).then(response => {
-    //     this.form = response.data;
-    //     this.open = true;
-    //     this.$nextTick(() => {
-    //       roleMenu.then(res => {
-    //         let checkedKeys = res.checkedKeys
-    //         checkedKeys.forEach((v) => {
-    //             this.$nextTick(()=>{
-    //                 this.$refs.menu.setChecked(v, true ,false);
-    //             })
-    //         })
-    //       });
-    //     });
-    //     this.title = "修改角色";
-    //   });
-    // },
-    //
-    // /** 提交按钮 */
-    // submitForm: function() {
-    //   this.$refs["form"].validate(valid => {
-    //     if (valid) {
-    //       if (this.form.roleId != undefined) {
-    //         this.form.menuIds = this.getMenuAllCheckedKeys();
-    //         updateRole(this.form).then(response => {
-    //           this.$modal.msgSuccess("修改成功");
-    //           this.open = false;
-    //           this.getList();
-    //         });
-    //       } else {
-    //         this.form.menuIds = this.getMenuAllCheckedKeys();
-    //         addRole(this.form).then(response => {
-    //           this.$modal.msgSuccess("新增成功");
-    //           this.open = false;
-    //           this.getList();
-    //         });
-    //       }
-    //     }
-    //   });
-    // },
-    // /** 提交按钮（数据权限） */
-    // submitDataScope: function() {
-    //   if (this.form.roleId != undefined) {
-    //     this.form.deptIds = this.getDeptAllCheckedKeys();
-    //     dataScope(this.form).then(response => {
-    //       this.$modal.msgSuccess("修改成功");
-    //       this.openDataScope = false;
-    //       this.getList();
-    //     });
-    //   }
-    // },
-
-
-
-
-
-
   },
 
 };

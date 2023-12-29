@@ -68,13 +68,6 @@ public interface IGoodsService {
      */
     public int deleteGoodsByGIds(String[] gIds);
 
-    /**
-     * 删除货品信息信息
-     *
-     * @param gId 货品信息主键
-     * @return 结果
-     */
-    public int deleteGoodsByGId(String gId);
 
     /**
      * 导入商品数据

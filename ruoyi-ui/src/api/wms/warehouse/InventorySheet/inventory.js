@@ -62,3 +62,14 @@ export function delInventory(isIds) {
     method: 'delete'
   })
 }
+
+
+//审核盘点单
+export function reviewInventory(data) {
+  return request({
+    url: '/wms/wh/inventory/reviewInventory' ,
+    method: 'post',
+    data: data
+  })
+}
+

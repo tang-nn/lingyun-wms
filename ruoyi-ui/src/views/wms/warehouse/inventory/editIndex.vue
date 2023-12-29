@@ -421,12 +421,6 @@ export default {
 
 
 
-
-
-
-
-
-
     /** 盘点明细序号 */
     rowStorageLocationIndex({ row, rowIndex }) {
       row.index = rowIndex + 1;

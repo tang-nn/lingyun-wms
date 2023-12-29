@@ -52,8 +52,6 @@ export function SupplierList() {
 }
 
 
-
-
 //新增货品
 
 export function addGoods(data) {
@@ -61,6 +59,26 @@ export function addGoods(data) {
     url: '/wms/goods/agds',
     method: 'post',
     data:data,
+  })
+}
+
+// 查询商品信息
+export function GoodsInfo(g_id) {
+  return request({
+    url: '/wms/goods/findByGid/'+g_id,
+    method: 'get',
+  })
+}
+
+
+
+//修改货品信息
+export function editGoods(goods) {
+  console.log("nibi",goods);
+  return request({
+    url: '/wms/goods/edit',
+    method: 'post',
+    data:goods,
   })
 }
 

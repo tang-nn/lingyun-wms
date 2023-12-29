@@ -173,6 +173,11 @@ public class GoodsTypeServiceImpl implements IGoodsTypeService {
         return goodsTypeMapper.selectGoodsTypes();
     }
 
+    @Override
+    public int countByIsDelete(String[] gtId) {
+        return goodsTypeMapper.countByIsDelete(gtId);
+    }
+
 
     /**
      * 新增货品类型

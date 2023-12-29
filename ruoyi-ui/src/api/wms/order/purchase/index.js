@@ -57,7 +57,7 @@ export function delPurchase(params) {
   })
 }
 
-// 批量删除进货订单
+// 审核进货订单
 export function reviewPurchase(data) {
   return request({
     url: '/wms/order/purchase/review',

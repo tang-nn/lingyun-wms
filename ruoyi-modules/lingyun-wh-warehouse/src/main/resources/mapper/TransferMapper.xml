@@ -33,6 +33,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="tdId"    column="td_id"    />
         <result property="tid"      column="t_id"    />
         <result property="quantity"    column="t_quantity"    />
+        <result property="inSlId"    column="in_sl_id"    />
         <result property="stockId"  column="stock_id"/>
         <result property="remark"    column="remark"    />
         <result property="createBy"    column="create_by"    />
@@ -48,7 +49,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <result column="g_code" property="gCode"/>
             <result column="spec_code" property="specCode"/>
         </association>
-        <association property="stock" javaType="com.lingyun.wh.warehouse.domain.Stock">
+        <association property="stock" javaType="com.lingyun.wh.goods.api.domain.Stock">
             <result column="unit" property="unit"/>
             <result column="item_quantity" property="itemQuantity"/>
         </association>
@@ -77,28 +78,31 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         left join sys_user revieer on wt.reviewer=revieer.user_id
         inner join sys_dept dp on dp.dept_id=creater.dept_id
         <where>
+            <if test="tid != null  and tid != ''"> and wt.t_id = #{tid}</if>
             <if test="tdCode != null  and tdCode != ''"> and wt.td_code = #{tdCode}</if>
             <if test="docStatus != null  and docStatus != ''"> and wt.doc_status = #{docStatus}</if>
             <if test="dates != null and dates.size() > 0">
                 and wt.t_date BETWEEN #{dates[0]} AND #{dates[1]}
             </if>
-            <if test="outStatus != null "> and wt.out_status = #{outStatus} or wt.in_status = #{outStatus}</if>
+            <if test="inStatus != null "> and wt.in_status = #{inStatus}</if>
+            <if test="outStatus != null "> and wt.out_status =#{outStatus} </if>
         and wt.is_delete=0
         </where>
+        order by wt.create_time desc
     </select>
 
 
 <!--    字表相关查询-->
     <select id="selectTransferByTid" parameterType="String" resultMap="TransferDetailsResults">
-        SELECT wtd.td_id,wtd.t_id,wtd.stock_id,wtd.t_quantity,wtd.remark,
-               gdb.g_name,gdb.g_id, gdb.wr_price, gdb.g_code,gdb.spec_code,
-               kcb.unit,kcb.item_quantity,sl.sl_id,sl.sl_name
-               from wh_transfer_details wtd
-               inner join wh_stock kcb on  wtd.stock_id=kcb.s_id
-               inner join wh_goods gdb on kcb.g_id=gdb.g_id
-               inner join wh_storage_location sl on kcb.sl_id=sl.sl_id
+        SELECT wtd.td_id,wtd.t_id,wtd.stock_id,wtd.t_quantity,wtd.in_sl_id,wtd.remark,
+        gdb.g_name,gdb.g_id, gdb.wr_price, gdb.g_code,gdb.spec_code,
+        kcb.unit,kcb.item_quantity,sl.sl_id,sl.sl_name
+        from wh_transfer_details wtd
+        inner join wh_stock kcb on wtd.stock_id=kcb.s_id
+        inner join wh_goods gdb on kcb.g_id=gdb.g_id
+        inner join wh_storage_location sl on kcb.sl_id=sl.sl_id
         <where>
-            wtd.t_id = #{t_id}
+            wtd.t_id = #{t_id} and wtd.is_delete=0
         </where>
     </select>
 
@@ -165,9 +169,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!--    1批量新增调拨明细-->
     <insert id="batchTransferDetails">
-        insert into wh_transfer_details( t_id, stock_id,t_quantity,remark,create_by, create_time, update_by, update_time, is_delete) values
+        insert into wh_transfer_details( t_id, stock_id,t_quantity,in_sl_id,remark,create_by, create_time, update_by, update_time, is_delete) values
         <foreach item="item" index="index" collection="list" separator=",">
-            ( #{item.tid}, #{item.stockId}, #{item.quantity}  ,#{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime}, 0)
+            ( #{item.tid}, #{item.stockId}, #{item.quantity},#{item.inSlId} ,#{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime}, 0)
         </foreach>
     </insert>
 
@@ -175,7 +179,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <!--    根据调拨仓库id查询所有库位-->
 
     <select id="location" resultType="com.lingyun.wh.warehouse.domain.StorageLocation">
-        select sl_id slId, sl_name slName from wh_storage_location where w_id = #{w_id}
+        select sl_id slId, sl_name slName from wh_storage_location where w_id = #{w_id} and is_delete=0
     </select>
 
     <!--    查询调入仓库货品库存-->
@@ -187,7 +191,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <!--    &lt;!&ndash;    查询调入仓库某库位下的货品货品计划数量&ndash;&gt;-->
 <!--    <select id="numberPlansIn" resultType="integer">-->
-<!--        select number_plans from wh_stock where w_id=#{w_id} and sl_id=#{sl_id} and  g_id=#{g_id}-->
+<!--        select number_plans from wh_stock where w_id=#{w_id} and td_id=#{td_id} and  g_id=#{g_id}-->
 <!--    </select>-->
 
 
@@ -198,14 +202,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where w_id=#{w_id} and sl_id=#{sl_id} and g_id=#{g_id}
     </update>
 
-<!--    查询调入仓库货品的库位(调入仓库id 货品id)-->
-    <select id="getLocation" resultType="com.lingyun.wh.warehouse.domain.StorageLocation">
-        SELECT sl.sl_id slId,sl.sl_name slName from wh_storage_location sl
-        inner join wh_transfer wt on sl.w_id=wt.in_w_id
-        inner join wh_transfer_details wtd  on wt.t_id=wtd.t_id
-        inner join wh_stock ws on wtd.stock_id=ws.s_id
-        where wt.in_w_id=#{w_id} and  ws.g_id=#{g_id}
+
+    <select id="getPlansAndTquantity" resultType="map">
+        select number_plans,t_quantity from wh_stock ws
+                inner join wh_transfer_details wtd
+                           on stock_id=s_id
+                inner join wh_transfer  wt
+                           on wt.t_id=wtd.t_id
+        where wt.out_w_id=#{outWId} and ws.g_id=#{gId} and ws.sl_id=#{slId} and wtd.t_id=#{tId}
     </select>
+
+<!--&lt;!&ndash;    查询调入仓库货品的库位(调入仓库id 货品id)&ndash;&gt;-->
+<!--    <select id="getLocation" resultType="com.lingyun.wh.warehouse.domain.StorageLocation">-->
+<!--        SELECT sl.sl_id slId,sl.sl_name tdName from wh_storage_location sl-->
+<!--        inner join wh_transfer wt on sl.w_id=wt.in_w_id-->
+<!--        inner join wh_transfer_details wtd  on wt.t_id=wtd.t_id-->
+<!--        inner join wh_stock ws on wtd.stock_id=ws.s_id-->
+<!--        where wt.in_w_id=#{w_id} and  ws.g_id=#{g_id}-->
+<!--    </select>-->
 
 
     <!--    批量删除调拨单-->
@@ -218,19 +232,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!--    通过调拨单主键批量删除调拨明细-->
     <delete id="deleteTransferDetailsByTIds" parameterType="String">
-        update  wh_transfer_details set is_delete=1 where t_id in
+        update  wh_transfer_details set is_delete=1 where   t_id in
         <foreach item="tId" collection="array" open="(" separator="," close=")">
             #{tId}
         </foreach>
     </delete>
 
 
+    <update id="deleteTransferDetailsByTdIds">
+        update  wh_transfer_details set is_delete=1 where   td_id in
+        <foreach item="tdIds" collection="array" open="(" separator="," close=")">
+            #{tdIds}
+        </foreach>
+    </update>
 
+
+<!-- 修改调拨单-->
     <update id="updateTransfer" parameterType="Transfer">
         update wh_transfer
         <trim prefix="SET" suffixOverrides=",">
-            <if test="tdCode != null and tdCode != ''">td_code = #{tdCode},</if>
-            <if test="docStatus != null and docStatus != ''">doc_status = #{docStatus},</if>
+            doc_status = "pending_review",
             <if test="date != null">t_date = #{date},</if>
             <if test="outWId != null and outWId != ''">out_w_id = #{outWId},</if>
             <if test="inWId != null and inWId != ''">in_w_id = #{inWId},</if>
@@ -243,12 +264,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
-            <if test="deleted != null">is_delete = #{deleted},</if>
         </trim>
         where t_id = #{tid}
     </update>
 
 
+<!--  批量修改调拨明细单  -->
+    <update id="updateTransferDetails">
+        <foreach collection="transferDetails" item="td" separator=";">
+            update wh_transfer_details
+            <trim prefix="SET" suffixOverrides=",">
+                <if test="td.quantity != null and td.quantity != ''">t_quantity = #{td.quantity},</if>
+                <if test="td.inSlId != null">in_sl_id = #{td.inSlId},</if>
+                <if test="td.updateBy != null">update_by = #{td.updateBy},</if>
+                <if test="td.updateTime != null">update_time = #{td.updateTime},</if>
+            </trim>
+            where t_id=#{tid}
+        </foreach>
+    </update>
+
+<!--审核调拨单-->
+    <update id="reviewInventory">
+        update wh_transfer
+       set doc_status=#{docStatus},comments=#{comments},
+       update_time=#{updateTime},update_by=#{updateBy},
+       reviewer=#{reviewer},reviewer_time=#{reviewerTime} where t_id=#{tid}
+    </update>
 
 
 

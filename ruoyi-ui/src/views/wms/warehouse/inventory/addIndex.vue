@@ -5,20 +5,19 @@
    padding-bottom: 10px;margin-left: 200px;width: 1280px">
       <h3 style="margin-left: 20px">基础信息</h3>
       <div style="border-top: 1px solid #eeeeee;padding-top: 30px;padding-left: 30px">
-        <el-form ref="elForm" :model="formData" label-width="95px" size="medium">
+        <el-form ref="elForm" :rules="rules" :model="formData" label-width="95px" size="medium">
           <el-row>
             <el-col :span="9">
               <el-form-item label="盘点单号" prop="isCode">
-                <el-input v-model="formData.isCode" :style="{width: '100%'}" clearable placeholder="自动获取系统编码"readonly>
+                <el-input v-model="formData.isCode" :style="{width: '100%'}" clearable placeholder="自动获取系统编码" disabled>
                 </el-input>
               </el-form-item>
             </el-col>
             <el-col :span="9" style="margin-left: 180px">
-              <el-form-item label="盘点类型">
+              <el-form-item label="盘点类型" prop="isType">
                 <el-select :style="{width: '100%'}"
                   v-model="queryParams.isType"
                   placeholder="请选择"
-                  clearable
                   style="width: 240px"
                 >
                   <el-option
@@ -37,18 +36,20 @@
                 <el-date-picker clearable
                                 v-model="formData.isStartTime"
                                 type="date"
-                                value-format="yyyy-MM-dd mm:HH:ss"
-                                placeholder="请选择盘点开始时间">
+                                value-format="yyyy-MM-dd"
+                                placeholder="请选择盘点开始时间"
+                                @change="handleStartTimeChange">
                 </el-date-picker>
               </el-form-item>
             </el-col>
             <el-col :span="10" style="margin-left: 180px">
-              <el-form-item label="盘点结束时间" prop="isStartTime" label-width="100">
+              <el-form-item label="盘点结束时间" prop="isEndTime" label-width="100">
                 <el-date-picker clearable
                                 v-model="formData.isEndTime"
                                 type="date"
-                                value-format="yyyy-MM-dd mm:HH:ss"
-                                placeholder="请选择盘点结束时间">
+                                value-format="yyyy-MM-dd"
+                                placeholder="请选择盘点结束时间"
+                                :picker-options="endPickerOptions">
                 </el-date-picker>
               </el-form-item>
             </el-col>
@@ -59,7 +60,6 @@
                 <el-select :style="{width: '100%'}"
                   v-model="queryGoodsParams.wId"
                   placeholder="请选择"
-                  clearable
                   style="width: 240px"
                   @change="handleSelectChange"
                 >
@@ -78,7 +78,6 @@
                 <el-input
                   v-model="formData.usera"
                   placeholder="请输入"
-                  clearable
                   @focus="handleUsera"
                   suffix-icon="el-icon-more"
                 />
@@ -130,10 +129,10 @@
         <el-table :loading="loading" style="margin-top: 50px"
                   :data="inventorysheetInf.selectGoods"
                   max-height="520px"
-                  row-key="g_id"
+                  row-key="sId"
                   @selection-change="handleSelectionChange"
                   :row-class-name="rowStorageLocationIndex">
-          <el-table-column type="selection" fixed="left" width="55" align="center" />
+          <el-table-column :reserve-selection="true" type="selection" fixed="left" width="55" align="center" />
           <el-table-column label="序号" fixed="left" align="center" prop="index" width="50"/>
           <el-table-column label="货品名称" fixed="left" prop="g_name"  width="100" />
           <el-table-column label="货品编号" fixed="left" align="center" prop="g_code" />
@@ -219,20 +218,8 @@
                  <span>盘亏金额：:<em>{{totalLossAmount}}</em></span>
                </div>
              </el-col>
-
-
            </el-row>
-
-
         </div>
-
-<!--        <pagination-->
-<!--          v-show="storageListAdd.length>0"-->
-<!--          :total="storageListAdd.length"-->
-<!--          :page.sync="queryParams.pageNum"-->
-<!--          :limit.sync="queryParams.pageSize"-->
-<!--          @pagination="storageListAdd"-->
-<!--        />-->
       </div>
     </el-row>
 
@@ -310,8 +297,8 @@
         </el-form-item>
       </el-form>
       <el-table ref="goodsTable" v-loading="loading" :data="goodsList"
-                row-key="g_id" @selection-change="handlerSelectionChange">
-        <el-table-column align="center" fixed type="selection" width="50"/>
+                row-key="sId" @selection-change="handlerSelectionChange" >
+        <el-table-column align="center" :reserve-selection="true" fixed type="selection" width="50"/>
         <el-table-column align="center" fixed label="序号" type="index" width="60"/>
         <el-table-column align="center" fixed label="货品编号" prop="g_code" width="80"/>
         <el-table-column align="center" fixed label="货品名称" prop="g_name" width="110"/>
@@ -352,6 +339,15 @@ export default {
   props: [],
   data() {
     return {
+      //盘点结束时间
+      endPickerOptions: {
+        disabledDate: time => {
+          if (!this.formData.isStartTime) {
+            return false;
+          }
+          return time.getTime() <= new Date(this.formData.isStartTime).getTime();
+        }
+      },
       // 遮罩层
       loading: true,
       // 弹出层标题
@@ -397,9 +393,17 @@ export default {
         children: "children",
         label: "label"
       },
-      formData: {
+      formData: {},
+      // 表单校验
+      rules: {
+        isStartTime: [
+          {required: true, message: "盘点开始时间不能为空", trigger: "blur"}
+        ],
+        isEndTime: [
+          {required: true, message: "盘点结束时间不能为空", trigger: "blur"}
+        ],
 
-      },
+      }
     }
   },
   computed: {
@@ -470,6 +474,18 @@ export default {
   },
   mounted() {},
   methods: {
+    //盘点开始时间
+    handleStartTimeChange() {
+      this.endPickerOptions = {
+        ...this.endPickerOptions,
+        disabledDate: time => {
+          if (!this.formData.isStartTime) {
+            return false;
+          }
+          return time.getTime() <= new Date(this.formData.isStartTime).getTime();
+        }
+      };
+    },
     /** 库位信息序号 */
     rowStorageLocationIndex({ row, rowIndex }) {
       row.index = rowIndex + 1;
@@ -548,6 +564,11 @@ export default {
     countQuantity(row){
       console.log(row.index);
       row.countQuantity = parseFloat(row.countQuantity);//盘点数量
+      // if (isNaN(row.countQuantity)) {
+      //   // 不是数值类型
+      //   this.$message.error("请输入有效的盘点数量");
+      //   return;
+      // }
       //获取账面库存
       let iq=this.itemQuantity(row);
       //获取入库单价
@@ -583,9 +604,29 @@ export default {
     },
     //货品确定按钮
     handleGoodsDefine() {
-      this.inventorysheetInf.selectGoods = this.tempSelectGoodsList;
-      console.info(this.tempSelectGoodsList+"*****************");
-      console.log(" this.inventorysheetInf.selectGoods", this.inventorysheetInf.selectGoods)
+      if (this.tempSelectGoodsList.length > 0) {
+        if (this.inventorysheetInf.selectGoods.length > 0) {
+          this.tempSelectGoodsList.reduce((result, obj1) => {
+            const isExists = this.inventorysheetInf.selectGoods.some(obj2 => obj2.sId === obj1.sId);
+            if (!isExists) {
+              this.inventorysheetInf.selectGoods.push(obj1);
+            }
+            return result;
+          }, this.inventorysheetInf.selectGoods.slice());
+
+          // 过滤掉在 tempSelectGoodsList 中已经被删除的元素
+          this.inventorysheetInf.selectGoods = this.inventorysheetInf.selectGoods.filter(obj1 =>
+            this.tempSelectGoodsList.some(obj2 => obj2.sId === obj1.sId)
+          );
+          console.info(this.tempSelectGoodsList + "*****************");
+          console.log(" this.inventorysheetInf.selectGoods", this.inventorysheetInf.selectGoods)
+
+        } else {
+          this.inventorysheetInf.selectGoods = this.tempSelectGoodsList;
+
+        }
+      }
+
       this.closeGoodsSelect();
     },
     //货品取消按钮
@@ -650,16 +691,16 @@ export default {
           this.goodsList = response.rows;
         console.log("this.goodsList",this.goodsList);
           this.goodsTotal = response.total;
-          this.$nextTick(() => {
-            console.log("nextTick selectGoods: ", this.inventorysheetInf.selectGoods)
-              this.goodsList.map(item => {
-                this.inventorysheetInf.selectGoods.map(vl => {
-                if (item.g_id === vl.g_id) {
-                  this.$refs.goodsTable.toggleRowSelection(item, true)
-                }
-              })
+        this.$nextTick(() => {
+          this.inventorysheetInf.selectGoods.forEach(vl => {
+
+            this.goodsList.forEach(item => {
+              if (item.sId === vl.sId) {
+                this.$refs.goodsTable.toggleRowSelection(item, true);
+              }
             })
-          });
+          })
+        });
           this.loading = false;
         }
       );
@@ -696,7 +737,6 @@ export default {
           addInventory(this.formData).then(response =>{
             this.$modal.msgSuccess("新增成功");
             this.$router.push(`/InventorySheet`);
-
           })
 
         }

@@ -6,10 +6,6 @@
       <h4 style="margin-left: 25px;padding-top:10px;font-weight: bold;font-size: 20px">
         调拨单号:{{ transferDetails[0] && transferDetails[0].tdCode }}</h4>
       <div style="position: relative;top: -50px;left: -26px">
-        <el-button style="float:right;margin-right: 5px;margin-top: 12px;padding-right: 14px;margin-left: 14px"
-                   plain size="small"
-                   @click="" v-hasPermi="['gd:good:add']">调出
-        </el-button>
       </div>
       <div style="padding-top: 30px;padding-left: 30px">
         <el-form ref="elForm" size="medium" label-width="95px" style="margin-top: 14px">
@@ -80,7 +76,7 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span="6">
+            <el-col :span="12">
               <el-form-item label="备注">
                 <span>{{ transferDetails[0] && transferDetails[0].remark }}</span>
               </el-form-item>

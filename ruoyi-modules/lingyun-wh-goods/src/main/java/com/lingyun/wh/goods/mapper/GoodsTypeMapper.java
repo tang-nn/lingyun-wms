@@ -59,7 +59,11 @@ public interface GoodsTypeMapper
     public int updateGoodsType(GoodsType goodsType);
 
 
-
+    /**
+     * 查询货品下面是否有子类商品
+     * @param gtId
+     * @return
+     */
     public int countByIsDelete(@Param("gtId") String [] gtId);
 
     /**

@@ -23,21 +23,35 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="出入库状态" label-width="100">
+      <el-form-item label="出库状态" label-width="80">
         <el-select
           v-model="queryParams.outStatus"
           placeholder="请选择"
           style="width: 240px"
         >
           <el-option
-            v-for="dict in dict.type.transfer_out_in_status"
+            v-for="dict in dict.type.transfer_out_status"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="调拨申请日期" label-width="100">
+      <el-form-item label="入库状态" label-width="80">
+        <el-select
+          v-model="queryParams.inStatus"
+          placeholder="请选择"
+          style="width: 240px"
+        >
+          <el-option
+            v-for="dict in dict.type.transfer_in_status"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="调拨申请日期" label-width="80">
           <el-date-picker
             v-model="queryParams.dates"
             end-placeholder="结束日期" format="yyyy-MM-dd"
@@ -66,16 +80,6 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          v-hasPermi="['transfer:transfer:edit']"
-        >审核</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="danger"
           plain
           icon="el-icon-delete"
@@ -85,6 +89,18 @@
           v-hasPermi="['transfer:transfer:remove']"
         >删除</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-coordinate"
+          size="mini"
+          :disabled="single"
+          @click="review"
+          v-hasPermi="['transfer:transfer:examine']"
+        >审核</el-button>
+      </el-col>
+
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -110,12 +126,12 @@
       <el-table-column label="调入仓库" align="center" prop="inName" />
       <el-table-column label="出库状态" align="center" prop="outStatus" >
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.transfer_out_in_status" :value="scope.row.outStatus"/>
+          <dict-tag :options="dict.type.transfer_out_status" :value="scope.row.outStatus"/>
         </template>
       </el-table-column>
       <el-table-column label="入库状态" align="center" prop="inStatus" >
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.transfer_out_in_status" :value="scope.row.inStatus"/>
+          <dict-tag :options="dict.type.transfer_in_status" :value="scope.row.inStatus"/>
         </template>
       </el-table-column>
       <el-table-column label="调拨数量" align="center" :formatter="handlerQuantity"  />
@@ -127,24 +143,33 @@
       <el-table-column label="制单时间" align="center" prop="createTime"  width="160px"/>
       <el-table-column label="审核人" align="center" prop="revieerName" />
       <el-table-column label="审核时间" align="center" prop="reviewer_time"  width="160px"/>
-      <el-table-column label="操作"  fixed="right" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="135" fixed="right" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-            v-show="scope.row.docStatus === 'turn_down'||scope.row.docStatus === 'pending_review'"
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['transfer:transfer:edit']"
+            v-if="scope.row.docStatus === 'turn_down'||scope.row.docStatus === 'pending_review'"
           >修改</el-button>
+
           <el-button
             size="mini"
-            v-show="scope.row.docStatus === 'turn_down'||scope.row.docStatus === 'pending_review'"
+            v-if="scope.row.docStatus === 'turn_down'||scope.row.docStatus === 'pending_review'"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['transfer:transfer:remove']"
           >删除</el-button>
+            <el-button
+              size="mini"
+              v-if="scope.row.docStatus === 'done'"
+              type="text"
+              icon="el-icon-refresh-right"
+              @click="handleUndo(scope.row)"
+              v-hasPermi="['transfer:transfer:undo']"
+            >撤销</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -157,21 +182,46 @@
       @pagination="getList"
     />
 
+
+    <!-- 审核 Form :label-width="" -->
+    <el-dialog :visible.sync="reviewFormVisible" title="盘点审核">
+      <el-form :model="reviewForm">
+        <el-form-item label="审核结果">
+          <el-radio v-model="reviewForm.docStatus" label="done">通过</el-radio>
+          <el-radio v-model="reviewForm.docStatus" label="turn_down">驳回</el-radio>
+        </el-form-item>
+        <el-form-item label="审核意见">
+          <el-input
+            v-model="reviewForm.comments"
+            :rows="3" placeholder="请输入内容"
+            resize="none"
+            type="textarea"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="reviewFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handlerReview">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import { listTransfer, delTransfer, }from "@/api/wms/warehouse/transfer/transfer.js";
+import { listTransfer, delTransfer,reviewInventory }from "@/api/wms/warehouse/transfer/transfer.js";
 
 export default {
   name: "Transfer",
-  dicts: ['transfer_doc_status','transfer_out_in_status'],
+  dicts: ['transfer_doc_status','transfer_out_status','transfer_in_status'],
   data() {
     return {
+      // 审核模态框
+      reviewFormVisible: false,
       // 遮罩层
       loading: true,
       // 选中数组
       ids: [],
+      docStatus:[],
       // 子表选中数据
       checkedTransferDetails: [],
       // 非单个禁用
@@ -200,6 +250,7 @@ export default {
       },
       // 表单参数
       form: {},
+      reviewForm:{},
       // 表单校验
       rules: {
         tdCode: [
@@ -304,6 +355,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.tid)
+      this.docStatus = selection.map(item => item.docStatus)
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
@@ -321,6 +373,37 @@ export default {
         this.getList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
+    },
+
+    //审核
+    review(){
+      console.log("this.docStatus?.[0]",this.docStatus?.[0])
+      if (this.docStatus?.[0] =="done"){
+        this.$message.warning("该调拨单已通过审核！");
+
+      }else {
+        this.reviewFormVisible=true;
+      }
+    },
+    async handlerReview() {
+      console.log("handlerReview: ", this.reviewForm);
+      this.loading = true;
+      this.reviewForm.tid = this.ids?.[0];
+      let {code, msg} = (await reviewInventory(this.reviewForm));
+      if (code === 200) {
+        this.$message.success("审核成功！");
+        await this.getList();
+        this.reviewFormVisible = false;
+      } else {
+        console.log("审核失败信息：", msg)
+        this.$message.error("审核失败！");
+        this.loading = false;
+      }
+    },
+
+    //撤销
+    handleUndo(row){
+
     },
 
     /**

@@ -18,6 +18,16 @@ export function getWarehouse(wId) {
   })
 }
 
+// 查询仓库详细（修改回显）
+export function getWarehouseByWid(wId) {
+  console.info(wId);
+  return request({
+    url: '/wms/wh/warehouse/getby/' + wId,
+    method: 'get'
+  })
+}
+
+
 //查询仓位操作记录
 // export function listWarehouse(query) {
 //   return request({
@@ -42,7 +52,7 @@ export function addWarehouse(data) {
 // 修改仓库
 export function updateWarehouse(data) {
   return request({
-    url: '/system/warehouse',
+    url: '/wms/wh/warehouse',
     method: 'put',
     data: data
   })
@@ -100,4 +110,14 @@ export function listStorageByWid(wid) {
     method: 'get'
   })
 }
+
+
+//删除库位
+export function deletelocation(slIds) {
+  return request({
+    url: '/wms/wh/warehouse/location/' + slIds,
+    method: 'delete'
+  })
+}
+
 

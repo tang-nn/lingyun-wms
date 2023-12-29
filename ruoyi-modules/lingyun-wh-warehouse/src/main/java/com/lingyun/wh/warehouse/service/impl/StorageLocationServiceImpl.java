@@ -5,9 +5,12 @@ import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.mapper.StorageLocationMapper;
 import com.lingyun.wh.warehouse.service.IStorageLocationService;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -63,14 +66,19 @@ public class StorageLocationServiceImpl implements IStorageLocationService
     /**
      * 修改库位信息
      * 
-     * @param storageLocation 库位信息
+     * @param storageLocations 库位信息
      * @return 结果
      */
     @Override
-    public int updateStorageLocation(StorageLocation storageLocation)
+    public int updateStorageLocation(String wId, List<StorageLocation>storageLocations)
     {
-        storageLocation.setUpdateTime(DateUtils.getNowDate());
-        return storageLocationMapper.updateStorageLocation(storageLocation);
+        Date nowDate = DateUtils.getNowDate();
+        String uid = SecurityUtils.getUserId().toString();
+        for (StorageLocation sl : storageLocations) {
+            sl.setUpdateBy(uid);
+            sl.setUpdateTime(nowDate);
+        }
+        return storageLocationMapper.updateStorageLocation(wId,storageLocations);
     }
 
     @Override

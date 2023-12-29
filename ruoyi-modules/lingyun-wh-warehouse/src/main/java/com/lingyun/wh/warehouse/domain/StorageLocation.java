@@ -41,6 +41,29 @@ public class StorageLocation extends BaseEntity
     @Excel(name = "仓位主管")
     private String positionManager;
 
+    private String locationUser;
+
+    private String tela;
+
+    //库位下库存数量（有库位不允许删除）
+    private String stockNum;
+
+    public String getStockNum() {
+        return stockNum;
+    }
+
+    public void setStockNum(String stockNum) {
+        this.stockNum = stockNum;
+    }
+
+    public String getTela() {
+        return tela;
+    }
+
+    public void setTela(String tela) {
+        this.tela = tela;
+    }
+
     /** 排序 */
     @Excel(name = "排序")
     private Long sort;
@@ -56,93 +79,96 @@ public class StorageLocation extends BaseEntity
     /** 0：存在；1：已删除，不存在 */
     private String isDelete;
 
-    public void setSlId(String slId) 
-    {
+
+
+    public String getSlId() {
+        return slId;
+    }
+
+    public void setSlId(String slId) {
         this.slId = slId;
     }
 
-    public String getSlId() 
-    {
-        return slId;
+    public String getwId() {
+        return wId;
     }
-    public void setwId(String wId) 
-    {
+
+    public void setwId(String wId) {
         this.wId = wId;
     }
 
-    public String getwId() 
-    {
-        return wId;
+    public String getSlCode() {
+        return slCode;
     }
-    public void setSlCode(String slCode) 
-    {
+
+    public void setSlCode(String slCode) {
         this.slCode = slCode;
     }
 
-    public String getSlCode() 
-    {
-        return slCode;
+    public String getSlName() {
+        return slName;
     }
-    public void setSlName(String slName) 
-    {
+
+    public void setSlName(String slName) {
         this.slName = slName;
     }
 
-    public String getSlName() 
-    {
-        return slName;
+    public String getLocationUser() {
+        return locationUser;
     }
-    public void setLocationCapacity(Integer locationCapacity) 
-    {
+
+    public void setLocationUser(String locationUser) {
+        this.locationUser = locationUser;
+    }
+
+    public Integer getLocationCapacity() {
+        return locationCapacity;
+    }
+
+    public void setLocationCapacity(Integer locationCapacity) {
         this.locationCapacity = locationCapacity;
     }
 
-    public Integer getLocationCapacity() 
-    {
-        return locationCapacity;
+    public String getPositionManager() {
+        return positionManager;
     }
-    public void setPositionManager(String positionManager) 
-    {
+
+    public void setPositionManager(String positionManager) {
         this.positionManager = positionManager;
     }
 
-    public String getPositionManager() 
-    {
-        return positionManager;
+    public Long getSort() {
+        return sort;
     }
-    public void setSort(Long sort) 
-    {
+
+    public void setSort(Long sort) {
         this.sort = sort;
     }
 
-    public Long getSort() 
-    {
-        return sort;
+    public Integer getStatus() {
+        return status;
     }
-    public void setStatus(Integer status) 
-    {
+
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
-    public Integer getStatus() 
-    {
-        return status;
-    }
-    public void setIsDelete(String isDelete) 
-    {
-        this.isDelete = isDelete;
-    }
-
-    public String getIsDelete() 
-    {
-        return isDelete;
-    }
-
+    @Override
     public String getRemark() {
         return remark;
     }
+
+    @Override
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(String isDelete) {
+        this.isDelete = isDelete;
     }
 
     @Override
@@ -154,6 +180,9 @@ public class StorageLocation extends BaseEntity
                 ", slName='" + slName + '\'' +
                 ", locationCapacity=" + locationCapacity +
                 ", positionManager='" + positionManager + '\'' +
+                ", locationUser='" + locationUser + '\'' +
+                ", tela='" + tela + '\'' +
+                ", stockNum='" + stockNum + '\'' +
                 ", sort=" + sort +
                 ", status=" + status +
                 ", remark='" + remark + '\'' +

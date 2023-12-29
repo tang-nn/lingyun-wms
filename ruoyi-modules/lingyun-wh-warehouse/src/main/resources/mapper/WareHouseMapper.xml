@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lingyun.wh.warehouse.mapper.WareHouseMapper">
     
-    <resultMap type="WareHouse" id="WareHouseResult">
+    <resultMap type="WareHouse" id="WareHouseResult" autoMapping="true">
         <result property="wId"    column="w_id"    />
         <result property="wCode"    column="w_code"    />
         <result property="wName"    column="w_name"    />
@@ -14,6 +14,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="isDefault"    column="is_default"    />
         <result property="isLock"    column="is_lock"    />
         <result property="wSupervisor"    column="w_supervisor"    />
+        <result property="supervisorUser"    column="supervisorUser"    />
         <result property="remark"    column="remark"    />
         <result property="sort"    column="sort"    />
         <result property="createBy"    column="create_by"    />
@@ -21,28 +22,37 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
         <result property="isDelete"    column="is_delete"    />
+        <result property="deptName" column="deptName"/>
+
+        <!--        库位明细表 storageLocationList 集合-->
+        <collection property="storageLocationList" ofType="com.lingyun.wh.warehouse.domain.StorageLocation"
+                    autoMapping="true" select="selectStorageByWid" column="w_id">
+        </collection>
+
     </resultMap>
 
-    <resultMap id="WareHouseStorageLocationResult" type="WareHouse" extends="WareHouseResult">
-        <collection property="storageLocationList" notNullColumn="sub_sl_id" javaType="java.util.List" resultMap="StorageLocationResult" />
-    </resultMap>
+
 
     <resultMap type="StorageLocation" id="StorageLocationResult">
-        <result property="slId"    column="sub_sl_id"    />
-        <result property="wId"    column="sub_w_id"    />
-        <result property="slCode"    column="sub_sl_code"    />
-        <result property="slName"    column="sub_sl_name"    />
-        <result property="locationCapacity"    column="sub_location_capacity"    />
-        <result property="positionManager"    column="sub_position_manager"    />
-        <result property="sort"    column="sub_sort"    />
-        <result property="status"    column="sub_status"    />
-        <result property="remark"    column="sub_remark"    />
-        <result property="createBy"    column="sub_create_by"    />
-        <result property="createTime"    column="sub_create_time"    />
-        <result property="updateBy"    column="sub_update_by"    />
-        <result property="updateTime"    column="sub_update_time"    />
-        <result property="isDelete"    column="sub_is_delete"    />
+        <result property="slId"    column="sl_id"    />
+        <result property="wId"    column="w_id"    />
+        <result property="slCode"    column="sl_code"    />
+        <result property="slName"    column="sl_name"    />
+        <result property="locationCapacity"    column="location_capacity"    />
+        <result property="positionManager"    column="position_manager"    />
+        <result property="sort"    column="sort"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="isDelete"    column="is_delete"    />
+        <result property="locationUser"  column="locationUser"/>
     </resultMap>
+
+
+
 
     <sql id="selectWareHouseVo">
         select ww.w_id, ww.w_code, ww.w_name, ww.w_capacity,sd.dept_name deptName,
@@ -50,17 +60,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                ww.w_supervisor, su3.user_name threeuser,ww.remark, ww.sort,
                ww.create_by, su.user_name oneuser,
                ww.create_time, ww.update_by,su2.user_name twouser,
-               ww.update_time, ww.is_delete,(select count(*)from wh_storage_location where w_id=ww.w_id)storageNum
+               ww.update_time, ww.is_delete,
+               (select count(*)from wh_storage_location where w_id=ww.w_id)storageNum,
+               (SELECT count(*) from wh_stock h where w_id=ww.w_id)WareStockNum
+
         from wh_warehouse ww
                      left join sys_user su
                                on ww.create_by=su.user_id
                      left join sys_user su2
                                on ww.update_by=su2.user_id
-                 left join sys_user su3
+                     left join sys_user su3
                            on ww.w_supervisor=su3.user_id
-                 left join sys_dept sd
+                     left join sys_dept sd
                            on sd.dept_id = su3.dept_id
     </sql>
+
+
 
     <select id="lists" resultType="WareHouse">
         SELECT w_id wId,w_name wName FROM wh_warehouse
@@ -76,7 +91,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="w_supervisor != null  and w_supervisor != ''"> and su3.user_name = #{w_supervisor}</if>
             and ww.is_delete = 0
         </where>
-
+        order by  ww.create_time desc
     </select>
     
     <select id="selectWareHouseByWId" parameterType="String" resultType="map">
@@ -102,13 +117,55 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where a.w_id = #{wId}
     </select>
 
+
+
+<!--    仓库-->
+    <select id="selectWareHouseByWIdupdate"  resultMap="WareHouseResult">
+        select a.w_id, a.w_code, a.w_name, a.w_capacity, a.`status`, a.w_address, a.is_default, a.is_lock,
+               a.w_supervisor,su3.user_name supervisorUser, su3.phonenumber tel,a.remark, a.sort, a.create_by,su.user_name oneuser,
+               a.create_time, a.update_by,sd.dept_name deptName,sd.phone tel,
+               su2.user_name twouser,a.update_time, a.is_delete
+        from wh_warehouse a
+                 left join sys_user su
+                           on a.create_by=su.user_id
+                 left join sys_user su2
+                           on a.update_by=su2.user_id
+                 left join sys_user su3
+                           on a.w_supervisor=su3.user_id
+                 left join sys_dept sd
+                           on sd.dept_id = su3.dept_id
+        where a.w_id = #{wId}
+    </select>
+
+
+<!--    库位-->
+    <select id="selectStorageByWid" resultMap="StorageLocationResult">
+            select  b.sl_id , b.w_id , b.sl_code , b.sl_name ,
+                    b.location_capacity , b.position_manager ,su4.user_name locationUser,
+                    su4.phonenumber tela, b.sort , b.`status`, b.remark, b.create_by ,
+                    b.create_time , b.update_by , b.update_time,
+                    b.is_delete ,(SELECT count(*) from  wh_stock h where b.sl_id=h.sl_id)stockNum
+                    from  wh_storage_location b
+                    left join sys_user su4
+                    on b.position_manager=su4.user_id
+            where b.w_id=#{w_id} and  b.is_delete=0
+    </select>
+
+
+<!-- 修改仓库状态-->
     <update id="changeStatus">
-        update wh_warehouse set status=#{status} where w_id in
-        <foreach item="wId" collection="w_id" open="(" separator="," close=")">
-            #{wId}
-        </foreach>
+        <if test="w_id instanceof java.util.List">
+            update wh_warehouse set status=#{status} where w_id in
+            <foreach item="wId" collection="w_id" open="(" separator="," close=")">
+                #{wId}
+            </foreach>
+        </if>
+        <if test="!(w_id instanceof java.util.List)">
+            update wh_warehouse set status=#{status} where w_id = #{w_id}
+        </if>
     </update>
-        
+
+<!--    新增仓库-->
     <insert id="insertWareHouse" parameterType="WareHouse" useGeneratedKeys="true" keyProperty="wId">
         insert into wh_warehouse
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -147,6 +204,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
+<!--    修改仓库-->
     <update id="updateWareHouse" parameterType="WareHouse">
         update wh_warehouse
         <trim prefix="SET" suffixOverrides=",">
@@ -155,8 +213,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="wCapacity != null and wCapacity != ''">w_capacity = #{wCapacity},</if>
             <if test="status != null">status = #{status},</if>
             <if test="wAddress != null and wAddress != ''">w_address = #{wAddress},</if>
-            <if test="isDefault != null and isDefault != ''">is_default = #{isDefault},</if>
-            <if test="isLock != null and isLock != ''">is_lock = #{isLock},</if>
+            <if test="isDefault != null">is_default = #{isDefault},</if>
             <if test="wSupervisor != null and wSupervisor != ''">w_supervisor = #{wSupervisor},</if>
             <if test="remark != null and remark != ''">remark = #{remark},</if>
             <if test="sort != null">sort = #{sort},</if>
@@ -164,7 +221,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
-            <if test="isDelete != null and isDelete != ''">is_delete = #{isDelete},</if>
         </trim>
         where w_id = #{wId}
     </update>
@@ -173,13 +229,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
        update  wh_warehouse set is_delete=1 where w_id = #{wId}
     </delete>
 
-    <delete id="deleteWareHouseByWIds" parameterType="String">
+    <update id="deleteWareHouseByWIds" parameterType="String">
         update wh_warehouse set is_delete=1 where w_id in
         <foreach item="wId" collection="array" open="(" separator="," close=")">
             #{wId}
         </foreach>
-    </delete>
-    
+    </update>
+
     <delete id="deleteStorageLocationByWIds" parameterType="String">
         update  wh_storage_location set is_delete=1 where w_id in
         <foreach item="wId" collection="array" open="(" separator="," close=")">
@@ -191,6 +247,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         delete from wh_storage_location where w_id = #{wId}
     </delete>
 
+<!--    批量新增库位信息-->
     <insert id="batchStorageLocation">
         insert into wh_storage_location( sl_id, w_id, sl_code, sl_name, location_capacity, position_manager, sort, status, remark, create_by, create_time, update_by, update_time, is_delete) values
 		<foreach item="item" index="index" collection="list" separator=",">
@@ -199,8 +256,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
 
 
-
-
+<!--查询仓库下的库位-->
     <select id="selectStorageListfindByWid" resultType="map">
         select wsl.sl_id,wsl.w_id, wsl.sl_code,wsl.sl_name,
                wsl.location_capacity,wsl.position_manager,su3.user_name manager,
@@ -226,4 +282,197 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
 
+    <resultMap id="WareHouseStorageLocationResult" type="WareHouse" extends="WareHouseResult">
+        <collection property="storageLocationList" notNullColumn="sub_sl_id" javaType="java.util.List" resultMap="StorageLocationResult" />
+    </resultMap>
+    
+    
+    
+    
+<!--     1.库存数量占比-->
+    <select id="StockNumber" resultType="map">
+            SELECT ww.w_name, tatalQuantity, allQuantity, tatalQuantity/allQuantity AS ratio
+            FROM
+            (
+                SELECT ws.w_id, SUM(item_quantity) AS tatalQuantity
+                FROM wh_stock ws
+                GROUP BY ws.w_id
+            ) AS sub1
+                INNER JOIN
+            (
+                SELECT SUM(item_quantity) AS allQuantity
+                FROM wh_stock
+            ) AS sub2
+            ON 1=1
+                INNER JOIN wh_warehouse ww
+                           ON sub1.w_id = ww.w_id;
+    </select>
+
+<!--     2.库存金额占比-->
+    <select id="StockPrice" resultType="map">
+        SELECT t1.totalPrice, t1.w_name, t2.allPrice,totalPrice/allPrice AS ratio
+        FROM
+            (SELECT
+                 SUM(ws.item_quantity * wg.wr_price) AS totalPrice,
+                 ww.w_name
+             FROM
+                 wh_stock ws
+                     INNER JOIN wh_goods wg ON ws.g_id = wg.g_id
+                     INNER JOIN wh_warehouse ww ON ww.w_id = ws.w_id
+             GROUP BY ws.w_id) t1,
+            (SELECT
+                 SUM(ws.item_quantity * wg.wr_price) AS AllPrice
+             FROM
+                 wh_stock ws
+                     INNER JOIN wh_goods wg ON ws.g_id = wg.g_id) t2;
+    </select>
+
+
+<!--   3.入库统计  -->
+    <select id="inboundStatistics">
+        SELECT DATE(dt.d) AS date,
+            COALESCE(SUM(wd.quantity_inbound), 0) AS iNnum,
+            COALESCE(SUM(wd.quantity_inbound * wd.pu_price), 0) AS inPrice
+        FROM (
+            SELECT CURDATE() - INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY AS d
+            FROM (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+            CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+            CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
+            ) AS dt
+            LEFT JOIN wh_inbound wh ON DATE(wh.storage_date) = DATE(dt.d)
+            LEFT JOIN wh_inbound_details wd ON wh.in_id = wd.in_id
+        WHERE dt.d >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        GROUP BY DATE(dt.d)
+        ORDER BY DATE(dt.d);
+
+    </select>
+
+<!--4.出库统计-->
+    <select id="outBoundStatistics" resultType="map">
+        SELECT DATE(dt.d) AS date,
+            COALESCE(SUM(wd.outbound_quantity), 0) AS oNnum,
+            COALESCE(SUM(wd.outbound_quantity * wd.pu_price), 0) AS outPrice
+        FROM (
+            SELECT CURDATE() - INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY AS d
+            FROM (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+            CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+            CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
+            ) AS dt
+            LEFT JOIN wh_outbound wo ON DATE(wo.outbound_date) = DATE(dt.d)
+            LEFT JOIN wh_outbound_details wd ON wo.out_id = wd.out_id
+        WHERE dt.d >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        GROUP BY DATE(dt.d)
+        ORDER BY DATE(dt.d);
+    </select>
+
+<!-- 5.入库排名-->
+    <select id="inboundRank" resultType="map">
+        select g_id,g_name,count(goods_id)inBoundTimes,sum(quantity_inbound)inBoundQuantitys,
+               sum(quantity_inbound*pu_price)inBoundPuPrices  from wh_inbound_details wid
+                inner join wh_goods wg on wid.goods_id=wg.g_id
+                inner join wh_inbound wi
+                on wi.in_id=wid.in_id
+        where wi.`status`='is_done'  GROUP BY goods_id
+        ORDER BY inBoundTimes desc,inBoundQuantitys desc, inBoundPuPrices desc
+    </select>
+
+
+<!-- 6.出库排名-->
+    <select id="outboundRank" resultType="map">
+        select g_id,g_name,count(goods_id)outBoundTimes,sum(outbound_quantity)outBoundQuantitys,
+               sum(outbound_quantity*pu_price)outBoundPuPrices  from wh_outbound_details wod
+               inner join wh_goods wg  on wod.goods_id=wg.g_id
+               inner join wh_outbound wo on wo.out_id=wod.out_id
+        where wo.`status`='done' GROUP BY goods_id
+        ORDER BY outBoundTimes desc,outBoundQuantitys desc, outBoundPuPrices desc
+
+    </select>
+
+<!--   今日概况（入库） -->
+    <select id="inTodaydetails" resultType="map">
+        SELECT
+            SUM(quantity_inbound) AS inNum,
+            SUM(quantity_inbound * pu_price) AS inPrice,
+            (
+                SELECT COUNT(in_code)
+                FROM wh_inbound
+                WHERE in_id IN (
+                    SELECT in_id
+                    FROM wh_inbound wh
+                    WHERE storage_date =CURDATE()
+                )
+            ) AS documents
+        FROM wh_inbound_details
+        WHERE in_id IN (
+            SELECT in_id
+            FROM wh_inbound
+            WHERE storage_date = CURDATE()
+        );
+    </select>
+
+<!--(出库)-->
+    <select id="outTodaydetails" resultType="map">
+        SELECT
+            SUM(outbound_quantity) AS outNum,
+            SUM(outbound_quantity * pu_price) AS outPrice,
+            (
+                SELECT COUNT(out_code)
+                FROM wh_outbound
+                WHERE out_id IN (
+                    SELECT out_id
+                    FROM wh_outbound wh
+                    WHERE outbound_date =CURDATE()
+                )
+            ) AS documents
+        FROM wh_outbound_details
+        WHERE out_id IN (
+            SELECT out_id
+            FROM wh_outbound
+            WHERE outbound_date = CURDATE()
+        );
+    </select>
+
+    <!--   昨日概况（入库） -->
+    <select id="inYesterdaydetails" resultType="map">
+        SELECT
+            SUM(quantity_inbound) AS inNum,
+            SUM(quantity_inbound * pu_price) AS inPrice,
+            (
+                SELECT COUNT(in_code)
+                FROM wh_inbound
+                WHERE in_id IN (
+                    SELECT in_id
+                    FROM wh_inbound wh
+                    WHERE storage_date =DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                )
+            ) AS documents
+        FROM wh_inbound_details
+        WHERE in_id IN (
+            SELECT in_id
+            FROM wh_inbound
+            WHERE storage_date =DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+        );
+    </select>
+
+    <!--(出库)-->
+    <select id="outYesterdaydetails" resultType="map">
+        SELECT
+            SUM(outbound_quantity) AS outNum,
+            SUM(outbound_quantity * pu_price) AS outPrice,
+            (
+                SELECT COUNT(out_code)
+                FROM wh_outbound
+                WHERE out_id IN (
+                    SELECT out_id
+                    FROM wh_outbound wh
+                    WHERE outbound_date =DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                )
+            ) AS documents
+        FROM wh_outbound_details
+        WHERE out_id IN (
+            SELECT out_id
+            FROM wh_outbound
+            WHERE outbound_date = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+        );
+    </select>
 </mapper>

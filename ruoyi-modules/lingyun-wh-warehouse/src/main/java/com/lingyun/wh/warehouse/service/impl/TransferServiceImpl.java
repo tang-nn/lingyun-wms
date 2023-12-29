@@ -167,11 +167,11 @@ public class TransferServiceImpl implements ITransferService {
 //    }
 
 
-    //查询调入仓库货品的库位(调入仓库id 货品id)
-    @Override
-    public List<StorageLocation> getLocation(String w_id, String g_id) {
-        return transferMapper.getLocation(w_id, g_id);
-    }
+//    //查询调入仓库货品的库位(调入仓库id 货品id)
+//    @Override
+//    public List<StorageLocation> getLocation(String w_id, String g_id) {
+//        return transferMapper.getLocation(w_id, g_id);
+//    }
 
     /**
      * 修改调拨单
@@ -182,9 +182,15 @@ public class TransferServiceImpl implements ITransferService {
     @Transactional
     @Override
     public int updateTransfer(Transfer transfer) {
-        transfer.setUpdateTime(DateUtils.getNowDate());
-//        transferMapper.deleteTransferDetailsByTId(transfer.getTid());
-        insertTransferDetails(transfer);
+
+
+
+
+
+
+//        transfer.setUpdateTime(DateUtils.getNowDate());
+////        transferMapper.deleteTransferDetailsByTId(transfer.getTid());
+//        insertTransferDetails(transfer);
         return transferMapper.updateTransfer(transfer);
     }
 
@@ -199,6 +205,23 @@ public class TransferServiceImpl implements ITransferService {
     public int deleteTransferByTids(String[] tids) {
         transferMapper.deleteTransferDetailsByTIds(tids);//删除调拨明细
         return transferMapper.deleteTransferByTids(tids);//删除调拨单
+    }
+
+    @Override
+    public int deleteTransferDetailsByTdIds(String[] tdIds) {
+        return transferMapper.deleteTransferDetailsByTdIds(tdIds);
+    }
+
+
+    @Override
+    public int reviewInventory(Transfer transfer) {
+        Date nowDate = DateUtils.getNowDate();
+        String uid = SecurityUtils.getUserId().toString();
+        transfer.setReviewer(uid);
+        transfer.setReviewerTime(nowDate);
+        transfer.setUpdateBy(uid);
+        transfer.setUpdateTime(nowDate);
+        return transferMapper.reviewInventory(transfer);
     }
 
 

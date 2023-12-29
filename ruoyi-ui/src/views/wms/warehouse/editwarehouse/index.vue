@@ -3,7 +3,7 @@
 
     <el-row :gutter="20" style="background-color: white;border-radius: 5px;box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
    padding-bottom: 10px;margin-left: 200px;width: 1280px">
-      <h3 style="margin-left: 20px">基础信息</h3>
+      <h3 style="margin-left: 20px">修改仓库基础信息</h3>
       <div style="border-top: 1px solid #eeeeee;padding-top: 30px;padding-left: 30px">
       <el-form ref="elForm" :rules="rules" :model="formData" label-width="95px" size="medium">
         <el-row>
@@ -36,7 +36,7 @@
             <el-col :span="9" style="margin-left: 200px">
               <el-form-item label="库管部门" prop="deptName">
                 <el-input
-                  v-model="queryParams.deptName"
+                  v-model="formData.deptName"
                   placeholder="请输入"
                   clearable
                   @focus="handledept"
@@ -84,21 +84,15 @@
             <el-form-item label="仓库状态" prop="status" style="margin-left: 90px">
               <el-radio-group v-model="formData.status">
                 <el-radio
-                  v-for="dict in dict.type.sys_normal_disable"
+                  v-for="dict in dict.type.wh_status"
                   :key="dict.value"
                   :label="dict.value"
-                >{{dict.label}}</el-radio>
+                >{{ dict.label }}
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
-<!--        <el-row>-->
-<!--          <el-col :span="11">-->
-<!--            <el-form-item label="仓库锁定" prop="isLock">-->
-<!--              <el-switch v-model="formData.isLock"></el-switch>-->
-<!--            </el-form-item>-->
-<!--          </el-col>-->
-<!--        </el-row>-->
         <el-row>
           <el-col :span="19">
             <el-form-item label="备注" prop="remark">
@@ -140,15 +134,16 @@
           </el-col>
         </el-row>
 
-        <el-table :loading="loading" style="margin-top: 50px" :data="storageListAdd"
+        <el-table :loading="loading" style="margin-top: 50px" :data="formData.storageLocationList"
                   max-height="520px" @selection-change="handleSelectionChange"
                   :row-class-name="rowStorageLocationIndex">
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="序号" align="center" prop="index" width="50"/>
-<!--          <el-table-column label="库位编号"  prop="sl_code" :show-overflow-tooltip="true" width="150" />-->
+          <el-table-column label="库位id"  prop="slId" v-if="false"  ref="slId" width="150" />
+          <el-table-column label="库下库存num"  prop="stockNum" v-if="false"  ref="stockNum" width="150" />
           <el-table-column label="库位名称"  prop="slName" :show-overflow-tooltip="true" width="150" />
           <el-table-column label="库位容量/m³" align="center" prop="locationCapacity" />
-          <el-table-column label="仓位主管" align="center" prop="usera" />
+          <el-table-column label="仓位主管" align="center" prop="locationUser" />
           <el-table-column label="排序" align="center" prop="sort" />
           <el-table-column label="库位状态"   align="center" width="100" >
             <template slot-scope="scope">
@@ -333,7 +328,7 @@
     <el-dialog :title="title" :visible.sync="opendept" width="420px" append-to-body>
       <div class="head-container">
         <el-input
-          v-model="queryParams.deptName"
+          v-model="formData.deptName"
           placeholder="请搜索"
           clearable
           size="small"
@@ -368,11 +363,11 @@
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import {deptTreeSelect, listUser} from "@/api/system/user";
-import {addWarehouse} from "@/api/wms/warehouse/warehouse.js";
+import {deletelocation, getWarehouseByWid, updateWarehouse} from "@/api/wms/warehouse/warehouse.js";
 
 export default {
   components: {Treeselect},
-  dicts: ['sys_normal_disable'],
+  dicts: ['wh_status','sys_normal_disable'],
   props: [],
   data() {
     return {
@@ -407,11 +402,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        deptName:null,
       },
       // 表单参数
       form: {
-        status:"0",
         usera:null,
         tela:null,
       },
@@ -422,20 +415,7 @@ export default {
         label: "label"
       },
       formData: {
-        //仓库字段
-        wCode: undefined,
-        //默认仓库
-        isDefault: false,
-        wName: undefined,
-        wCapacity: undefined,
-        deptName: undefined,
-        wSupervisor: undefined,
-        tel: undefined,
-        wAddress: undefined,
-        sort: undefined,
-        status: "0",
         storageLocationList:[],
-
       },
       // 表单校验
       rules: {
@@ -519,13 +499,31 @@ export default {
     }
   },
   computed: {
+
   },
   watch: {},
   created() {
     this.getDeptTree();
   },
-  mounted() {},
+  mounted() {
+    this.w_id=this.$route.params.w_id;
+    this.getDetailsByWid();
+    const slId = this.$refs.slId;
+    const stockNum = this.$refs.stockNum;
+
+  },
   methods: {
+    //根据w_id查询仓库
+    getDetailsByWid(){
+      getWarehouseByWid(this.w_id).then(response => {
+        this.formData = response.data;
+        this.formData.status = this.formData.status + '';
+        this.formData.wSupervisor=response.data.supervisorUser;
+        console.log("this.formData",this.formData)
+      });
+    },
+
+
     /** 库位信息序号 */
     rowStorageLocationIndex({ row, rowIndex }) {
       row.index = rowIndex + 1;
@@ -557,7 +555,7 @@ export default {
     },
      // 节点单击事件
     handleNodeClick(data) {
-      this.queryParams.deptName=data.label;
+      this.formData.deptName=data.label;
       this.deptId=data.id;
       this.getUser();
     },
@@ -599,6 +597,7 @@ export default {
     },
     okUsera(){
       this.form.usera=this.userdga;
+      console.log( this.form.usera)
       this.form.tela=this.tela;
       this.openUsera=false;
     },
@@ -638,43 +637,29 @@ export default {
       this.resetForm("form");
     },
 
-    /*新增库位页面保存数据*/
-    // saveAdd(){
-    //   this.$refs["form"].validate(valid => {
-    //     if (valid) {
-    //       this.form.positionManager=this.userIda;
-    //       this.storageListAdd.push(this.form);
-    //       console.info("storageListAdd", this.storageListAdd);
-    //       this.dialog = false;
-    //     }
-    //   });
-    //
-    // },
-
-
     /*新增/修改库位页面保存数据*/
     saveAdd(){
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.index){
+          if (this.form.slCode){
             //修改
             const index = this.form.index-1;
             this.form.locationUser=this.form.usera;
-            this.$set(this.storageListAdd, index ,this.form);
+            this.$set(this.formData.storageLocationList, index ,this.form);
           }else {
             // 新添数据
             this.form.positionManager=this.userIda;//库位主管id
             this.form.locationUser=this.userdga;//库位主管名称
-            this.storageListAdd.push(this.form);
+            this.formData.storageLocationList.push(this.form);
           }
-          console.info(" this.storageListAdd",  this.storageListAdd);
+          console.info(" this.formData.storageLocationList",  this.formData.storageLocationList);
           this.dialog = false;
         }
       });
     },
 
 
-    /** 关闭新增库存页面操作 */
+    /** 关闭新增/修改库存页面操作 */
     saveAddCancle(){
       this.dialog = false;
       this.reset();
@@ -685,14 +670,25 @@ export default {
       if(!Array.isArray(indexs)){
         indexs = [indexs];
       }
+      const slIds=row.slId;
+      const stockNum=row.stockNum;
       console.info("indexs: ", indexs);
-      this.$modal.confirm('是否确认删除库位编号为"' + indexs + '"的数据项？').then(()=> {
-        this.storageListAdd = this.storageListAdd?.filter(e=>!indexs.includes(e.index));
-      }).then(() => {
-        this.$message.success("删除成功");
-        console.log("this.storageListAdd: ", this.storageListAdd);
-      }).catch(e => {
-      });
+      console.info("stockNum: ", stockNum);
+      console.info("slId: ", slIds);
+      if (stockNum>0){
+        this.$message.error("不允许操作改库位！");
+      }else {
+        this.$modal.confirm('是否确认删除库位编号为"' + indexs + '"的数据项？').then(()=> {
+          //去数据库删除
+          deletelocation(slIds);
+          this.formData.storageLocationList = this.formData.storageLocationList?.filter(e=>!indexs.includes(e.index));
+        }).then(() => {
+          this.$message.success("删除成功");
+          console.log(" this.formData.storageLocationList: ",  this.formData.storageLocationList);
+        }).catch(e => {
+        });
+      }
+
     },
     /*修改库位操作*/
     handleUpdate(row){
@@ -700,10 +696,10 @@ export default {
       this.updateTitle = "修改";
       this.getUsera();
       const index = row.index-1;
-      this.form=JSON.parse(JSON.stringify(this.storageListAdd[index]));
-      this.form.usera =JSON.parse(JSON.stringify(this.storageListAdd[index].locationUser));
-      this.form.status = ''+JSON.parse(JSON.stringify(this.storageListAdd[index].status));
-      this.form.tela=JSON.parse(JSON.stringify(this.storageListAdd[index].tela));
+      this.form=JSON.parse(JSON.stringify(this.formData.storageLocationList[index]));
+      this.form.usera =JSON.parse(JSON.stringify(this.formData.storageLocationList[index].locationUser));
+      this.form.status = ''+JSON.parse(JSON.stringify(this.formData.storageLocationList[index].status));
+      this.form.tela=JSON.parse(JSON.stringify(this.formData.storageLocationList[index].tela));
 
     },
     /*最终添加*/
@@ -711,14 +707,12 @@ export default {
       this.$refs['elForm'].validate(valid => {
         if (valid) {
           // TODO 提交表单
-          this.formData.isDefault=this.formData.isDefault==true?1:0;
           // this.formData.isLock=this.formData.isLock==true?1:0;
           this.formData.wSupervisor=this.userid;
-          this.formData.storageLocationList=this.storageListAdd;
-          addWarehouse(this.formData).then(response =>{
-            this.$modal.msgSuccess("新增成功");
+          console.log("this.formData: ", this.formData)
+          updateWarehouse(this.formData).then(response =>{
+            this.$modal.msgSuccess("修改成功");
             this.$router.push(`/warehousemanager`);
-
           })
 
         }else {
@@ -728,7 +722,7 @@ export default {
       })
     },
     resetForm() {
-      this.$refs['Form']
+      this.$refs['Form'];
     },
     },
 }

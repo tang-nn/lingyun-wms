@@ -23,6 +23,9 @@ public class WareHouse extends BaseEntity
     @Excel(name = "仓库编号")
     private String wCode;
 
+    private String deptName;
+
+
     /** 仓库名称 */
     @Excel(name = "仓库名称")
     private String wName;
@@ -48,8 +51,12 @@ public class WareHouse extends BaseEntity
     private Boolean isLock;
 
     /** 关联至用户表，仓库主管 */
-    @Excel(name = "关联至用户表，仓库主管")
+    @Excel(name = "关联至用户表id")
     private String wSupervisor;
+    @Excel(name = "关联至用户表，仓库主管")
+    private String supervisorUser;
+
+    private String tel;
 
     /** 排序 */
     @Excel(name = "排序")
@@ -103,7 +110,30 @@ public class WareHouse extends BaseEntity
         this.status = status;
     }
 
-    public Integer getStatus() 
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
+
+    public String getSupervisorUser() {
+        return supervisorUser;
+    }
+
+    public void setSupervisorUser(String supervisorUser) {
+        this.supervisorUser = supervisorUser;
+    }
+    public String getDeptName() {
+        return deptName;
+    }
+
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+
+    public Integer getStatus()
     {
         return status;
     }
@@ -174,24 +204,22 @@ public class WareHouse extends BaseEntity
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("wId", getwId())
-            .append("wCode", getwCode())
-            .append("wName", getwName())
-            .append("wCapacity", getwCapacity())
-            .append("status", getStatus())
-            .append("wAddress", getwAddress())
-            .append("isDefault", getIsDefault())
-            .append("isLock", getIsLock())
-            .append("wSupervisor", getwSupervisor())
-            .append("remark", getRemark())
-            .append("sort", getSort())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateBy", getUpdateBy())
-            .append("updateTime", getUpdateTime())
-            .append("isDelete", getIsDelete())
-            .append("storageLocationList", getStorageLocationList())
-            .toString();
+        return "WareHouse{" +
+                "wId='" + wId + '\'' +
+                ", wCode='" + wCode + '\'' +
+                ", deptName='" + deptName + '\'' +
+                ", wName='" + wName + '\'' +
+                ", wCapacity='" + wCapacity + '\'' +
+                ", status=" + status +
+                ", wAddress='" + wAddress + '\'' +
+                ", isDefault=" + isDefault +
+                ", isLock=" + isLock +
+                ", wSupervisor='" + wSupervisor + '\'' +
+                ", supervisorUser='" + supervisorUser + '\'' +
+                ", tel='" + tel + '\'' +
+                ", sort=" + sort +
+                ", isDelete=" + isDelete +
+                ", storageLocationList=" + storageLocationList +
+                '}';
     }
 }

@@ -73,20 +73,21 @@
         >新增
         </el-button>
       </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="danger"-->
+<!--          plain-->
+<!--          icon="el-icon-delete"-->
+<!--          size="mini"-->
+<!--          :disabled="multiple"-->
+<!--          @click="handleDelete"-->
+<!--          v-hasPermi="['InventorySheet:inventory:remove']"-->
+<!--        >删除-->
+<!--        </el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['InventorySheet:inventory:remove']"
-        >删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           plain
           icon="el-icon-unlock"
           size="mini"
@@ -99,9 +100,10 @@
         <el-button
           type="success"
           plain
-          icon="el-icon-edit"
+          icon="el-icon-coordinate"
           size="mini"
           :disabled="single"
+          @click="review"
           v-hasPermi="['transfer:transfer:edit']"
         >审核</el-button>
       </el-col>
@@ -110,9 +112,14 @@
     <el-table max-height="520"  v-loading="loading" :data="inventoryList" @selection-change="handleSelectionChange">
       <el-table-column fixed="left" type="selection" width="55" align="center"/>
       <el-table-column fixed="left" label="盘点ID" align="center" prop="isId"/>
-      <el-table-column fixed="left" label="盘点单号" align="center" prop="isCode" width="120px">
+      <el-table-column fixed="left" label="盘点单号" align="center" prop="isCode" width="140x">
         <template slot-scope="{ row }">
           <span @click="goToDetails(row.isId)">{{row.isCode}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column fixed="left" label="审核状态" align="center" prop="reviewStatus">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.inventory_review_status" :value="scope.row.reviewStatus"/>
         </template>
       </el-table-column>
       <el-table-column fixed="left" label="盘点结果" align="center" prop="isResult">
@@ -138,12 +145,12 @@
       </el-table-column>
       <el-table-column label="出库状态" align="center">
         <template slot-scope="scope">
-          {{ scope.row.outStatus === 0 ? '已出库' : '未出库' }}
+          <dict-tag :options="dict.type.outbound_status" :value="scope.row.outStatus"/>
         </template>
       </el-table-column>
       <el-table-column label="入库状态" align="center">
         <template slot-scope="scope">
-          {{ scope.row.inStatus === 0 ? '已入库' : '未入库' }}
+          <dict-tag :options="dict.type.inbound_status" :value="scope.row.inStatus"/>
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" label="盘点货品" :formatter="handlerProductName" align="center" prop="gname"/>
@@ -155,33 +162,30 @@
       <el-table-column :formatter="handlerProfitAmount" label="盘盈金额" align="center" prop="count_amount" width="100" style="color: #1ab394"/>
       <el-table-column :formatter="handlerLossAmount" label="盘亏金额" align="center" prop="count_amount" width="100" style="color: red"/>
       <el-table-column label="经办人" align="center" prop="managerName"/>
-      <el-table-column label="制单人" fixed="right" align="center" prop="creatorName"/>
-      <el-table-column label="所在部门" fixed="right" align="center" prop="creatorDept" width="140px"/>
-      <el-table-column label="制单时间" fixed="right" align="center" prop="createTime" width="110px">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+      <el-table-column label="制单人"  align="center" prop="creatorName"/>
+      <el-table-column label="所在部门"  align="center" prop="creatorDept" width="140px"/>
+      <el-table-column label="制单时间" align="center" prop="createTime" width="150px"/>
+      <el-table-column label="操作" width="110" fixed="right" align="center" class-name="small-padding fixed-width">
+        <template slot-scope="{ row }">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            v-if="row.reviewStatus === 'turn_down' || row.reviewStatus === 'pending_review'"
+            @click="handleUpdate(row.isId)"
+            v-hasPermi="['InventorySheet:inventory:edit']"
+          >修改</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            v-if="row.reviewStatus === 'turn_down' || row.reviewStatus === 'pending_review'"
+            @click="handleDelete(row)"
+            v-hasPermi="['InventorySheet:inventory:remove']"
+          >删除</el-button>
         </template>
       </el-table-column>
-<!--      <el-table-column label="操作" fixed="right" align="center" class-name="small-padding fixed-width">-->
-<!--        <template slot-scope="{ row }">-->
-<!--          <el-button-->
-<!--            size="mini"-->
-<!--            type="text"-->
-<!--            icon="el-icon-edit"-->
-<!--            @click="handleUpdate(row.isId)"-->
-<!--            v-hasPermi="['InventorySheet:inventory:edit']"-->
-<!--          >修改-->
-<!--          </el-button>-->
-<!--          <el-button-->
-<!--            size="mini"-->
-<!--            type="text"-->
-<!--            icon="el-icon-delete"-->
-<!--            @click="handleDelete(scope.row)"-->
-<!--            v-hasPermi="['InventorySheet:inventory:remove']"-->
-<!--          >删除-->
-<!--          </el-button>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+
     </el-table>
 
     <pagination
@@ -192,25 +196,49 @@
       @pagination="getList"
     />
 
+    <!-- 审核 Form :label-width="" -->
+    <el-dialog :visible.sync="reviewFormVisible" title="盘点审核">
+      <el-form :model="reviewForm">
+        <el-form-item label="审核结果">
+          <el-radio v-model="reviewForm.reviewStatus" label="done">通过</el-radio>
+          <el-radio v-model="reviewForm.reviewStatus" label="turn_down">驳回</el-radio>
+        </el-form-item>
+        <el-form-item label="审核意见">
+          <el-input
+            v-model="reviewForm.comments"
+            :rows="3" placeholder="请输入内容"
+            resize="none"
+            type="textarea"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="reviewFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handlerReview">确 定</el-button>
+      </div>
+    </el-dialog>
+
+
   </div>
 </template>
 
 <script>
 import {
-  listInventory, getInventory, delInventory,
-  addInventory, updateInventory
+  listInventory, reviewInventory, delInventory,
 } from "@/api/wms/warehouse/InventorySheet/inventory.js";
 import {listWarehouse} from "@/api/wms/warehouse/warehouse";
 
 export default {
   name: "Inventory",
-  dicts: ['p_result_check', 'pd_type_check', 'pd_status_check'],
+  dicts: ['outbound_status','inbound_status','p_result_check', 'pd_type_check', 'pd_status_check','inventory_review_status'],
   data() {
     return {
+      // 审核模态框
+      reviewFormVisible: false,
       // 遮罩层
       loading: true,
       // 选中数组
       ids: [],
+      reviewStatus:[],
       // 子表选中数据
       checkedInventoryDetails: [],
       // 非单个禁用
@@ -234,7 +262,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 5,
         is_code: null,
         is_result: null,
         w_id: null,
@@ -248,51 +276,8 @@ export default {
       },
       // 表单参数
       form: {},
-      // 表单校验
-      rules: {
-        isCode: [
-          {required: true, message: "盘点单号不能为空", trigger: "blur"}
-        ],
-        isResult: [
-          {required: true, message: "盘点结果不能为空", trigger: "blur"}
-        ],
-        wId: [
-          {required: true, message: "仓库 ID不能为空", trigger: "blur"}
-        ],
-        isType: [
-          {required: true, message: "来自数据字典,盘点类型不能为空", trigger: "change"}
-        ],
-        isStartTime: [
-          {required: true, message: "盘点开始时间不能为空", trigger: "blur"}
-        ],
-        isEndTime: [
-          {required: true, message: "盘点结束时间不能为空", trigger: "blur"}
-        ],
-        outStatus: [
-          {required: true, message: "出库状态不能为空", trigger: "change"}
-        ],
-        inStatus: [
-          {required: true, message: "入库状态不能为空", trigger: "change"}
-        ],
-        isManager: [
-          {required: true, message: "关联用户表,盘点经办人不能为空", trigger: "blur"}
-        ],
-        createBy: [
-          {required: true, message: "关联至用户表,创建人不能为空", trigger: "blur"}
-        ],
-        createTime: [
-          {required: true, message: "操作时间不能为空", trigger: "blur"}
-        ],
-        updateBy: [
-          {required: true, message: "关联至用户表,修改人不能为空", trigger: "blur"}
-        ],
-        updateTime: [
-          {required: true, message: "修改时间不能为空", trigger: "blur"}
-        ],
-        isDelete: [
-          {required: true, message: "0：存在；1：已删除，不存在不能为空", trigger: "blur"}
-        ]
-      }
+      reviewForm:{},
+
     };
   },
   created() {
@@ -313,6 +298,32 @@ export default {
     //锁定仓库
     lock(){
       this.$router.push(`/warehousemanager`);
+    },
+    //审核
+    review(){
+      console.log("this.reviewStatus?.[0]",this.reviewStatus?.[0])
+      if (this.reviewStatus?.[0] =="done"){
+        this.$message.warning("该盘点单已通过审核！");
+      }else {
+        this.reviewFormVisible=true;
+      }
+    },
+    async handlerReview() {
+      console.log("handlerReview: ", this.reviewForm);
+      this.loading = true;
+      this.reviewForm.isId = this.ids?.[0];
+      let {code, msg} = (await reviewInventory(this.reviewForm));
+      if (code === 200) {
+        this.$message.success("审核成功！");
+        await this.getList();
+        this.reviewFormVisible = false;
+      } else {
+        console.log("审核失败信息：", msg)
+        this.$message.error("审核失败！");
+        this.loading = false;
+      }
+
+
     },
     //查询仓库名称集合
     wareName(){
@@ -340,6 +351,7 @@ export default {
       row.pq = pq;
        return pq;
     },
+
     // 盘亏数量
     handlerLossQuantity(row) {
       let lq = row.inventoryDetailsList?.reduce((accumulator, currentValue) => {
@@ -393,12 +405,15 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
+      this.queryParams.is_result=undefined;
+      this.queryParams.is_type=undefined;
       this.resetForm("queryForm");
       this.handleQuery();
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.isId)
+      this.reviewStatus = selection.map(item => item.reviewStatus)
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
@@ -406,11 +421,11 @@ export default {
     handleAdd() {
       this.$router.push('/addInventorySheet');
     },
-    // /** 修改按钮操作 */
-    // handleUpdate(isId) {
-    //   this.$router.push({ path: `/editInventorySheet/${isId}` }); // 将 row.isCode 参数传递给路径占位符
-    //
-    // },
+    /** 修改按钮操作 */
+    handleUpdate(isId) {
+      this.$router.push({ path: `/editInventorySheet/${isId}` }); // 将 row.isCode 参数传递给路径占位符
+
+    },
     /** 删除按钮操作 */
     handleDelete(row) {
       const isIds = row.isId || this.ids;
@@ -428,10 +443,10 @@ export default {
     goToDetails(isId){
       this.$router.push({ path: `/Inventorydetails/${isId}` }); // 将 row.isCode 参数传递给路径占位符
     },
-    /** 盘点明细序号 */
-    rowInventoryDetailsIndex({row, rowIndex}) {
-      row.index = rowIndex + 1;
-    },
+    // /** 盘点明细序号 */
+    // rowInventoryDetailsIndex({row, rowIndex}) {
+    //   row.index = rowIndex + 1;
+    // },
   }
 };
 </script>

@@ -4,6 +4,7 @@ import com.lingyun.wh.goods.api.domain.Goods;
 import com.lingyun.wh.goods.api.domain.WarningInfo;
 import com.lingyun.wh.goods.mapper.GoodsMapper;
 import com.lingyun.wh.goods.service.IGoodsService;
+import com.ruoyi.common.core.constant.AttachmentType;
 import com.ruoyi.common.core.constant.OrderType;
 import com.ruoyi.common.core.constant.SecurityConstants;
 import com.ruoyi.common.core.domain.R;
@@ -12,8 +13,11 @@ import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanValidators;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import com.ruoyi.system.api.RemoteAnnexService;
 import com.ruoyi.system.api.RemoteEncodeRuleService;
+import com.ruoyi.system.api.domain.Annex;
 import com.ruoyi.system.service.impl.SysUserServiceImpl;
+import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +45,8 @@ public class GoodsServiceImpl implements IGoodsService {
     protected Validator validator;
     @Autowired
     private GoodsMapper goodsMapper;
+    @Autowired
+    private RemoteAnnexService remoteAnnexService;
 
     /**
      * 查询货品信息
@@ -48,10 +54,17 @@ public class GoodsServiceImpl implements IGoodsService {
      * @param gId 货品信息主键
      * @return 货品信息
      */
+
     @Override
     public Goods selectGoodsByGId(String gId)
     {
-        return goodsMapper.selectGoodsByGId(gId);
+        Goods goods = goodsMapper.selectGoodsByGId(gId);
+        R<List<Annex>> img = remoteAnnexService.list(AttachmentType.PRODUCT_IMAGE, goods.getgId(), null);
+        R<List<Annex>> annx = remoteAnnexService.list(AttachmentType.PRODUCT_ANNEX, goods.getgId(), null);
+        goods.setGoodsImages(img.getData());
+        goods.setGoodsAnnex(annx.getData());
+        System.out.println("goodsbyGid==========="+goods);
+        return goods;
     }
 
     /**
@@ -74,17 +87,17 @@ public class GoodsServiceImpl implements IGoodsService {
         return goodsMapper.selectGoodsByGname(gname);
     }
 
+
+    /**
+     * 查询货品信息列表
+     * @return 货品信息
+     */
+
     @Override
     public List<Map<String, Object>> selectGoodsList(Map<String, Object> map) {
         return goodsMapper.selectGoodsList(map);
     }
 
-    /**
-     * 查询货品信息列表
-     *
-     * @param goods 货品信息
-     * @return 货品信息
-     */
 
     /**
      * 新增货品信息
@@ -116,12 +129,11 @@ public class GoodsServiceImpl implements IGoodsService {
         System.out.println("oooooooooo"+goods);
         WarningInfo w=new WarningInfo();
         w.setwDays(goods.getwDays());
-        System.out.println("qqqqqq"+w);
-        int ware_id = goodsMapper.insertWarning(w);
-        System.out.println("ware44444444"+w.getWareId());
-
+        goodsMapper.insertWarning(w);
         goods.setWarningId(String.valueOf(w.getWareId()));
         int rows = goodsMapper.insertGoods(goods);
+        System.out.println("goods.getGoodsImages()"+goods.getGoodsImages());
+        extracted(goods);
         if (rows > 0) {
             R<String> r = remoteEncodeRuleService.increaseCurrentSerialNumber(OrderType.PRODUCT_INFO, 1, SecurityConstants.INNER);
             System.out.println("流水号迭代 Res: "+ r);
@@ -142,8 +154,56 @@ public class GoodsServiceImpl implements IGoodsService {
     @Override
     public int updateGoods(Goods goods)
     {
-        goods.setUpdateTime(DateUtils.getNowDate());
+        Date nowDate = DateUtils.getNowDate();
+        String uid = SecurityUtils.getUserId().toString();
+        goods.setUpdateBy(uid);
+        goods.setUpdateTime(nowDate);
+        //删除原来的附件、图片，重新添加
+        if (goods.getGoodsImages() != null&&goods.getGoodsImages().size()>0){
+            remoteAnnexService.remove(new String[]{goods.getgId()},AttachmentType.PRODUCT_IMAGE);
+        }
+        if (goods.getGoodsAnnex() != null&&goods.getGoodsAnnex().size()>0){
+            remoteAnnexService.remove(new String[]{goods.getgId()},AttachmentType.PRODUCT_ANNEX);
+        }
+
+        System.out.println("goods.getWarningId()============"+goods.getWarningId());
+        extracted(goods);
+        if (goods.getwDays()!=null){
+            WarningInfo w=new WarningInfo();
+            w.setwDays(goods.getwDays());
+            goodsMapper.insertWarning(w);
+            goods.setWarningId(String.valueOf(w.getWareId()));
+        }else {
+            goodsMapper.deleteWarnId(goods.getWarningId());
+            goods.setWarningId(null);
+        }
         return goodsMapper.updateGoods(goods);
+    }
+
+    //添加货品附件、图片
+    private void extracted(Goods goods) {
+        goods.getGoodsImages().forEach(e -> {
+            e.setFormId(goods.getgId());
+            e.setType(AttachmentType.PRODUCT_IMAGE);
+        });
+        goods.getGoodsAnnex().forEach(k -> {
+            k.setFormId(goods.getgId());
+            k.setType(AttachmentType.PRODUCT_ANNEX);
+        });
+        List<Annex> annexeImage = goods.getGoodsImages();
+        List<Annex> goodsAnnex = goods.getGoodsAnnex();
+        List<Annex> all=new ArrayList<>();
+        all.addAll(goodsAnnex);
+        all.addAll(annexeImage);
+        if (all != null && !all.isEmpty()) {
+            R<?> add = remoteAnnexService.add(all);
+            System.out.println("all-------------"+all);
+            if (add == null || add.getCode() != 200) {
+                log.error("insertPurchaseOrder 附件信息插入失败");
+                throw new RuntimeException("附件信息插入失败");
+            }
+            System.out.println("remoteAnnexService add: " + add);
+        }
     }
 
     /**
@@ -156,21 +216,9 @@ public class GoodsServiceImpl implements IGoodsService {
     public int deleteGoodsByGIds(String[] gIds)
     {
 
+
         return goodsMapper.deleteGoodsByGIds(gIds);
     }
-
-    /**
-     * 删除货品信息信息
-     *
-     * @param gId 货品信息主键
-     * @return 结果
-     */
-    @Override
-    public int deleteGoodsByGId(String gId)
-    {
-        return goodsMapper.deleteGoodsByGId(gId);
-    }
-
 
 
     /**

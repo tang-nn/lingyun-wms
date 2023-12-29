@@ -22,7 +22,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStorageLocationVo">
-        select sl_id, w_id, sl_code, sl_name, location_capacity, position_manager, sort, status, remark, create_by, create_time, update_by, update_time, is_delete from wh_storage_location
+        select wsl.sl_id,wsl.w_id,wsl.sl_code,wsl.sl_name,wsl.location_capacity,
+               wsl.position_manager,su.user_name locationUser,su.phonenumber tela,wsl.sort,wsl.status,  wsl.remark,  wsl.create_by,
+               wsl.create_time,wsl.update_by,wsl.update_time,wsl.is_delete
+                from wh_storage_location wsl
+                 left join sys_user su
+                   on wsl.position_manager=su.user_id
     </sql>
 
     <select id="selectStorageLocationList" parameterType="StorageLocation" resultMap="StorageLocationResult">
@@ -78,24 +83,45 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateStorageLocation" parameterType="StorageLocation">
-        update wh_storage_location
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="wId != null and wId != ''">w_id = #{wId},</if>
-            <if test="slCode != null and slCode != ''">sl_code = #{slCode},</if>
-            <if test="slName != null and slName != ''">sl_name = #{slName},</if>
-            <if test="locationCapacity != null">location_capacity = #{locationCapacity},</if>
-            <if test="positionManager != null and positionManager != ''">position_manager = #{positionManager},</if>
-            <if test="sort != null">sort = #{sort},</if>
-            <if test="status != null">status = #{status},</if>
-            <if test="remark != null and remark != ''">remark = #{remark},</if>
-            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
-            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
-            <if test="isDelete != null and isDelete != ''">is_delete = #{isDelete},</if>
-        </trim>
-        where sl_id = #{slId}
+<!--    修改库位信息-->
+<!--    <update id="updateStorageLocation" parameterType="StorageLocation">-->
+<!--        update wh_storage_location-->
+<!--        <trim prefix="SET" suffixOverrides=",">-->
+<!--            <if test="wId != null and wId != ''">w_id = #{wId},</if>-->
+<!--            <if test="slCode != null and slCode != ''">sl_code = #{slCode},</if>-->
+<!--            <if test="slName != null and slName != ''">sl_name = #{slName},</if>-->
+<!--            <if test="locationCapacity != null">location_capacity = #{locationCapacity},</if>-->
+<!--            <if test="positionManager != null and positionManager != ''">position_manager = #{positionManager},</if>-->
+<!--            <if test="sort != null">sort = #{sort},</if>-->
+<!--            <if test="status != null">status = #{status},</if>-->
+<!--            <if test="remark != null and remark != ''">remark = #{remark},</if>-->
+<!--            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>-->
+<!--            <if test="createTime != null">create_time = #{createTime},</if>-->
+<!--            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>-->
+<!--            <if test="updateTime != null">update_time = #{updateTime},</if>-->
+<!--            <if test="isDelete != null and isDelete != ''">is_delete = #{isDelete},</if>-->
+<!--        </trim>-->
+<!--        where w_id=#{wId} and  sl_id = #{slId}-->
+<!--    </update>-->
+
+
+    <update id="updateStorageLocation">
+        <foreach collection="storageLocations" item="sl" separator=";">
+            update wh_storage_location
+            <trim prefix="SET" suffixOverrides=",">
+                <if test="sl.slName != null and sl.slName != ''">sl_name = #{sl.slName},</if>
+                <if test="sl.locationCapacity != null">location_capacity = #{sl.locationCapacity},</if>
+                <if test="sl.positionManager != null and sl.positionManager != ''">position_manager = #{sl.positionManager},</if>
+                <if test="sl.sort != null">sort = #{sl.sort},</if>
+                <if test="sl.status != null">status = #{sl.status},</if>
+                <if test="sl.remark != null and sl.remark != ''">remark = #{sl.remark},</if>
+                <if test="sl.createBy != null and sl.createBy != ''">create_by = #{sl.createBy},</if>
+                <if test="sl.createTime != null">create_time = #{sl.createTime},</if>
+                <if test="sl.updateBy != null and sl.updateBy != ''">update_by = #{sl.updateBy},</if>
+                <if test="sl.updateTime != null">update_time = #{sl.updateTime},</if>
+            </trim>
+            where w_id=#{wId} and sl_id = #{sl.slId}
+        </foreach>
     </update>
 
     <update id="changeLocationStatus">
@@ -112,7 +138,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteStorageLocationBySlIds" parameterType="String">
-        delete from wh_storage_location where sl_id in 
+        update  wh_storage_location set is_delete=1 where sl_id in
         <foreach item="slId" collection="array" open="(" separator="," close=")">
             #{slId}
         </foreach>

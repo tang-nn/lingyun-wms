@@ -138,4 +138,14 @@ public class InventorySheetController extends BaseController
     }
 
 
+    /**
+     * 审核盘点单
+     */
+    @RequiresPermissions("InventorySheet:inventory:reviewInventory")
+    @PostMapping("/reviewInventory")
+    public AjaxResult reviewInventory(@RequestBody InventorySheet inventorySheet)
+    {
+        return toAjax(inventorySheetService.reviewInventory(inventorySheet));
+    }
+
 }

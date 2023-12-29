@@ -14,4 +14,8 @@ public class AttachmentType {
      * 货品附件
      */
     public static final String PRODUCT_ANNEX = "at_product_annex";
+    /**
+     * 货品图片
+     */
+    public static final String PRODUCT_IMAGE = "at_product_image";
 }

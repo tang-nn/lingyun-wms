@@ -8,6 +8,7 @@
         <result property="isId" column="is_id"/>
         <result property="isCode" column="is_code"/>
         <result property="isResult" column="is_result"/>
+        <result property="reviewStatus" column="review_status"/>
         <result property="wId" column="w_id"/>
         <result property="isType" column="is_type"/>
         <result property="isStartTime" column="is_start_time"/>
@@ -66,7 +67,7 @@
 
 <!--   主表 InventorySheet 相关查询 -->
     <select id="selectInventorySheetList" resultMap="InventorySheetResult">
-        select pdb.is_id, pdb.is_code, pdb.is_result, pdb.w_id,ckb.w_name whName,
+        select pdb.is_id, pdb.is_code, pdb.is_result,pdb.review_status, pdb.w_id,ckb.w_name whName,
                pdb.is_type, pdb.is_start_time, pdb.is_end_time, pdb.out_status,
                pdb.in_status, pdb.remark, pdb.is_manager,manager.user_name managerName,
                pdb.create_by,creater.user_name creatorName, pdb.create_time,pdb.update_by,
@@ -84,6 +85,7 @@
             <if test="isId != null  and isId != ''">and pdb.is_id = #{isId}</if>
             and pdb.is_delete=0
         </where>
+        order by pdb.create_time desc
     </select>
 
 <!--    子表 InventoryDetails 相关查询-->
@@ -325,10 +327,10 @@
     </update>
 
 
-
-
-
-
-
-
+<!--审核盘点单-->
+        <update id="reviewInventory">
+            update wh_inventory_sheet set review_status=#{reviewStatus},comments=#{comments},
+            update_time=#{updateTime},update_by=#{updateBy},
+            reviewer=#{reviewer},reviewer_time=#{reviewerTime} where is_id=#{isId}
+        </update>
 </mapper>

@@ -80,4 +80,7 @@ public interface IInventorySheetService
      */
     public int deleteInventoryDetailsByIsId(String isId);
 
+    //审核盘点单
+    public int reviewInventory(InventorySheet inventorySheet);
+
 }

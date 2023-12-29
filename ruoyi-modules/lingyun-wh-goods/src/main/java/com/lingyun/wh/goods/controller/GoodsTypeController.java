@@ -158,4 +158,12 @@ public class GoodsTypeController extends BaseController
 
         return toAjax(goodsTypeService.deleteGoodsTypeByGtIds(gtIds));
     }
+
+    //查询货品分类下是否有子类
+    @PostMapping("/isExits/{gtIds}")
+    public AjaxResult isExits(@PathVariable String[] gtIds)
+    {
+
+        return success(goodsTypeService.countByIsDelete(gtIds));
+    }
 }

@@ -93,17 +93,7 @@ public class StorageLocationController extends BaseController
         return toAjax(storageLocationService.insertStorageLocation(storageLocation));
     }
 
-    /**
-     * 修改库位信息
-     */
-    @RequiresPermissions("system:location:edit")
-    @Log(title = "库位信息", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public AjaxResult edit(@RequestBody StorageLocation storageLocation)
-    {
-        System.out.println("storageLocation==="+storageLocation);
-        return toAjax(storageLocationService.updateStorageLocation(storageLocation));
-    }
+
 
     /**
      * 修改库位状态

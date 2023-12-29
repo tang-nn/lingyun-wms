@@ -1,8 +1,7 @@
 package com.lingyun.wh.warehouse.service.impl;
 
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.service.IWareHouseService;
@@ -16,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.Map;
 
 import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +41,8 @@ public class InventorySheetServiceImpl implements IInventorySheetService
     private InventorySheetMapper inventorySheetMapper;
     @Autowired
     private RemoteEncodeRuleService remoteEncodeRuleService;
+    @Autowired
+    private IWareHouseService iWareHouseService;
 
     /**
      * 查询盘点单
@@ -108,8 +107,11 @@ public class InventorySheetServiceImpl implements IInventorySheetService
             System.out.println("流水号迭代 Res: "+ r);
             inventorySheet.setIsId(inventorySheet.getIsId());//获取刚插入盘点单的自增id
             insertInventoryDetails(inventorySheet);//盘点明细
-
-
+            //盘点结束后解锁仓库状态
+            Map<String, Object>  map=new HashMap<>();
+            map.put("w_id",inventorySheet.getwId());
+            map.put("status",0);
+            iWareHouseService.changeStatus(map);
             if (r == null || r.getCode() != 200) {
                 log.error("insertWareHouse 流水号迭代失败");
                 throw new RuntimeException("盘点单数据插入失败");
@@ -205,6 +207,17 @@ public class InventorySheetServiceImpl implements IInventorySheetService
         return inventorySheetMapper.deleteInventoryDetailsByIsId(isId);
     }
 
+    //审核盘点单
+    @Override
+    public int reviewInventory(InventorySheet inventorySheet) {
+        Date nowDate = DateUtils.getNowDate();
+        String uid = SecurityUtils.getUserId().toString();
+        inventorySheet.setReviewer(uid);
+        inventorySheet.setReviewerTime(nowDate);
+        inventorySheet.setUpdateBy(uid);
+        inventorySheet.setUpdateTime(nowDate);
+        return inventorySheetMapper.reviewInventory(inventorySheet);
+    }
 
 
 }

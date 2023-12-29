@@ -39,7 +39,7 @@
                                 v-model="formData.date"
                                 type="date"
                                 value-format="yyyy-MM-dd mm:HH:ss"
-                                placeholder="请选择盘点开始时间">
+                                placeholder="请选择调拨申请日期">
                 </el-date-picker>
               </el-form-item>
             </el-col>
@@ -164,9 +164,9 @@
           <el-table-column label="调出仓库当前库存" width="130" align="center" prop="item_quantity"/>
           <el-table-column label="调出仓库当前库位" align="center" width="130px" prop="sl_name"/>
           <el-table-column label="调入仓库当前库存" align="center" prop="stockQuantity" width="130px"/>
-          <el-table-column label="调入仓库当前库位" align="center" width="130px">
+          <el-table-column label="调入仓库当前库位" align="center" width="155px">
             <template slot-scope="scope">
-              <el-select v-model="scope.row.inLocationId" placeholder="请选择">
+              <el-select v-model="scope.row.inSlId" placeholder="请选择">
                 <el-option v-for="location in slNameList"
                            :key="location.slId" :label="location.slName" :value="location.slId"/>
               </el-select>
@@ -534,7 +534,9 @@ export default {
         this.formData.outWId = null;
       } else {
         this.tempSelectGoodsList = [],
+          console.log("啦啦啦", this.inventorysheetInf.selectGoods);
           this.$set(this.inventorysheetInf, 'selectGoods', []);
+        console.log("this.inventorysheetInf.selectGoods", this.inventorysheetInf.selectGoods);
       }
     },
 
@@ -567,18 +569,6 @@ export default {
       this.getSlName();
       if (this.tempSelectGoodsList.length > 0) {
         if (this.inventorysheetInf.selectGoods.length > 0) {
-          // this.tempSelectGoodsList.forEach(obj1 => {
-          //   var isNo = false;
-          //   this.inventorysheetInf.selectGoods.forEach(item=>{
-          //     if (item.sId == obj1.sId){
-          //       isNo=true;
-          //     }
-          //   })
-          //   console.log(isNo);
-          //   if (!isNo){
-          //     this.inventorysheetInf.selectGoods.push(obj1);
-          //   }
-          // });
           this.tempSelectGoodsList.reduce((result, obj1) => {
             const isExists = this.inventorysheetInf.selectGoods.some(obj2 => obj2.sId === obj1.sId);
             if (!isExists) {
@@ -587,16 +577,18 @@ export default {
             return result;
           }, this.inventorysheetInf.selectGoods.slice());
 
+          // 过滤掉在 tempSelectGoodsList 中已经被删除的元素
+          this.inventorysheetInf.selectGoods = this.inventorysheetInf.selectGoods.filter(obj1 =>
+            this.tempSelectGoodsList.some(obj2 => obj2.sId === obj1.sId)
+          );
+
           // this.inventorysheetInf.selectGoods = this.inventorysheetInf.selectGoods.concat(this.tempSelectGoodsList);
           console.info(this.tempSelectGoodsList + "*****************");
-          console.log(" this.inventorysheetInf.selectGoods", this.inventorysheetInf.selectGoods)
-
         } else {
           this.inventorysheetInf.selectGoods = this.tempSelectGoodsList;
-
         }
       }
-
+      console.log(" this.inventorysheetInf.selectGoods", this.inventorysheetInf.selectGoods)
       this.closeGoodsSelect();
     },
     //货品取消按钮
@@ -700,8 +692,9 @@ export default {
           this.formData.manager = this.userIda;
           this.formData.transferDetailsList = this.inventorysheetInf.selectGoods;
           console.log("this.formData，", this.formData)
-          if (!this.formData.transferDetailsList && !this.formData.transferDetailsList.length > 0) {
-            this.$message.error("请选中调拨明细");
+          console.log(this.formData.transferDetailsList.length)
+          if (this.formData.transferDetailsList.length == 0) {
+            this.$message.error("请完善调拨货品的数据信息!");
             return;
           }
           addTransfer(this.formData).then(response => {
@@ -717,11 +710,7 @@ export default {
       this.resetForm("queryGoodsForm");
       this.getGoodsList();
     },
-
-
   },
-
-
 }
 
 </script>

@@ -28,12 +28,14 @@
             </el-col>
             <el-col :span="6">
               <el-form-item label="操作时间">
-                <span>{{warehousedetails[0]&&warehousedetails[0].create_time}}</span>
+                <span>
+                  {{parseTime(warehousedetails[0]&&warehousedetails[0].create_time)}}
+                </span>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label=更新时间>
-                <span>{{warehousedetails[0]&&warehousedetails[0].update_time}}</span>
+                <span>{{parseTime(warehousedetails[0]&&warehousedetails[0].update_time)}}</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -129,7 +131,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="创建时间">
-              <span>{{warehousedetails[0]&&warehousedetails[0].create_time}}</span>
+              <span>{{parseTime(warehousedetails[0]&&warehousedetails[0].create_time)}}</span>
             </el-form-item>
           </el-col>
           <el-col :span="3">
@@ -139,7 +141,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="更新时间">
-              <span>{{warehousedetails[0]&&warehousedetails[0].update_time}}</span>
+              <span>{{parseTime(warehousedetails[0]&&warehousedetails[0].update_time)}}</span>
             </el-form-item>
           </el-col>
         </el-row>
@@ -198,17 +200,18 @@
         </el-form>
 
         <el-row :gutter="10" class="mb8">
+<!--          <el-col :span="1.5">-->
+<!--            <el-button-->
+<!--              plain-->
+<!--              icon="el-icon-download"-->
+<!--              size="mini"-->
+<!--              @click="handleExport"-->
+<!--            >导出</el-button>-->
+<!--          </el-col>-->
           <el-col :span="1.5">
             <el-button
               plain
-              icon="el-icon-download"
-              size="mini"
-              @click="handleExport"
-            >导出</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              plain
+              type="success"
               icon="el-icon-circle-check"
               size="mini"
               :button-value="buttonValuez"
@@ -220,6 +223,7 @@
           <el-col :span="1.5">
             <el-button
               plain
+              type="danger"
               icon="el-icon-circle-close"
               size="mini"
               :button-value="buttonValueo"
@@ -283,14 +287,6 @@
         </el-form>
 
         <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
-            <el-button
-              plain
-              icon="el-icon-download"
-              size="mini"
-              @click="handleExport"
-            >导出</el-button>
-          </el-col>
         </el-row>
         <el-table style="margin-top: 50px" :row-class-name="operateIndex" :data="operateList" v-loading="loading"  max-height="520px" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
@@ -430,12 +426,6 @@ export default {
        this.queryParams.status=null,
       this.queryParams.position_manager=null,
       this.handleQuery();
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('wms/wh/location/export', {
-        ...this.queryParams
-      }, `storage_location_${new Date().getTime()}.xlsx`)
     },
     //更改库位状态
     changeWareHouseStatusz(row) {

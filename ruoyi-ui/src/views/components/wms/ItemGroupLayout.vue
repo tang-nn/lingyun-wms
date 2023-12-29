@@ -17,6 +17,6 @@ export default {
   background: #f3f6f8;
 }
 .app-main{
-  background: #f3f6f8;
+  //background: #f3f6f8;
 }
 </style>

@@ -9,6 +9,7 @@
        <result property="gCode"    column="g_code"    />
        <result property="gName"    column="g_name"    />
        <result property="gtId"    column="gt_id"    />
+       <result property="sId"    column="s_id"    />
        <result property="sort"    column="sort"    />
        <result property="status"    column="status"    />
        <result property="specCode"    column="spec_code"    />
@@ -25,6 +26,8 @@
        <result property="updateBy"    column="update_by"    />
        <result property="updateTime"    column="update_time"    />
        <result property="isDelete"    column="is_delete"    />
+       <result property="wDays" column="w_days"/>
+
    </resultMap>
    <!-- Tang -->
    <resultMap id="goodsStocksMap" type="com.lingyun.wh.goods.api.domain.Goods" extends="GoodsResult" autoMapping="true">
@@ -56,8 +59,8 @@
                w_days,gt_name,s_name,(item_quantity*or_price) stocktotalmoney,su.user_name oneuser,
                wg.create_time,su2.user_name twouser,wg.update_time,wsk.unit,wsk.item_quantity, wsk.number_plans
                from wh_goods wg
-                 inner join wh_warning_info wwi
-                            on wg.warning_id=wwi.w_id
+                 left join wh_warning_info wwi
+                            on wg.warning_id=wwi.ware_id
                  inner join wh_goods_type wgt
                             on wg.gt_id=wgt.gt_id
                  left join wh_supplier ws
@@ -81,11 +84,13 @@
             <if test="unit != null  and unit != ''"> and wsk.unit = #{unit}</if>
             and wg.is_delete = 0
         </where>
-        order by wg.sort asc
+        order by  wg.create_time desc
     </select>
 
    <select id="selectGoodsByGId" parameterType="String" resultMap="GoodsResult">
-       select * FROM wh_goods
+       select *,w_days FROM wh_goods wg
+          left join wh_warning_info wwi
+           on wg.warning_id=wwi.ware_id
        where g_id = #{gId} and is_delete = 0
    </select>
 
@@ -105,6 +110,7 @@
         </if>
         </where>
     </select>
+
     <select id="selectGoodsStocksByGid" resultMap="stockMap">
         select stock.s_id stockId, stock.w_id, stock.sl_id, stock.unit, stock.g_id stock_goodsId, stock.item_quantity, stock.number_plans
         from wh_stock stock
@@ -179,6 +185,14 @@
         </trim>
     </insert>
 
+
+<!--    删除预警-->
+    <delete id="deleteWarnId">
+        delete from wh_warning_info where ware_id=#{warnId}
+    </delete>
+
+
+<!--    修改货品信息-->
     <update id="updateGoods" parameterType="com.lingyun.wh.goods.api.domain.Goods">
         update wh_goods
         <trim prefix="SET" suffixOverrides=",">
@@ -192,9 +206,9 @@
             <if test="remark != null">remark = #{remark},</if>
             <if test="orPrice != null">or_price = #{orPrice},</if>
             <if test="wrPrice != null">wr_price = #{wrPrice},</if>
-            <if test="warningId != null">warning_id = #{warningId},</if>
+            warning_id = #{warningId},
             <if test="hasShelfLife != null">has_shelf_life = #{hasShelfLife},</if>
-            <if test="shelfLife != null">shelf_life = #{shelfLife},</if>
+            shelf_life = #{shelfLife},
             <if test="itemLimit != null">item_limit = #{itemLimit},</if>
             <if test="lowerLimit != null">lower_limit = #{lowerLimit},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
@@ -206,9 +220,6 @@
         where g_id = #{gId}
     </update>
 
-    <delete id="deleteGoodsByGId" parameterType="String">
-       update  wh_goods set is_delete=1 where g_id = #{gId}
-    </delete>
 
     <delete id="deleteGoodsByGIds" parameterType="String">
         update  wh_goods set is_delete=1 where g_id  in

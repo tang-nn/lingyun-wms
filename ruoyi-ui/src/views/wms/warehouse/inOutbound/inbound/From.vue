@@ -1072,7 +1072,7 @@ export default {
 }
 
 .app-main {
-  background: #f3f6f8;
+  //background: #f3f6f8;
 }
 
 .footer-btn {
