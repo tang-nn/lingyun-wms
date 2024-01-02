@@ -180,30 +180,38 @@ public class GoodsServiceImpl implements IGoodsService {
         return goodsMapper.updateGoods(goods);
     }
 
+    @Override
+    public int updateGoodsStatus(Goods goods) {
+        return goodsMapper.updateGoodsStatus(goods);
+    }
+
     //添加货品附件、图片
     private void extracted(Goods goods) {
-        goods.getGoodsImages().forEach(e -> {
-            e.setFormId(goods.getgId());
-            e.setType(AttachmentType.PRODUCT_IMAGE);
-        });
-        goods.getGoodsAnnex().forEach(k -> {
-            k.setFormId(goods.getgId());
-            k.setType(AttachmentType.PRODUCT_ANNEX);
-        });
-        List<Annex> annexeImage = goods.getGoodsImages();
-        List<Annex> goodsAnnex = goods.getGoodsAnnex();
-        List<Annex> all=new ArrayList<>();
-        all.addAll(goodsAnnex);
-        all.addAll(annexeImage);
-        if (all != null && !all.isEmpty()) {
-            R<?> add = remoteAnnexService.add(all);
-            System.out.println("all-------------"+all);
-            if (add == null || add.getCode() != 200) {
-                log.error("insertPurchaseOrder 附件信息插入失败");
-                throw new RuntimeException("附件信息插入失败");
+                goods.getGoodsImages().forEach(e -> {
+                    e.setFormId(goods.getgId());
+                    e.setType(AttachmentType.PRODUCT_IMAGE);
+                });
+
+                goods.getGoodsAnnex().forEach(k -> {
+                    k.setFormId(goods.getgId());
+                    k.setType(AttachmentType.PRODUCT_ANNEX);
+                });
+
+            List<Annex> annexeImage = goods.getGoodsImages();
+            List<Annex> goodsAnnex = goods.getGoodsAnnex();
+            List<Annex> all=new ArrayList<>();
+            all.addAll(goodsAnnex);
+            all.addAll(annexeImage);
+            if (all != null && !all.isEmpty()) {
+                R<?> add = remoteAnnexService.add(all);
+                System.out.println("all-------------"+all);
+                if (add == null || add.getCode() != 200) {
+                    log.error("insertPurchaseOrder 附件信息插入失败");
+                    throw new RuntimeException("附件信息插入失败");
+                }
+                System.out.println("remoteAnnexService add: " + add);
             }
-            System.out.println("remoteAnnexService add: " + add);
-        }
+
     }
 
     /**
@@ -252,6 +260,8 @@ public class GoodsServiceImpl implements IGoodsService {
                     BeanValidators.validateWithException(validator, goods);
                     goods.setCreateBy(operName.toString());
                     goods.setCreateTime(new Date());
+                    goods.setUpdateBy(operName.toString());
+                    goods.setUpdateTime(new Date());
                     goodsMapper.insertGoods(goods);
                     successNum++;
                     successMsg.append("<br/>" + successNum + "、货品 " + goods.getGName() + " 导入成功");

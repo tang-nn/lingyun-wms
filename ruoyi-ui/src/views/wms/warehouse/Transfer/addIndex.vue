@@ -291,7 +291,8 @@
         </el-form-item>
       </el-form>
       <el-table ref="goodsTable" v-loading="loading" :data="goodsList"
-                row-key="sId" @selection-change="handlerSelectionChange">
+                row-key="sId"
+                @selection-change="handlerSelectionChange">
         <el-table-column :reserve-selection="true" align="center" fixed type="selection" width="50"/>
         <el-table-column align="center" fixed label="序号" type="index" width="60"/>
         <el-table-column align="center" fixed label="货品编号" prop="g_code" width="80"/>
@@ -577,7 +578,7 @@ export default {
             return result;
           }, this.inventorysheetInf.selectGoods.slice());
 
-          // 过滤掉在 tempSelectGoodsList 中已经被删除的元素
+          // 过滤掉在 tempSelectGoodsList 中已经被取消勾选的元素
           this.inventorysheetInf.selectGoods = this.inventorysheetInf.selectGoods.filter(obj1 =>
             this.tempSelectGoodsList.some(obj2 => obj2.sId === obj1.sId)
           );
@@ -678,13 +679,27 @@ export default {
       }
       console.info("indexs: ", indexs);
       this.$modal.confirm('是否确认删除库位编号为"' + indexs + '"的数据项？').then(() => {
+        // 清空表格的选中状态
+        const table = this.$refs.goodsTable;
+        indexs.forEach(index => {
+          const item = table.store.states.data.find(item => item.index === index);
+          console.log("1111",item)
+          if (item) {
+            table.toggleRowSelection(item, false);
+          }
+        });
+        // 移除明细表对应数据
         this.storageListAdd = this.storageListAdd?.filter(e => !indexs.includes(e.index));
+
+
       }).then(() => {
         this.$message.success("删除成功");
         console.log("this.storageListAdd: ", this.storageListAdd);
       }).catch(e => {
       });
     },
+
+
     /*最终添加*/
     submitForm() {
       this.$refs['elForm'].validate(valid => {

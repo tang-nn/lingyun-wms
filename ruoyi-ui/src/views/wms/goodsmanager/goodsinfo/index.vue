@@ -36,23 +36,23 @@
       </el-form-item>
 
       <!--      :label属性来指定在页面上显示的文本    :value属性来指定选项的值。-->
-      <el-form-item label="单位"  >
-          <el-select
-            v-model="queryParams.unit"
-            clearable
-            filterable
-            placeholder="请选择"
-            style="width: 240px"
-          >
-            <el-option
-              v-for="dict in dict.type.g_unit_goods"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
+<!--      <el-form-item label="单位"  >-->
+<!--          <el-select-->
+<!--            v-model="queryParams.unit"-->
+<!--            clearable-->
+<!--            filterable-->
+<!--            placeholder="请选择"-->
+<!--            style="width: 240px"-->
+<!--          >-->
+<!--            <el-option-->
+<!--              v-for="dict in dict.type.g_unit_goods"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
 
-            />
-          </el-select>
-      </el-form-item>
+<!--            />-->
+<!--          </el-select>-->
+<!--      </el-form-item>-->
       <el-form-item>
           <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
           <el-button size="mini"  type="primary" @click="handleQuery">查询</el-button>
@@ -106,11 +106,11 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="goodList" max-height="520" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" max-height="600" :data="goodList" @selection-change="handleSelectionChange">
       <el-table-column align="center" fixed type="selection" width="55" />
 
       <el-table-column fixed="left" label='序号' prop="g_id" width="100"/>
-      <el-table-column fixed="left" label="货品编号" prop="g_code" width="120" />
+      <el-table-column fixed="left" label="货品编号" prop="g_code" width="170" />
       <el-table-column :show-overflow-tooltip="true" fixed="left" label="货品名称" prop="g_name" width="150" />
       <el-table-column align="center"  fixed="left" label="状态" width="100">
         <template slot-scope="scope">
@@ -124,22 +124,30 @@
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" label="货品类型" prop="gt_name" width="150" />
-      <el-table-column label="规格型号" prop="spec_code" width="100" />
-      <el-table-column align="center" label="单位"  width="180">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.g_unit_goods" :value="scope.row.unit" />
-        </template>
-      </el-table-column>
+      <el-table-column label="规格型号" prop="spec_code" width="120" />
+<!--      <el-table-column align="center" label="单位"  width="180">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.g_unit_goods" :value="scope.row.unit" />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
 
-      <el-table-column label="供应商" prop="s_name" width="100" />
+      <el-table-column label="供应商" prop="s_name" width="120" />
       <el-table-column :formatter="formatPrice" label="入库参考价/元" prop="wr_price" width="110" />
       <el-table-column :formatter="formatPrice2" label="出库参考价/元" prop="or_price" width="110" />
-      <el-table-column label="显示顺序" prop="sort" width="100" />
+<!--      <el-table-column label="显示顺序" prop="sort" width="100" />-->
       <el-table-column :formatter="formatStock" label="当前库存" prop="item_quantity" width="100" />
       <el-table-column :formatter="formatPrice3" label="库存总金额" prop="stocktotalmoney" width="100" />
       <el-table-column :formatter="formathasShelfLife" label="保质期管理" prop="has_shelf_life" width="100" />
-      <el-table-column label="保质期" prop="shelf_life" width="100" />
-      <el-table-column label="预警天数(天)" prop="w_days" width="100" />
+      <el-table-column label="保质期" prop="shelf_life" width="100">
+        <template slot-scope="{ row }">
+          {{ row.shelf_life ? row.shelf_life : '/' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="预警天数(天)" prop="w_days" width="100">
+        <template slot-scope="{ row }">
+          {{ row.w_days ? row.w_days : '/' }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作人" prop="oneuser" width="100" />
       <el-table-column label="操作时间" prop="create_time" fixed="right"  width="100" >
         <template slot-scope="scope">
@@ -160,7 +168,7 @@
             icon="el-icon-delete"
             size="mini"
             type="text"
-            v-if="scope.row.item_quantity ===0"
+            v-if="scope.row.item_quantity ===0 || scope.row.item_quantity ==null"
             @click="handleDelete(scope.row)"
           >删除</el-button>
         </template>
@@ -271,7 +279,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 5,
+        pageSize: 10,
         g_name: undefined,
         status:undefined,
         unit: undefined,

@@ -557,6 +557,8 @@ export default {
                 }, 100);
                 this.loading = true;
                 if (this.form.gtId != undefined) {
+                  this.form.parentId=this.selectedParentId;
+                  console.log("1111",this.form)
                   editTypeGoods(this.form).then(response => {
                     this.$modal.msgSuccess("修改成功");
                     this.dialog = false;

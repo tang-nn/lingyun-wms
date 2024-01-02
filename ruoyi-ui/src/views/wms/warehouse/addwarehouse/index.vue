@@ -476,9 +476,9 @@ export default {
         status:[
           { required: true, message: "仓库状态不能为空", trigger: "blur" }
           ],
-        wSupervisor: [
-          { required: true, message: "仓库主管不能为空", trigger: "blur" }
-        ],
+        // wSupervisor: [
+        //   { required: true, message: "仓库主管不能为空", trigger: "blur" }
+        // ],
       },
       addrules: {
         slName: [

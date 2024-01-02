@@ -111,7 +111,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" max-height="520px" :data="warehouseList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="warehouseList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" align="center" prop="w_id" />
       <el-table-column label="仓库下库存num" align="center" v-if="false" prop="WareStockNum" ref="WareStockNum"/>
@@ -242,7 +242,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 5,
+        pageSize: 10,
         w_name: null,
         status: null,
         w_supervisor: null,

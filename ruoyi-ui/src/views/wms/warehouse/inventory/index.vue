@@ -109,7 +109,7 @@
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-    <el-table max-height="520"  v-loading="loading" :data="inventoryList" @selection-change="handleSelectionChange">
+    <el-table  v-loading="loading" :data="inventoryList" @selection-change="handleSelectionChange">
       <el-table-column fixed="left" type="selection" width="55" align="center"/>
       <el-table-column fixed="left" label="盘点ID" align="center" prop="isId"/>
       <el-table-column fixed="left" label="盘点单号" align="center" prop="isCode" width="140x">
@@ -262,7 +262,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 5,
+        pageSize: 10,
         is_code: null,
         is_result: null,
         w_id: null,

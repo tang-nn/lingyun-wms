@@ -69,7 +69,7 @@ public interface TransferMapper
 
 
     //修改调拨明细单的调拨数量时需要查出修改前调出仓库对应的库位的货品的计划数量和调拨数量
-    public Map<String,Object> getPlansAndTquantity(Map<String,Object>map);
+    public List<Map<String,Object>> getPlansAndTquantity(Map<String,Object>map);
 
 
 
@@ -110,7 +110,7 @@ public interface TransferMapper
      * @param transferDetails
      * @return
      */
-    public int updateTransferDetails(@Param("tdId")String tdId ,@Param("transferDetails") List<TransferDetails>transferDetails);
+    public int updateTransferDetails(@Param("transferDetails") List<TransferDetails>transferDetails);
 
 
     //审核调拨单

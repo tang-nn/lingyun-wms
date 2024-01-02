@@ -104,7 +104,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table  max-height="520"  v-loading="loading" :data="transferList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="transferList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" fixed="left" width="55" align="center" />
       <el-table-column label="调拨ID" fixed="left" align="center" prop="tid" />
       <el-table-column label="调拨单号" fixed="left" align="center" prop="tdCode" width="130px">
@@ -162,14 +162,14 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['transfer:transfer:remove']"
           >删除</el-button>
-            <el-button
-              size="mini"
-              v-if="scope.row.docStatus === 'done'"
-              type="text"
-              icon="el-icon-refresh-right"
-              @click="handleUndo(scope.row)"
-              v-hasPermi="['transfer:transfer:undo']"
-            >撤销</el-button>
+<!--            <el-button-->
+<!--              size="mini"-->
+<!--              v-if="scope.row.docStatus === 'done'"-->
+<!--              type="text"-->
+<!--              icon="el-icon-refresh-right"-->
+<!--              @click="handleUndo(scope.row)"-->
+<!--              v-hasPermi="['transfer:transfer:undo']"-->
+<!--            >撤销</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -241,7 +241,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 5,
+        pageSize: 10,
         tdCode: null,
         docStatus: null,
         dates: [],

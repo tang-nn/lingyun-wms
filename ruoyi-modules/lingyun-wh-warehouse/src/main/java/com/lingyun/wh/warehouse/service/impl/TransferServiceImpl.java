@@ -2,8 +2,7 @@ package com.lingyun.wh.warehouse.service.impl;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.service.IInventorySheetService;
@@ -17,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -182,16 +179,55 @@ public class TransferServiceImpl implements ITransferService {
     @Transactional
     @Override
     public int updateTransfer(Transfer transfer) {
+//        System.out.println(transfer.getTransferDetailsList()+"[][][][][");
+        Date nowDate = DateUtils.getNowDate();
+        String uid = SecurityUtils.getUserId().toString();
+        transfer.setUpdateBy(uid);
+        transfer.setUpdateTime(nowDate);
+        Map<String,Object>map=new HashMap<>();
+        map.put("outWId",transfer.getOutWId());
+        map.put("tId",transfer.getTid());
+        for (TransferDetails td : transfer.getTransferDetailsList()) {
+            map.put("gId",td.getGoods().getGId());
+            map.put("slId",td.getLocation().getSlId());
+            List<Map<String, Object>> plansAndTquantity = transferMapper.getPlansAndTquantity(map);
+            for (TransferDetails tds : transfer.getTransferDetailsList()) {
+                for (Map<String, Object> pt : plansAndTquantity) {
+                    BigDecimal tQuantity = (BigDecimal) pt.get("t_quantity");
+                    if (tQuantity!=tds.getQuantity()&&tds.getTdId().equals(pt.get("td_id").toString())){
+                        BigDecimal result = tds.getQuantity().subtract(tQuantity);
+//                        System.out.println("tds========================="+tds);
+//                        System.out.println(result+"****"+transfer.getOutWId()+"****"+ tds.getStock().getSlid()+"****"+ tds.getGoods().getGId());
+                        transferMapper.changePlanNums(result, transfer.getOutWId(), tds.getStock().getSlid(), tds.getGoods().getGId());
+                    }
+                }
+            }
+        }
 
+        List<TransferDetails> tf = transfer.getTransferDetailsList();
+//        System.out.println("tf=====================/////////////////*******************"+tf);
+        List<TransferDetails>addList=new ArrayList<>();
+        List<TransferDetails>updateList=new ArrayList<>();
+        for (TransferDetails details : tf) {
 
+            if (details.getTdId() == null||details.getTdId()==""){
+                //新增
+                System.out.println("新增"+details);
+                addList.add(details);
+            }else {
+                System.out.println("修改"+details);
+                details.setUpdateBy(uid);
+                details.setUpdateTime(nowDate);
+                updateList.add(details);
+            }
+        }
+        transfer.setTransferDetailsList(addList);
+        insertTransferDetails(transfer);
+        System.out.println("updateList====================="+updateList);
+        transferMapper.updateTransferDetails(updateList);
+        transferMapper.updateTransfer(transfer);
 
-
-
-
-//        transfer.setUpdateTime(DateUtils.getNowDate());
-////        transferMapper.deleteTransferDetailsByTId(transfer.getTid());
-//        insertTransferDetails(transfer);
-        return transferMapper.updateTransfer(transfer);
+        return 1;
     }
 
     /**

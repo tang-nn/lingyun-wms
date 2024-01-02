@@ -756,10 +756,10 @@ export default {
             this.$message.error("请完善调拨货品的数据信息!");
             return;
           }
-          // updateTransfer(this.formData).then(response => {
-          //   this.$modal.msgSuccess("修改成功");
-          //   // this.$router.push(`/transfer`);
-          // })
+          updateTransfer(this.formData).then(response => {
+            this.$modal.msgSuccess("修改成功");
+            this.$router.push(`/transfer`);
+          })
         }
       })
 

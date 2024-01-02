@@ -60,6 +60,8 @@ public interface IGoodsService {
      */
     public int updateGoods(Goods goods);
 
+    public int updateGoodsStatus(Goods goods);
+
     /**
      * 批量删除货品信息
      *

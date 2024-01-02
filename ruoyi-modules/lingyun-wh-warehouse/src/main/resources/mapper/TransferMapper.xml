@@ -52,6 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <association property="stock" javaType="com.lingyun.wh.goods.api.domain.Stock">
             <result column="unit" property="unit"/>
             <result column="item_quantity" property="itemQuantity"/>
+            <result column="sl_id" property="slid"/>
         </association>
         <association property="location" javaType="com.lingyun.wh.warehouse.domain.StorageLocation">
             <id property="slId" column="sl_id"/>
@@ -204,12 +205,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
     <select id="getPlansAndTquantity" resultType="map">
-        select number_plans,t_quantity from wh_stock ws
+        select number_plans,t_quantity,td_id from wh_stock ws
                 inner join wh_transfer_details wtd
                            on stock_id=s_id
                 inner join wh_transfer  wt
                            on wt.t_id=wtd.t_id
-        where wt.out_w_id=#{outWId} and ws.g_id=#{gId} and ws.sl_id=#{slId} and wtd.t_id=#{tId}
+        where wt.out_w_id=#{outWId} and ws.g_id=#{gId} and ws.sl_id=#{slId} and wt.t_id=#{tId}
     </select>
 
 <!--&lt;!&ndash;    查询调入仓库货品的库位(调入仓库id 货品id)&ndash;&gt;-->
@@ -276,10 +277,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <trim prefix="SET" suffixOverrides=",">
                 <if test="td.quantity != null and td.quantity != ''">t_quantity = #{td.quantity},</if>
                 <if test="td.inSlId != null">in_sl_id = #{td.inSlId},</if>
-                <if test="td.updateBy != null">update_by = #{td.updateBy},</if>
+                <if test="td.updateBy != null and td.updateBy != 'null'">update_by = #{td.updateBy},</if>
                 <if test="td.updateTime != null">update_time = #{td.updateTime},</if>
             </trim>
-            where t_id=#{tid}
+            where td_id=#{td.tdId}
         </foreach>
     </update>
 

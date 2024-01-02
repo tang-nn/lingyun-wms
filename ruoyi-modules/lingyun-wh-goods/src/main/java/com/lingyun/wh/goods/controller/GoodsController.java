@@ -3,6 +3,7 @@ package com.lingyun.wh.goods.controller;
 import com.lingyun.wh.goods.api.domain.Goods;
 import com.lingyun.wh.goods.service.IGoodsService;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -60,7 +61,6 @@ public class GoodsController extends BaseController {
             System.out.println("map===" + map);
             Goods g = new Goods();
             g.setSpecCode(map.get("spec_code").toString());
-            g.setLowerLimit(map.get("lower_limit").toString());
             g.setGId(map.get("g_id").toString());
             g.setGCode(map.get("g_code").toString());
             g.setOrPrice((BigDecimal) map.get("or_price"));
@@ -78,7 +78,7 @@ public class GoodsController extends BaseController {
 
             g.setHasShelfLife((Integer) map.get("has_shelf_life"));
             g.setShelfLife(map.get("shelf_life").toString());
-            g.setItemLimit(map.get("item_limit").toString());
+            g.setGtName(map.get("gt_name").toString());
             goodsList.add(g);
         }
 
@@ -181,7 +181,8 @@ public class GoodsController extends BaseController {
         goods.setGId(map.get("gId").toString());
         goods.setStatus(Integer.valueOf(map.get("status").toString()));
         goods.setUpdateBy(SecurityUtils.getUserId().toString());
-        return toAjax(goodsService.updateGoods(goods));
+        goods.setUpdateTime(DateUtils.getNowDate());
+        return toAjax(goodsService.updateGoodsStatus(goods));
     }
 
     /**

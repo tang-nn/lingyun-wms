@@ -372,7 +372,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 inner join wh_goods wg on wid.goods_id=wg.g_id
                 inner join wh_inbound wi
                 on wi.in_id=wid.in_id
-        where wi.`status`='is_done'  GROUP BY goods_id
+        where wi.`status`='done'  GROUP BY goods_id
         ORDER BY inBoundTimes desc,inBoundQuantitys desc, inBoundPuPrices desc
     </select>
 

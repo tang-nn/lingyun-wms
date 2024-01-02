@@ -284,13 +284,13 @@ export default {
         gName: [
           {required: true, message: "货品名称不能为空", trigger: "blur"}
         ],
-        gtId: [
-          {required: true, message: "货品类型不能为空", trigger: "blur"}
-        ],
+        // gtId: [
+        //   {required: true, message: "货品类型不能为空", trigger: "blur"}
+        // ],
         specCode: [
           {required: true, message: "规格型号不能为空", trigger: "blur"}
         ],
-        wrPprice: [
+        wrPrice: [
           {required: true, message: "入库参考价不能为空", trigger: "blur"},
           {
             validator: (rule, value, callback) => {

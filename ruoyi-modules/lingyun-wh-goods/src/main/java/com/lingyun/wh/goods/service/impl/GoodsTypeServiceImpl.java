@@ -12,6 +12,7 @@ import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.lingyun.wh.goods.doman.vo.TreeSelect;
 import com.ruoyi.common.core.utils.bean.BeanValidators;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import com.ruoyi.system.api.RemoteEncodeRuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.validation.Validator;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -188,7 +190,12 @@ public class GoodsTypeServiceImpl implements IGoodsTypeService {
     @Transactional(rollbackFor = SQLException.class)
     @Override
     public int insertGoodsType(GoodsType goodsType) {
-        goodsType.setCreateTime(DateUtils.getNowDate());
+        Date nowDate = DateUtils.getNowDate();
+        String uid = SecurityUtils.getUserId().toString();
+        goodsType.setCreateBy(uid);
+        goodsType.setCreateTime(nowDate);
+        goodsType.setUpdateBy(uid);
+        goodsType.setUpdateTime(nowDate);
         R<String[]> res = remoteEncodeRuleService.genSpecifyEncoding(OrderType.GOODS_TYPE, 1, SecurityConstants.INNER);
         System.out.println("货品类型编码获取 res: " + res);
         if (res == null || res.getCode() != 200) {

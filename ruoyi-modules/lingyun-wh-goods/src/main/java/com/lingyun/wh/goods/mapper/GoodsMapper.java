@@ -61,7 +61,7 @@ public interface GoodsMapper {
      * @return 结果
      */
     public int updateGoods(Goods goods);
-
+    public int updateGoodsStatus(Goods goods);
 
 
     /**

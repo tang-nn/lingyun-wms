@@ -38,6 +38,7 @@ public class Goods extends BaseEntity {
     /** 货品名称 */
     @Excel(name = "货品名称")
     private String gName;
+    @Excel(name = "货品类型ID")
     private String gtId;
 
 //    private Integer warningDays;
@@ -76,10 +77,10 @@ public class Goods extends BaseEntity {
     @Excel(name = "保质期")
     private String shelfLife;
     /** 货品上限 */
-    @Excel(name = "货品上限")
+//    @Excel(name = "货品上限")
     private String itemLimit;
     /** 货品下限 */
-    @Excel(name = "货品下限")
+//    @Excel(name = "货品下限")
     private String lowerLimit;
     /**
      * 备注

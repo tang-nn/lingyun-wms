@@ -141,8 +141,21 @@ public class GoodsTypeController extends BaseController
     {
         GoodsType goodsType=new GoodsType();
         goodsType.setUpdateBy(SecurityUtils.getUserId().toString());
-        goodsType.setGtId(map.get("gtId").toString());
-        goodsType.setStatus(Integer.valueOf(map.get("status").toString()));
+        if (map.get("gtId")!=null){
+            goodsType.setGtId(map.get("gtId").toString());
+        }
+       if (map.get("parentId")!=null){
+           goodsType.setParentId(map.get("parentId").toString());
+       }
+       if (map.get("gtName")!=null){
+           goodsType.setGtName(map.get("gtName").toString());
+       }
+        if (map.get("sort")!=null){
+            goodsType.setStatus(Integer.valueOf(map.get("status").toString()));
+        }
+        if (map.get("remark")!=null){
+            goodsType.setRemark(map.get("remark").toString());
+        }
         System.out.println("goodsType```````````````"+goodsType);
         return toAjax(goodsTypeService.updateGoodsType(goodsType));
     }
