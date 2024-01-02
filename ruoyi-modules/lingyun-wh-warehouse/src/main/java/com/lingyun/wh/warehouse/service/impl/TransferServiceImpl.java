@@ -275,7 +275,7 @@ public class TransferServiceImpl implements ITransferService {
         transfer.setTransferDetailsList(addList);
         insertTransferDetails(transfer);
         System.out.println("updateList=====================" + updateList);
-        transferMapper.updateTransferDetails(updateList);
+        transferMapper.updateTransferDetailsList(updateList);
         transferMapper.updateTransfer(transfer);
 
         return 1;

@@ -136,23 +136,24 @@ public class InventorySheet extends BaseEntity
         isDelete = delete;
     }
 
+    public String getIsId()
+    {
+        return isId;
+    }
+
     public void setIsId(String isId)
     {
         this.isId = isId;
     }
 
-    public String getIsId()
+    public String getIsCode()
     {
-        return isId;
+        return isCode;
     }
+
     public void setIsCode(String isCode)
     {
         this.isCode = isCode;
-    }
-
-    public String getIsCode() 
-    {
-        return isCode;
     }
 
     public String getReviewStatus() {
@@ -163,54 +164,54 @@ public class InventorySheet extends BaseEntity
         this.reviewStatus = reviewStatus;
     }
 
+    public String getIsResult()
+    {
+        return isResult;
+    }
+
     public void setIsResult(String isResult)
     {
         this.isResult = isResult;
     }
 
-    public String getIsResult() 
+    public String getwId()
     {
-        return isResult;
+        return wId;
     }
-    public void setwId(String wId) 
+
+    public void setwId(String wId)
     {
         this.wId = wId;
     }
 
-    public String getwId() 
+    public String getIsType()
     {
-        return wId;
+        return isType;
     }
-    public void setIsType(String isType) 
+
+    public void setIsType(String isType)
     {
         this.isType = isType;
     }
 
-    public String getIsType() 
+    public Date getIsStartTime()
     {
-        return isType;
+        return isStartTime;
     }
-    public void setIsStartTime(Date isStartTime) 
+
+    public void setIsStartTime(Date isStartTime)
     {
         this.isStartTime = isStartTime;
     }
 
-    public Date getIsStartTime() 
-    {
-        return isStartTime;
-    }
-    public void setIsEndTime(Date isEndTime) 
-    {
-        this.isEndTime = isEndTime;
-    }
-
-    public Date getIsEndTime() 
+    public Date getIsEndTime()
     {
         return isEndTime;
     }
-    public void setOutStatus(Integer outStatus) 
+
+    public void setIsEndTime(Date isEndTime)
     {
-        this.outStatus = outStatus;
+        this.isEndTime = isEndTime;
     }
 
     public String getOutStatus() {
@@ -229,22 +230,17 @@ public class InventorySheet extends BaseEntity
         this.inStatus = inStatus;
     }
 
-    public void setIsManager(String isManager)
-    {
-        this.isManager = isManager;
-    }
-
-    public String getIsManager() 
+    public String getIsManager()
     {
         return isManager;
     }
 
     public void setIsManager(String isManager)
     {
-        this.isDelete = isDelete;
+        this.isManager = isManager;
     }
 
-    public Boolean getIsDelete() 
+    public Boolean getIsDelete()
     {
         return isDelete;
     }

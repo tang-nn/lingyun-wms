@@ -52,12 +52,6 @@ public interface GoodsMapper {
      * @return
      */
     ArrayList<Goods> selectGoodsByIds(@Param("ids") String[] ids, @Param("params") Map<String, Object> params);
-    /**
-     * 根据商品名称查询是否存在
-     * @param gname
-     * @return
-     */
-    public int selectGoodsByGname(String gname);
 
     /**
      * 修改货品信息

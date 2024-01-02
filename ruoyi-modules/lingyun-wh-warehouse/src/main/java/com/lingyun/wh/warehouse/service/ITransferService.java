@@ -84,7 +84,7 @@ public interface ITransferService {
 
 
     // 查询调入仓库货品的库位(调入仓库id 货品id)
-    public List<StorageLocation> getLocation(String w_id, String g_id);
+    // public List<StorageLocation> getLocation(String w_id, String g_id);
 
 //    //查询调入仓库货品的库位(调入仓库id 货品id)
 //    public List<StorageLocation> getLocation( String w_id, String g_id);

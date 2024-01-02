@@ -47,9 +47,6 @@ public class WareHouseServiceImpl implements IWareHouseService {
     @Autowired
     private RemoteEncodeRuleService remoteEncodeRuleService;
 
-    @Autowired
-    protected Validator validator;
-
     /**
      * 查询仓库
      *

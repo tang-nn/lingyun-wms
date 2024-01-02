@@ -128,7 +128,7 @@ public interface TransferMapper
      * @param transferDetails
      * @return
      */
-    public int updateTransferDetails(@Param("transferDetails") List<TransferDetails>transferDetails);
+    public int updateTransferDetailsList(@Param("transferDetails") List<TransferDetails>transferDetails);
     /**
      * 更新调拨明细，的出入库数量
      *
