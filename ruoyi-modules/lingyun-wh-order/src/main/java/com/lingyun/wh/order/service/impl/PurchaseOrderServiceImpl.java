@@ -1,14 +1,9 @@
 package com.lingyun.wh.order.service.impl;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.lingyun.wh.goods.api.RemoteGoodsService;
 import com.lingyun.wh.goods.api.domain.Goods;
-import com.lingyun.wh.order.domain.PurchaseDetails;
-import com.lingyun.wh.order.domain.PurchaseOrder;
+import com.lingyun.wh.order.api.domain.PurchaseDetails;
+import com.lingyun.wh.order.api.domain.PurchaseOrder;
 import com.lingyun.wh.order.mapper.PurchaseOrderMapper;
 import com.lingyun.wh.order.pojo.dto.PurchaseReviewDto;
 import com.lingyun.wh.order.pojo.vo.PurchaseOrderVo;
@@ -20,7 +15,6 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.domain.AjaxResult;
-import com.ruoyi.common.core.web.page.TableDataInfo;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import com.ruoyi.system.api.RemoteAnnexService;
 import com.ruoyi.system.api.RemoteEncodeRuleService;
@@ -31,9 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.crypto.Data;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @Author : Tang
@@ -46,8 +41,10 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
 
     @Autowired
     RemoteEncodeRuleService remoteEncodeRuleService;
+
     @Autowired
     private PurchaseOrderMapper purchaseOrderMapper;
+
     @Autowired
     private RemoteAnnexService remoteAnnexService;
 
@@ -65,23 +62,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         PurchaseOrder purchaseOrder = purchaseOrderMapper.selectPurchaseOrderByPoId(poId);
         // JSONObject po = JSONObject.from(purchaseOrder);
         List<PurchaseDetails> detailsList = purchaseOrder.getPurchaseDetailsList();
-        String[] ids = detailsList.stream().map(PurchaseDetails::getGoodsId).toArray(String[]::new);
-        if (ids.length > 0) {
-            R<ArrayList<Goods>> res = remoteGoodsService.getInfoByIds(ids);
-            System.out.println("ids：" + ids);
-            System.out.println("获取货物库存数据：" + res);
-            if ("200".equals(String.valueOf(res.getCode()))) {
-                ArrayList<Goods> goodsList = res.getData();
-                if (goodsList != null && goodsList.size() > 0) {
-                    purchaseOrder.setPurchaseDetailsList(
-                            detailsList.stream().map(dl -> goodsList.stream().filter(g -> Objects.equals(dl.getGoodsId(), g.getGId())).map(g -> {
-                                dl.setGoods(g);
-                                return dl;
-                            }).collect(Collectors.toList())).flatMap(List::stream).collect(Collectors.toList())
-                    );
-                }
-            }
-        }
+        purchaseOrder.setPurchaseDetailsList(packagedGoodsStocks(detailsList, null));
         R<List<Annex>> list = remoteAnnexService.list(AttachmentType.PURCHASE_ANNEX, poId, null);
         // System.out.println("remoteAnnexService list: " + list);
         if (list != null && list.getCode() == 200) {
@@ -90,6 +71,58 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
             log.error("进货 ID：{}，查询附件失败", poId);
         }
         return purchaseOrder;
+    }
+
+    /**
+     * 根据进货单 ID 查询进货明细
+     *
+     * @param poid   进货单 ID
+     * @param params 其它查询差数
+     * @return 进货订单
+     */
+    @Override
+    public List<PurchaseDetails> selectPurchaseDetailsById(String poid, Map<String, Object> params) {
+        List<PurchaseDetails> purchaseOrders = purchaseOrderMapper.selectOrderDetailsListById(poid, params);
+        return packagedGoodsStocks(purchaseOrders, params);
+    }
+
+    /**
+     * 获取进货订单详细信息
+     * 在进货审核后，入库检查数据
+     *
+     * @param poId 进货 ID
+     * @param dids 进货明细 ID
+     * @return
+     */
+    @Override
+    public PurchaseOrder queryPurchaseInfoByIds(String poId, String[] dids) {
+        return purchaseOrderMapper.selectPurchaseInfoByIds(poId, dids);
+    }
+
+    /**
+     * 将货品库存数据封装进进货明细
+     *
+     * @param purchaseDetails
+     * @param params          货品库存查询差数
+     * @return
+     */
+    public List<PurchaseDetails> packagedGoodsStocks(List<PurchaseDetails> purchaseDetails, Map<String, Object> params) {
+        String[] ids = purchaseDetails.stream().map(PurchaseDetails::getGoodsId).toArray(String[]::new);
+        if (ids.length > 0) {
+            R<ArrayList<Goods>> res = remoteGoodsService.getInfoByIds(ids, params);
+            System.out.println("ids：" + Arrays.toString(ids));
+            System.out.println("获取货物库存数据：" + res);
+            if ("200".equals(String.valueOf(res.getCode()))) {
+                ArrayList<Goods> goodsList = res.getData();
+                if (goodsList != null && goodsList.size() > 0) {
+                    return purchaseDetails.stream().map(dl -> goodsList.stream().filter(g -> Objects.equals(dl.getGoodsId(), g.getGId())).map(g -> {
+                        dl.setGoods(g);
+                        return dl;
+                    }).collect(Collectors.toList())).flatMap(List::stream).collect(Collectors.toList());
+                }
+            }
+        }
+        return purchaseDetails;
     }
 
     /**
@@ -161,10 +194,58 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     @Transactional
     @Override
     public int updatePurchaseOrder(PurchaseOrder purchaseOrder) {
-        purchaseOrder.setUpdateTime(DateUtils.getNowDate());
+        Date nowDate = DateUtils.getNowDate();
+        String userId = String.valueOf(SecurityUtils.getUserId());
+        purchaseOrder.setUpdateTime(nowDate);
+        purchaseOrder.setUpdateBy(userId);
         purchaseOrderMapper.deletePurchaseDetailsByPoId(purchaseOrder.getPoId());
         insertPurchaseDetails(purchaseOrder);
         return purchaseOrderMapper.updatePurchaseOrder(purchaseOrder);
+    }
+
+    /**
+     * 更新进货订单状态
+     *
+     * @param purchaseOrder
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateOrderStatus(PurchaseOrder purchaseOrder) {
+        String userId = String.valueOf(SecurityUtils.getUserId());
+        Date nowDate = DateUtils.getNowDate();
+        PurchaseOrder p = new PurchaseOrder();
+        p.setPoId(purchaseOrder.getPoId());
+        p.setStatus(purchaseOrder.getStatus());
+        p.setUpdateBy(userId);
+        p.setUpdateTime(nowDate);
+        List<PurchaseDetails> pd = purchaseOrder.getPurchaseDetailsList();
+        if (pd == null || pd.size() == 0) {
+            throw new RuntimeException("进货明细异常！");
+        }
+        for (PurchaseDetails purchaseDetails : pd) {
+            purchaseDetails.setPoId(purchaseOrder.getPoId());
+            purchaseDetails.setUpdateBy(userId);
+            purchaseDetails.setUpdateTime(nowDate);
+            updatePurchaseDetails(purchaseDetails);
+        }
+        if (selectInboundCompleted(p.getPoId())) {
+            purchaseOrder.setStatus("done");
+        } else {
+            purchaseOrder.setStatus("partial_storage");
+        }
+        purchaseOrderMapper.updatePurchaseOrder(p);
+        return true;
+    }
+
+    /**
+     * 查询进货订单的入库情况
+     *
+     * @param pid 进货订单 id
+     * @return
+     */
+    public boolean selectInboundCompleted(String pid) {
+        return purchaseOrderMapper.queryInboundCompleted(pid);
     }
 
     /**
@@ -246,5 +327,15 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         purchaseOrder.setPoId(dto.getPoId());
         System.out.println("purchaseOrder = " + purchaseOrder);
         return purchaseOrderMapper.updatePurchaseOrder(purchaseOrder) > 0;
+    }
+
+    /**
+     * 修改单个明细
+     *
+     * @param purchaseDetails
+     * @return
+     */
+    boolean updatePurchaseDetails(PurchaseDetails purchaseDetails) {
+        return purchaseOrderMapper.updateInboundInStock(purchaseDetails) > 0;
     }
 }

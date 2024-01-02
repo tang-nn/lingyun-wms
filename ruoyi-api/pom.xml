@@ -10,6 +10,7 @@
 
     <modules>
         <module>ruoyi-api-system</module>
+        <module>lingyun-wms-api-order</module>
     </modules>
 
     <artifactId>ruoyi-api</artifactId>

@@ -73,3 +73,12 @@ export function reviewInventory(data) {
   })
 }
 
+
+// 盘点明细查询 - 出入库查询
+export function getInventoryDetails(query) {
+  return request({
+    url: '/wms/wh/inventory/details',
+    method: 'get',
+    params: query
+  })
+}

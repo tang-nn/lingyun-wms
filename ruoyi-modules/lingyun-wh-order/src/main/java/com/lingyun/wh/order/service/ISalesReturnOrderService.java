@@ -1,6 +1,7 @@
 package com.lingyun.wh.order.service;
 
-import com.lingyun.wh.order.domain.SalesReturnOrder;
+
+import com.lingyun.wh.order.api.domain.SalesReturnOrder;
 
 import java.util.List;
 

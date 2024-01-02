@@ -9,6 +9,7 @@
        <result property="gCode"    column="g_code"    />
        <result property="gName"    column="g_name"    />
        <result property="gtId"    column="gt_id"    />
+       <result property="gtName" column="gt_name"/>
        <result property="sId"    column="s_id"    />
        <result property="sort"    column="sort"    />
        <result property="status"    column="status"    />
@@ -53,24 +54,47 @@
     </resultMap>
 
     <sql id="selectGoodsVo">
-        select wg.g_id, wg.g_code, wg.g_name, wg.gt_id,wg.s_id, wg.sort, wg.`status`,
-               wg.spec_code, wg.remark, wg.or_price, wg.wr_price, wg.has_shelf_life,shelf_life,
-               wg.item_limit, wg.lower_limit, wg.warning_id,  wg.is_delete,
-               w_days,gt_name,s_name,(item_quantity*or_price) stocktotalmoney,su.user_name oneuser,
-               wg.create_time,su2.user_name twouser,wg.update_time,wsk.unit,wsk.item_quantity, wsk.number_plans
-               from wh_goods wg
+        select wg.g_id,
+               wg.g_code,
+               wg.g_name,
+               wg.gt_id,
+               wg.s_id,
+               wg.sort,
+               wg.`status`,
+               wg.spec_code,
+               wg.remark,
+               wg.or_price,
+               wg.wr_price,
+               wg.has_shelf_life,
+               shelf_life,
+               wg.item_limit,
+               wg.lower_limit,
+               wg.warning_id,
+               wg.is_delete,
+               w_days,
+               gt_name,
+               s_name,
+               (item_quantity * or_price) stocktotalmoney,
+               su.user_name               oneuser,
+               wg.create_time,
+               su2.user_name              twouser,
+               wg.update_time,
+               wsk.unit,
+               wsk.item_quantity,
+               wsk.number_plans
+        from wh_goods wg
                  left join wh_warning_info wwi
-                            on wg.warning_id=wwi.ware_id
+                           on wg.warning_id = wwi.ware_id
                  inner join wh_goods_type wgt
-                            on wg.gt_id=wgt.gt_id
+                            on wg.gt_id = wgt.gt_id
                  left join wh_supplier ws
-                           on ws.s_id=wg.s_id
+                           on ws.s_id = wg.s_id
                  left join wh_stock wsk
-                           on wsk.g_id=wg.g_id
+                           on wsk.g_id = wg.g_id
                  left join sys_user su
-                            on wg.create_by=su.user_id
+                           on wg.create_by = su.user_id
                  left join sys_user su2
-                            on wg.update_by=su2.user_id
+                           on wg.update_by = su2.user_id
     </sql>
 
 
@@ -103,14 +127,22 @@
         FROM wh_goods g
         INNER JOIN wh_goods_type gt on gt.gt_id = g.gt_id
         <where>g.`status` = 0
-        <if test="ids != null and ids.length > 0">
-            <foreach collection="ids" item="gId" open="and g.g_id in (" separator="," close=")">
-                #{gId}
-            </foreach>
-        </if>
+            <if test="ids != null and ids.length > 0">
+                <foreach collection="ids" item="gId" open="and g.g_id in (" separator="," close=")">
+                    #{gId}
+                </foreach>
+            </if>
+            <if test="params != null and !params.isEmpty()">
+                <if test="params.codeOrName != null and params.codeOrName != ''">
+                    and (g.g_code like CONCAT('%',#{params.codeOrName},'%') or g.g_name like
+                    CONCAT('%',#{params.codeOrName},'%'))
+                </if>
+                <if test="params.gtId != null and params.gtId != ''">
+                    and gt.gt_id = #{params.gtId}
+                </if>
+            </if>
         </where>
     </select>
-
     <select id="selectGoodsStocksByGid" resultMap="stockMap">
         select stock.s_id stockId, stock.w_id, stock.sl_id, stock.unit, stock.g_id stock_goodsId, stock.item_quantity, stock.number_plans
         from wh_stock stock
@@ -138,7 +170,7 @@
             <if test="wrPrice != null">wr_price,</if>
             <if test="warningId != null">warning_id,</if>
             <if test="hasShelfLife != null">has_shelf_life,</if>
-             shelf_life,
+            shelf_life,
             item_limit,
             lower_limit,
             <if test="createBy != null">create_by,</if>
@@ -234,7 +266,7 @@
 
 
     <delete id="deleteGoodsByGIds" parameterType="String">
-        update  wh_goods set is_delete=1 where g_id  in
+        update wh_goods set is_delete=1 where g_id in
         <foreach item="gId" collection="array" open="(" separator="," close=")">
             #{gId}
         </foreach>

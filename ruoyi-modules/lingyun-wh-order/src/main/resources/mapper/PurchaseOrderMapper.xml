@@ -67,8 +67,8 @@
         <result property="supplName" column="s_name"/>
         <result property="contactPerson" column="contact_person"/>
         <result property="contactNumber" column="contact_number"/>
-        <collection property="purchaseDetails" column="po_id" select="selectOrderDetailsList" ofType="com.lingyun.wh.order.pojo.vo.PurchaseDetailVo">
-
+        <collection property="purchaseDetails" column="po_id" select="selectOrderDetailsList"
+                    ofType="com.lingyun.wh.order.pojo.vo.PurchaseDetailVo">
         </collection>
     </resultMap>
     <resultMap id="purchaseDetailsVO" type="com.lingyun.wh.order.pojo.vo.PurchaseDetailVo">
@@ -100,7 +100,9 @@
 
     <select id="selectPurchaseDetailsList" resultMap="PurchaseOrderList">
         SELECT
-        po.po_id,po.po_code,po.status po_status,po.purchase_date po_purchase_date,po.s_id,po.purchaser_id,po.reviewer,po.review_comments,po.reviewer_date,po.create_by po_create_by,po.create_time po_create_time,po.update_by po_update_by,po.update_time po_update_time,
+        po.po_id,po.po_code,po.status po_status,po.purchase_date
+        po_purchase_date,po.s_id,po.purchaser_id,po.reviewer,po.review_comments,po.reviewer_date,po.create_by
+        po_create_by,po.create_time po_create_time,po.update_by po_update_by,po.update_time po_update_time,
         pu.dept_id pu_dept_id,pu.nick_name pu_nick_name,
         pdt.dept_id pdt_dept_id,pdt.dept_name pdt_dept_name,
         cu.user_id cu_user_id,cu.dept_id cu_dept_id,cu.nick_name cu_nick_name,
@@ -134,7 +136,7 @@
                     and po.po_code like concat('%',#{params.purOrderSn},'%')
                 </if>
                 <if test="params.orderStatus != null and params.orderStatus != ''">
-                    and po.status =  #{params.orderStatus}
+                    and po.status = #{params.orderStatus}
                 </if>
                 <if test="params.supplierName != null and params.supplierName != ''">
                     and s.supplier_name like concat('%',#{params.supplierName},'%')
@@ -155,58 +157,36 @@
         </where>
     </select>
     <select id="selectOrderDetailsList" resultMap="purchaseDetailsVO">
-        select
-            g.g_name goodsName,
-            pod.pd_id pod_pd_id,pod.goods_id pod_goods_id,pod.purchase_quantity pod_purchase_quantity,pod.pu_price pod_pu_price, pod.received_quantity
+        select g.g_name              goodsName,
+               pod.pd_id             pod_pd_id,
+               pod.goods_id          pod_goods_id,
+               pod.purchase_quantity pod_purchase_quantity,
+               pod.pu_price          pod_pu_price,
+               pod.received_quantity
         from wh_purchase_details pod
-        INNER JOIN wh_goods g on g.g_id = pod.goods_id
+                 INNER JOIN wh_goods g on g.g_id = pod.goods_id
         where pod.po_id = #{poId,jdbcType=BIGINT}
     </select>
-    <!-- <select id="selectPurchaseDetailsList_COUNT" resultType="Long"> -->
-    <!--     select count(0) from ( -->
-    <!--     SELECT -->
-    <!--     po.po_id, -->
-    <!--     pu.dept_id pu_dept_id, -->
-    <!--     pdt.dept_id pdt_dept_id, -->
-    <!--     cu.user_id cu_user_id, -->
-    <!--     cdt.dept_id cdt_dept_id, -->
-    <!--     ru.user_id ru_user_id, -->
-    <!--     s.s_name -->
-    <!--     FROM wh_purchase_order po -->
-    <!--     # 供应商 -->
-    <!--     INNER JOIN wh_supplier s on s.s_id = po.s_id -->
-    <!--     # 进货人和进货部门 -->
-    <!--     INNER JOIN sys_user pu on pu.user_id = po.purchaser_id -->
-    <!--     INNER JOIN sys_dept pdt on pdt.dept_id = pu.dept_id -->
-    <!--     # 制单人和所在部门 -->
-    <!--     INNER JOIN sys_user cu on cu.user_id = po.create_by -->
-    <!--     INNER JOIN sys_dept cdt on cdt.dept_id = po.purchasing_dept -->
-    <!--     # 供应商 -->
-    <!--     INNER JOIN wh_supplier on s.s_id = po.s_id -->
-    <!--     # 审核人 -->
-    <!--     LEFT JOIN sys_user ru on ru.user_id = po.reviewer -->
-    <!--     <where> -->
-    <!--         po.is_delete = 0 -->
-    <!--         <if test="params != null"> -->
-    <!--             <if test="params.purOrderSn != null and params.purOrderSn != ''"> -->
-    <!--                 and po.po_code like concat('%',#{params.purOrderSn},'%') -->
-    <!--             </if> -->
-    <!--             <if test="params.orderStatus != null and params.orderStatus != ''"> -->
-    <!--                 and po.status =  #{params.orderStatus} -->
-    <!--             </if> -->
-    <!--             <if test="params.supplierName != null and params.supplierName != ''"> -->
-    <!--                 and s.supplier_name like concat('%',#{params.supplierName},'%') -->
-    <!--             </if> -->
-    <!--             <if test="params.beginTime != null and params.beginTime != ''">&lt;!&ndash; 开始时间检索 &ndash;&gt; -->
-    <!--                 AND date_format(po.purchase_date,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d') -->
-    <!--             </if> -->
-    <!--             <if test="params.endTime != null and params.endTime != ''">&lt;!&ndash; 结束时间检索 &ndash;&gt; -->
-    <!--                 AND date_format(po.purchase_date,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d') -->
-    <!--             </if> -->
-    <!--         </if> -->
-    <!--     </where> -->
-    <!--     ) tmp_count -->
-    <!-- </select> -->
+
+    <select id="selectOrderDetailsListById" resultMap="PurchaseDetailsResult">
+        SELECT
+        pd_id as sub_pd_id,
+        po_id as sub_po_id,
+        goods_id as sub_goods_id,
+        spec_code as sub_spec_code,
+        unit as sub_unit,
+        received_quantity as sub_received_quantity,
+        purchase_quantity as sub_purchase_quantity,
+        pu_price as sub_pu_price,
+        remark as sub_remark
+        from wh_purchase_details where po_id = #{poid}
+        <if test="params != null and !params.isEmpty()">
+            <if test="params.unit != null and params.unit != ''">
+                and unit = #{params.unit}
+            </if>
+        </if>
+    </select>
+
     <select id="selectPurchaseOrderByPoId" parameterType="String" resultMap="PurchaseOrderPurchaseDetailsResult">
         select a.po_id,
                a.po_code,
@@ -239,7 +219,8 @@
                b.is_delete         as sub_is_delete
         from wh_purchase_order a
                  left join wh_purchase_details b on b.po_id = a.po_id
-        where a.po_id = #{poId} and a.is_delete = b'0'
+        where a.po_id = #{poId}
+          and a.is_delete = b'0'
     </select>
 
     <insert id="insertPurchaseOrder" parameterType="PurchaseOrder" useGeneratedKeys="true" keyProperty="poId">
@@ -274,6 +255,14 @@
             b'0'
         </trim>
     </insert>
+
+    <select id="queryInboundCompleted" resultType="boolean">
+        SELECT
+            (SUM(received_quantity) = purchase_quantity) inboundStatus
+        FROM wh_purchase_details
+        where po_id = #{pid}
+        GROUP BY po_id
+    </select>
 
     <update id="updatePurchaseOrder" parameterType="PurchaseOrder">
         update wh_purchase_order
@@ -317,8 +306,9 @@
     </delete>
 
     <delete id="deletePurchaseDetailsByPoId">
-        update wh_purchase_details set is_delete = b'1'
-                                   where po_id = #{poId}
+        update wh_purchase_details
+        set is_delete = b'1'
+        where po_id = #{poId}
     </delete>
 
     <insert id="batchPurchaseDetails">
@@ -330,4 +320,41 @@
             b'0')
         </foreach>
     </insert>
+
+    <select id="selectPurchaseInfoByIds" resultMap="PurchaseOrderPurchaseDetailsResult">
+        select po.po_id,
+        po.po_code,
+        po.status,
+        po.purchase_date,
+        po.s_id,
+        po.purchaser_id,
+        po.is_delete,
+        pd.pd_id as sub_pd_id,
+        pd.po_id as sub_po_id,
+        pd.goods_id as sub_goods_id,
+        pd.spec_code as sub_spec_code,
+        pd.unit as sub_unit,
+        pd.received_quantity as sub_received_quantity,
+        pd.purchase_quantity as sub_purchase_quantity,
+        pd.pu_price as sub_pu_price
+        from wh_purchase_order po
+        left join wh_purchase_details pd on pd.po_id = po.po_id
+        where po.po_id = #{poId} and po.is_delete = b'0' and status in ('partial_storage','not_in_stock') #
+        订单状态必须为部分入库和未入库
+        and pd.pd_id in (
+        <foreach collection="dids" item="i" separator=",">
+            #{i}
+        </foreach>
+        )
+    </select>
+
+    <!-- 更新入库数量 -->
+    <update id="updateInboundInStock">
+        update wh_purchase_details
+        set received_quantity = #{pd.receivedQuantity},
+            update_by         = #{pd.updateBy},
+            update_time       = #{pd.updateTime}
+        where pd_id = #{pd.pdId}
+          and po_id = #{pd.poId}
+    </update>
 </mapper>

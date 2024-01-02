@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author : Tang
@@ -28,7 +29,7 @@ public class RemoteGoodsFallbackFactory implements FallbackFactory<RemoteGoodsSe
         log.error("货品服务调用失败: {}", throwable.getMessage());
         return new RemoteGoodsService() {
             @Override
-            public R<ArrayList<Goods>> getInfoByIds(String[] ids) {
+            public R<ArrayList<Goods>> getInfoByIds(String[] ids, Map<String, Object> params) {
                 return R.fail(HttpStatus.ERROR, "货物数据获取失败");
             }
         };

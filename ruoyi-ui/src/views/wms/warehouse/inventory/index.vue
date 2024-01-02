@@ -4,7 +4,6 @@
       <el-form-item label="盘点单号" prop="is_code">
         <el-input
           v-model="queryParams.is_code"
-          placeholder="请输入盘点单号"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -13,7 +12,6 @@
         <el-select
           v-model="queryParams.is_result"
           placeholder="请选择"
-          clearable
           style="width: 240px"
         >
           <el-option
@@ -27,7 +25,6 @@
       <el-form-item label="盘点类型">
         <el-select
           v-model="queryParams.is_type"
-          placeholder="请选择"
           clearable
           style="width: 240px"
         >
@@ -43,7 +40,6 @@
         <el-select
           v-model="queryParams.w_id"
           placeholder="请选择"
-          clearable
           style="width: 240px"
         >
           <el-option
@@ -351,7 +347,6 @@ export default {
       row.pq = pq;
        return pq;
     },
-
     // 盘亏数量
     handlerLossQuantity(row) {
       let lq = row.inventoryDetailsList?.reduce((accumulator, currentValue) => {

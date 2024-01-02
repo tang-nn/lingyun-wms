@@ -12,7 +12,7 @@ export function listTransfer(query) {
 // 查询调拨单详细
 export function getTransfer(tid) {
   return request({
-    url: '/wms/wh/transfer/'+tid,
+    url: '/wms/wh/transfer/' + tid,
     method: 'get'
   })
 }
@@ -51,7 +51,7 @@ export function deleteTransferDetails(tdId) {
   })
 }
 
-//根据调出仓库查询下面的调拨货品
+//根据调出仓库查询下面的盘点货品
 export function listGoodByWid(query) {
   return request({
     url: '/wms/wh/inventory/getByWid',
@@ -59,7 +59,6 @@ export function listGoodByWid(query) {
     params: query
   })
 }
-
 
 
 //查询入库仓库库位
@@ -72,7 +71,6 @@ export function listSlName(w_id) {
 }
 
 
-
 /**
  * 查询调入仓库某库位下的某货品货品计划数量
  * @param w_id 仓库
@@ -80,7 +78,7 @@ export function listSlName(w_id) {
  * @param g_id 货品
  * @returns {AxiosPromise}
  */
-export function inNumsPlan(w_id,sl_id,g_id) {
+export function inNumsPlan(w_id, sl_id, g_id) {
   const data = {
     w_id,
     sl_id,
@@ -89,9 +87,37 @@ export function inNumsPlan(w_id,sl_id,g_id) {
   return request({
     url: '/wms/wh/transfer/inNumsPlans',
     method: 'post',
-    data:data
+    data: data
   })
 }
+
+/**
+ * 调拨出入库，订单查询
+ * @param query {String}
+ * @returns {*}
+ */
+export function listTransferByInOut(query) {
+  return request({
+    url: '/wms/wh/transfer/list/inOutbound?' + query,
+    method: 'get'
+  })
+}
+
+/**
+ *
+ * 调拨出入库，明细查询
+ *
+ * @param query {Object}
+ * @returns {*}
+ */
+export function transferDetailsByInOut(query) {
+  return request({
+    url: '/wms/wh/transfer/list/details',
+    method: 'get',
+    params: query
+  })
+}
+
 
 
 //审核调拨单

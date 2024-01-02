@@ -20,12 +20,12 @@ import Layout from '@/layout'
  * roles: ['admin', 'common']       // 访问路由的角色权限
  * permissions: ['a:a:a', 'b:b:b']  // 访问路由的菜单权限b
  * meta : {
-    noCache: true                   // 如果设置为true，则不会被 <keep-alive> 缓存(默认 false)
-    title: 'title'                  // 设置该路由在侧边栏和面包屑中展示的名字
-    icon: 'svg-name'                // 设置该路由的图标，对应路径src/assets/icons/svg
-    breadcrumb: false               // 如果设置为false，则不会在breadcrumb面包屑中显示
-    activeMenu: '/system/user'      // 当路由设置了该属性，则会高亮相对应的侧边栏。
-  }
+ noCache: true                   // 如果设置为true，则不会被 <keep-alive> 缓存(默认 false)
+ title: 'title'                  // 设置该路由在侧边栏和面包屑中展示的名字
+ icon: 'svg-name'                // 设置该路由的图标，对应路径src/assets/icons/svg
+ breadcrumb: false               // 如果设置为false，则不会在breadcrumb面包屑中显示
+ activeMenu: '/system/user'      // 当路由设置了该属性，则会高亮相对应的侧边栏。
+ }
  */
 
 // 公共路由
@@ -60,7 +60,7 @@ export const constantRoutes = [
         path: '/gdsadd',
         component: () => import('@/views/wms/goodsmanager/goodsinfo/goodsadd'),
         name: 'goodsadd',
-        meta: { title: '商品管理 / 新增货品信息', icon: 'dashboard'}
+        meta: {title: '商品管理 / 新增货品信息', icon: 'dashboard'}
       }
     ]
   },
@@ -73,7 +73,7 @@ export const constantRoutes = [
         path: '/gdsedit/:gid',
         component: () => import('@/views/wms/goodsmanager/goodsinfo/goodsedit'),
         name: 'goodsedit',
-        meta: { title: '商品管理 / 编辑货品信息', icon: 'dashboard' }
+        meta: {title: '商品管理 / 编辑货品信息', icon: 'dashboard'}
       }
     ]
   },
@@ -86,7 +86,7 @@ export const constantRoutes = [
         path: '/goods',
         component: () => import('@/views/wms/goodsmanager/goodsinfo/index.vue'),
         name: 'gdpage',
-        meta: { title: '货品信息', icon: 'dashboard' }
+        meta: {title: '货品信息', icon: 'dashboard'}
       }
     ]
   },
@@ -99,7 +99,7 @@ export const constantRoutes = [
         path: '/housedetails/:w_id',
         component: () => import('@/views/wms/warehouse/warehousedetails/index'),
         name: 'warehousedetail',
-        meta: { title: '仓库详情', icon: 'dashboard'}
+        meta: {title: '仓库详情', icon: 'dashboard'}
       }
     ]
   },
@@ -112,7 +112,7 @@ export const constantRoutes = [
         path: 'warehousemanager',
         component: () => import('@/views/wms/warehouse/index'),
         name: 'whmanager',
-        meta: { title: '仓库管理', icon: 'dashboard'}
+        meta: {title: '仓库管理', icon: 'dashboard'}
       }
     ]
   },
@@ -125,7 +125,7 @@ export const constantRoutes = [
         path: 'addwarehouse',
         component: () => import('@/views/wms/warehouse/addwarehouse/index'),
         name: 'whadd',
-        meta: { title: '新增仓库', icon: 'dashboard'}
+        meta: {title: '新增仓库', icon: 'dashboard'}
       }
     ]
   },
@@ -151,7 +151,7 @@ export const constantRoutes = [
         path: '/InventorySheet',
         component: () => import('@/views/wms/warehouse/inventory/index'),
         name: 'InSheet',
-        meta: { title: '库存盘点', icon: 'dashboard' }
+        meta: {title: '库存盘点', icon: 'dashboard'}
       }
     ]
   },
@@ -164,7 +164,7 @@ export const constantRoutes = [
         path: '/addInventorySheet',
         component: () => import('@/views/wms/warehouse/inventory/addIndex'),
         name: 'addInSheet',
-        meta: { title: '库存盘点 / 新增盘点', icon: 'dashboard' }
+        meta: {title: '库存盘点 / 新增盘点', icon: 'dashboard'}
       }
     ]
   },
@@ -177,7 +177,7 @@ export const constantRoutes = [
         path: '/Inventorydetails/:isId',
         component: () => import('@/views/wms/warehouse/inventory/detailsIndex'),
         name: 'Indetails',
-        meta: { title: '库存盘点/盘点详情', icon: 'dashboard'}
+        meta: {title: '库存盘点/盘点详情', icon: 'dashboard'}
       }
     ]
   },
@@ -190,7 +190,7 @@ export const constantRoutes = [
         path: '/addtransfer',
         component: () => import('@/views/wms/warehouse/Transfer/addIndex'),
         name: 'addtransferOrder',
-        meta: { title: '库存调拨/新增调拨', icon: 'dashboard'}
+        meta: {title: '库存调拨/新增调拨', icon: 'dashboard'}
       }
     ]
   },
@@ -203,7 +203,7 @@ export const constantRoutes = [
         path: '/transfer',
         component: () => import('@/views/wms/warehouse/Transfer/index'),
         name: 'transfer',
-        meta: { title: '库存调拨', icon: 'dashboard' }
+        meta: {title: '库存调拨', icon: 'dashboard'}
       }
     ]
   },
@@ -216,7 +216,7 @@ export const constantRoutes = [
         path: '/Transferdetails/:tid',
         component: () => import('@/views/wms/warehouse/Transfer/detailsIndex'),
         name: 'tfdetails',
-        meta: { title: '库存调拨/调拨详情', icon: 'dashboard'}
+        meta: {title: '库存调拨/调拨详情', icon: 'dashboard'}
       }
     ]
   },
@@ -229,7 +229,7 @@ export const constantRoutes = [
         path: '/updateTransfer/:tid',
         component: () => import('@/views/wms/warehouse/Transfer/editIndex.vue'),
         name: 'updetails',
-        meta: { title: '库存调拨/修改调拨', icon: 'dashboard'}
+        meta: {title: '库存调拨/修改调拨', icon: 'dashboard'}
       }
     ]
   },
@@ -252,7 +252,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/Home'),
         name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        meta: {title: '首页', icon: 'dashboard', affix: true}
       }
     ]
   },
@@ -266,7 +266,7 @@ export const constantRoutes = [
         path: 'profile',
         component: () => import('@/views/system/user/profile/index'),
         name: 'Profile',
-        meta: { title: '个人中心', icon: 'user' }
+        meta: {title: '个人中心', icon: 'user'}
       }
     ]
   }
@@ -284,7 +284,7 @@ export const dynamicRoutes = [
         path: 'role/:userId(\\d+)',
         component: () => import('@/views/system/user/authRole'),
         name: 'AuthRole',
-        meta: { title: '分配角色', activeMenu: '/system/user' }
+        meta: {title: '分配角色', activeMenu: '/system/user'}
       }
     ]
   },
@@ -298,7 +298,7 @@ export const dynamicRoutes = [
         path: 'user/:roleId(\\d+)',
         component: () => import('@/views/system/role/authUser'),
         name: 'AuthUser',
-        meta: { title: '分配用户', activeMenu: '/system/role' }
+        meta: {title: '分配用户', activeMenu: '/system/role'}
       }
     ]
   },
@@ -312,7 +312,7 @@ export const dynamicRoutes = [
         path: 'index/:dictId(\\d+)',
         component: () => import('@/views/system/dict/data'),
         name: 'Data',
-        meta: { title: '字典数据', activeMenu: '/system/dict' }
+        meta: {title: '字典数据', activeMenu: '/system/dict'}
       }
     ]
   },
@@ -326,7 +326,7 @@ export const dynamicRoutes = [
         path: 'index/:jobId(\\d+)',
         component: () => import('@/views/monitor/job/log'),
         name: 'JobLog',
-        meta: { title: '调度日志', activeMenu: '/monitor/job' }
+        meta: {title: '调度日志', activeMenu: '/monitor/job'}
       }
     ]
   },
@@ -340,7 +340,7 @@ export const dynamicRoutes = [
         path: 'index/:tableId(\\d+)',
         component: () => import('@/views/tool/gen/editTable'),
         name: 'GenEdit',
-        meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
+        meta: {title: '修改生成配置', activeMenu: '/tool/gen'}
       }
     ]
   },
@@ -355,28 +355,28 @@ export const dynamicRoutes = [
         permissions: ['order:purchase:add'],
         component: () => import('@/views/wms/order/purchasingOrder/add.vue'),
         name: '添加进货单据',
-        meta: { title: '添加进货信息', activeMenu: '/order/purchase/add' }
+        meta: {title: '添加进货信息', activeMenu: '/order/purchase/add'}
       },
       {
         path: 'purchase/edit/:poId(\\d+)',
         permissions: ['order:purchase:exit'],
         component: () => import('@/views/wms/order/purchasingOrder/edit.vue'),
         name: '编辑进货单据',
-        meta: { title: '编辑进货信息', activeMenu: '/order/purchase/edit' }
+        meta: {title: '编辑进货信息', activeMenu: '/order/purchase/edit'}
       },
       {
         path: 'purchase/details/:poId(\\d+)',
         permissions: ['order:purchase:details'],
         component: () => import('@/views/wms/order/purchasingOrder/details.vue'),
         name: '进货单据明细',
-        meta: { title: '进货单据明细', activeMenu: '/order/purchase/details' }
+        meta: {title: '进货单据明细', activeMenu: '/order/purchase/details'}
       }
     ]
   },
   {
     path: '/inOutbound',
-    component: Layout,
     hidden: true,
+    component: Layout,
     permissions: ['inbound'],
     children: [
       {
@@ -384,23 +384,37 @@ export const dynamicRoutes = [
         permissions: ['inbound:add'],
         component: () => import('@/views/wms/warehouse/inOutbound/inbound/add.vue'),
         name: '添加入库单',
-        meta: { title: '添加入库单', activeMenu: 'inbound/add' }
+        meta: {title: '添加入库单', activeMenu: '/inOutbound/inbound'}
       },
       {
         path: 'inbound/edit/:inid(\\d+)',
         permissions: ['inbound:editor'],
         component: () => import('@/views/wms/warehouse/inOutbound/inbound/editor.vue'),
         name: '编辑入库单',
-        meta: { title: '编辑入库单', activeMenu: 'inbound/editor' }
+        meta: {title: '编辑入库单', activeMenu: '/inOutbound/inbound'}
       },
       {
         path: 'inbound/details/:inid(\\d+)',
         permissions: ['inbound:details'],
         component: () => import('@/views/wms/warehouse/inOutbound/inbound/details.vue'),
         name: '入库单明细',
-        meta: { title: '入库单明细', activeMenu: 'inbound/details' }
+        meta: {title: '入库单明细', activeMenu: '/inOutbound/inbound'}
+      },
+      {
+        name: '添加出库单',
+        path: 'outbound/add',
+        permissions: ['outbound:add'],
+        component: () => import('@/views/wms/warehouse/inOutbound/outbound/OutboundAdd.vue'),
+        meta: {title: '添加出库单', activeMenu: '/inOutbound/outbound'}
+      },
+      {
+        name: '编辑出库单',
+        path: 'outbound/edit/:outId(\\d+)',
+        permissions: ['outbound:edit'],
+        component: () => import('@/views/wms/warehouse/inOutbound/outbound/OutboundEditor.vue'),
+        meta: {title: '添加出库单', activeMenu: '/inOutbound/outbound'}
       }
-    ]
+    ],
   },
   {
     path: '/contactUnits/consumer/add',
@@ -412,7 +426,7 @@ export const dynamicRoutes = [
         path: '',
         component: () => import('@/views/wms/contactUnits/consumer/add'),
         name: '新增客户',
-        meta: { title: '新增客户', activeMenu: '/contactUnits/consumer/add' }
+        meta: {title: '新增客户', activeMenu: '/contactUnits/consumer/add'}
       }
     ]
   },
@@ -426,7 +440,7 @@ export const dynamicRoutes = [
         path: '',
         component: () => import('@/views/wms/contactUnits/consumer/index'),
         name: '客户',
-        meta: { title: '客户', activeMenu: '/contactUnits/consumer/index' }
+        meta: {title: '客户', activeMenu: '/contactUnits/consumer/index'}
       }
     ]
   },
@@ -446,6 +460,6 @@ Router.prototype.replace = function push(location) {
 
 export default new Router({
   mode: 'history', // 去掉url中的#
-  scrollBehavior: () => ({ y: 0 }),
+  scrollBehavior: () => ({y: 0}),
   routes: constantRoutes
 })

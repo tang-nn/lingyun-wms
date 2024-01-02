@@ -4,8 +4,14 @@ import java.util.List;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
+import com.lingyun.wh.warehouse.domain.Outbound;
+import com.lingyun.wh.warehouse.vo.ReviewDto;
 import com.ruoyi.common.core.utils.StringUtils;
+import io.jsonwebtoken.lang.Assert;
+import io.swagger.models.auth.In;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
@@ -65,6 +71,19 @@ public class InboundController extends BaseController {
     }
 
     /**
+     * 获取入库管理详细信息
+     *
+     * @param inid 入库 ID
+     * @return
+     */
+    @RequiresPermissions("inbound:inbound:query")
+    @GetMapping(value = "/details")
+    public AjaxResult getDetails(@RequestParam(required = false) String inid, @RequestParam(required = false) String odid) {
+        // TODO 查询入库明细
+        return success(inboundService.selectInboundByInid(inid));
+    }
+
+    /**
      * 新增入库管理
      */
     @RequiresPermissions("inbound:inbound:add")
@@ -82,7 +101,22 @@ public class InboundController extends BaseController {
     @Log(title = "入库管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Inbound inbound) {
+        Assert.isTrue(inbound.getInid() != null && StringUtils.isNotEmpty(inbound.getInid()), "入库单号不能为空");
         return toAjax(inboundService.updateInbound(inbound));
+    }
+
+    /**
+     * 入库审核
+     */
+    @RequiresPermissions("inbound:inbound:review")
+    @Log(title = "入库审核", businessType = BusinessType.UPDATE)
+    @PutMapping("/review")
+    public AjaxResult review(@Validated @RequestBody ReviewDto reviewDto) {
+        Inbound inbound = new Inbound();
+        inbound.setInid(reviewDto.getOrderId());
+        inbound.setStatus(reviewDto.getReviewStatus());
+        inbound.setComments(reviewDto.getComments());
+        return toAjax(inboundService.reviewInbound(inbound));
     }
 
     /**

@@ -44,6 +44,14 @@ public interface IInboundService {
     public int updateInbound(Inbound inbound);
 
     /**
+     * 入库审核
+     *
+     * @param inbound 入库对象
+     * @return 结果
+     */
+    public boolean reviewInbound(Inbound inbound);
+
+    /**
      * 批量删除入库管理
      *
      * @param inids 需要删除的入库管理主键集合

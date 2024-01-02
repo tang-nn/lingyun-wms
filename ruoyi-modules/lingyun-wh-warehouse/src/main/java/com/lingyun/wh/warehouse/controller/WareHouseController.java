@@ -21,14 +21,13 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
 
 /**
  * 仓库Controller
- * 
+ *
  * @author lijin
  * @date 2023-12-07
  */
 @RestController
 @RequestMapping("/warehouse")
-public class WareHouseController extends BaseController
-{
+public class WareHouseController extends BaseController {
     @Autowired
     private IWareHouseService wareHouseService;
     @Autowired
@@ -40,8 +39,7 @@ public class WareHouseController extends BaseController
      */
     @RequiresPermissions("wh:house:manager")
     @GetMapping("/list")
-    public TableDataInfo list(@RequestParam Map<String,Object> map)
-    {
+    public TableDataInfo list(@RequestParam Map<String, Object> map) {
         startPage();
         List<Map<String, Object>> list = wareHouseService.selectWareHouseList(map);
         return getDataTable(list);
@@ -52,8 +50,7 @@ public class WareHouseController extends BaseController
      */
     @RequiresPermissions("system:warehouse:lists")
     @GetMapping("/lists")
-    public List<WareHouse> lists()
-    {
+    public List<WareHouse> lists() {
         return wareHouseService.lists();
     }
 
@@ -61,11 +58,10 @@ public class WareHouseController extends BaseController
      * 查询仓库下的仓位列表
      */
     @GetMapping("/storagelist")
-    public TableDataInfo storageList(@RequestParam Map<String,Object> map)
-    {
-        System.out.println("map======"+map);
+    public TableDataInfo storageList(@RequestParam Map<String, Object> map) {
+        System.out.println("map======" + map);
         List<StorageLocation> storageLocations = wareHouseService.selectStorageListfindByWid(map);
-        System.out.println("storageLocations====="+storageLocations);
+        System.out.println("storageLocations=====" + storageLocations);
         startPage();
         return getDataTable(storageLocations);
     }
@@ -76,8 +72,7 @@ public class WareHouseController extends BaseController
     @RequiresPermissions("system:warehouse:export")
     @Log(title = "仓库", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, WareHouse wareHouse)
-    {
+    public void export(HttpServletResponse response, WareHouse wareHouse) {
         List<WareHouse> list = new ArrayList<>();
         ExcelUtil<WareHouse> util = new ExcelUtil<WareHouse>(WareHouse.class);
         util.exportExcel(response, list, "仓库数据");
@@ -88,10 +83,7 @@ public class WareHouseController extends BaseController
      */
     @RequiresPermissions("wh:house:details")
     @GetMapping(value = "/{wId}")
-    public AjaxResult getInfo(@PathVariable("wId") String wId)
-    {
-
-        System.out.println("ooooouuuu"+wareHouseService.selectWareHouseByWId(wId));
+    public AjaxResult getInfo(@PathVariable("wId") String wId) {
         return success(wareHouseService.selectWareHouseByWId(wId));
     }
 
@@ -113,9 +105,7 @@ public class WareHouseController extends BaseController
     @RequiresPermissions("system:warehouse:add")
     @Log(title = "仓库", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody WareHouse wareHouse)
-    {
-        System.out.println("wareHouse`````````"+wareHouse);
+    public AjaxResult add(@RequestBody WareHouse wareHouse) {
         return toAjax(wareHouseService.insertWareHouse(wareHouse));
     }
 
@@ -125,8 +115,7 @@ public class WareHouseController extends BaseController
     @RequiresPermissions("system:warehouse:edit")
     @Log(title = "仓库", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody WareHouse wareHouse)
-    {
+    public AjaxResult edit(@RequestBody WareHouse wareHouse) {
         return toAjax(wareHouseService.updateWareHouse(wareHouse));
     }
 
@@ -146,9 +135,8 @@ public class WareHouseController extends BaseController
      */
     @RequiresPermissions("wh:house:delete")
     @Log(title = "仓库", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{wIds}")
-    public AjaxResult remove(@PathVariable String[] wIds)
-    {
+    @DeleteMapping("/{wIds}")
+    public AjaxResult remove(@PathVariable String[] wIds) {
         toAjax(wareHouseService.deleteStorageLocationByWIds(wIds));
         return toAjax(wareHouseService.deleteWareHouseByWIds(wIds));
     }
@@ -160,9 +148,8 @@ public class WareHouseController extends BaseController
 
     @Log(title = "仓库", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
-    public AjaxResult editStatus(@RequestBody Map<String,Object> map)
-    {
-        System.out.println("map==="+map);
+    public AjaxResult editStatus(@RequestBody Map<String, Object> map) {
+        System.out.println("map===" + map);
         return toAjax(wareHouseService.changeStatus(map));
     }
 

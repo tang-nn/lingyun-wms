@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Validator;
 import java.sql.SQLException;
@@ -39,10 +40,9 @@ import java.util.*;
 public class GoodsServiceImpl implements IGoodsService {
     private static final Logger log = LoggerFactory.getLogger(GoodsServiceImpl.class);
     @Autowired
-    private RemoteEncodeRuleService remoteEncodeRuleService;
-
-    @Autowired
     protected Validator validator;
+    @Autowired
+    private RemoteEncodeRuleService remoteEncodeRuleService;
     @Autowired
     private GoodsMapper goodsMapper;
     @Autowired
@@ -73,8 +73,8 @@ public class GoodsServiceImpl implements IGoodsService {
      * @return
      */
     @Override
-    public ArrayList<Goods> queryGoodsByIds(String[] ids) {
-        return goodsMapper.selectGoodsByIds(ids);
+    public ArrayList<Goods> queryGoodsByIds(String[] ids, Map<String, Object> params) {
+        return goodsMapper.selectGoodsByIds(ids, params);
     }
 
     /**

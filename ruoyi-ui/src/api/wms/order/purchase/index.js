@@ -11,19 +11,21 @@ export function listPurchase(params) {
   })
 }
 
-// 进货单列表 - 单个查询
-export function getSinglePurchase(id) {
-  return request({
-    url: '/wms/order/purchase/list/single?id=' + id,
-    method: 'get'
-  })
-}
-
 // 进货单详细信息
 export function getPurchaseInf(poId) {
   return request({
     url: '/wms/order/purchase/' + poId,
     method: 'get'
+  })
+}
+
+// 根据进货 ID 进货明细
+export function getPurchaseDetails(poId, params) {
+  console.log("getPurchaseDetails params: ", params)
+  return request({
+    url: '/wms/order/purchase/details/' + poId,
+    method: 'get',
+    params
   })
 }
 

@@ -1,15 +1,15 @@
 <template>
-  <From :is-editor="false" @submitForm="submitForm"></From>
+  <InboundForm :is-editor="false" @submitForm="submitForm"></InboundForm>
 </template>
 
 <script>
-import From from './From.vue'
+import InboundForm from './InboundForm.vue'
 import {addInbound} from "@/api/wms/inboundOutbound/inboundMgt";
 
 export default {
   name: "InboundEditor",
   components: {
-    From,
+    InboundForm,
   },
   data() {
     return {}
@@ -21,8 +21,8 @@ export default {
       console.log("submitForm data: ", data)
       addInbound(data).then(({code, message}) => {
         if (code == 200) {
-          this.$message.success("添加成功")
-          this.$tab.closeOpenPage({path: '/inboundOutbound/inbound'});
+          this.$message.success("添加成功");
+          this.$tab.closeOpenPage({path: '/inOutbound/inbound'});
         } else {
           this.$message.error("添加失败")
         }

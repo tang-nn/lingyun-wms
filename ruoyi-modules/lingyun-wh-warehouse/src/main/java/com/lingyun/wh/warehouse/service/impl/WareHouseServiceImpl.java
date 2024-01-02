@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.validation.Validator;
 
@@ -36,6 +37,8 @@ import javax.validation.Validator;
 @Service
 public class WareHouseServiceImpl implements IWareHouseService {
     private static final Logger log = LoggerFactory.getLogger(WareHouseServiceImpl.class);
+    @Autowired
+    protected Validator validator;
     @Autowired
     private WareHouseMapper wareHouseMapper;
     @Autowired
@@ -248,6 +251,19 @@ public class WareHouseServiceImpl implements IWareHouseService {
     public int deleteWareHouseByWId(String wId) {
         wareHouseMapper.deleteStorageLocationByWId(wId);
         return wareHouseMapper.deleteWareHouseByWId(wId);
+    }
+
+    /**
+     * 查看某个仓库是否锁库
+     *
+     * @param wId 仓库 id
+     * @return true：已锁库，false：未锁库
+     */
+    @Override
+    public boolean warehouseLocked(String wId) {
+        WareHouse wareHouse = wareHouseMapper.queryWarehouseById(wId);
+        Assert.notNull(wareHouse, "仓库 id: [" + wId + "] 不存在");
+        return wareHouse.getStatus() == 2;
     }
 
     @Override

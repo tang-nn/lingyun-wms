@@ -1,4 +1,4 @@
-package com.lingyun.wh.order.domain;
+package com.lingyun.wh.order.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.lingyun.wh.goods.api.domain.Goods;

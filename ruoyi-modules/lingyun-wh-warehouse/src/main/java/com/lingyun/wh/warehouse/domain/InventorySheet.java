@@ -141,11 +141,11 @@ public class InventorySheet extends BaseEntity
         this.isId = isId;
     }
 
-    public String getIsId() 
+    public String getIsId()
     {
         return isId;
     }
-    public void setIsCode(String isCode) 
+    public void setIsCode(String isCode)
     {
         this.isCode = isCode;
     }
@@ -208,6 +208,10 @@ public class InventorySheet extends BaseEntity
     {
         return isEndTime;
     }
+    public void setOutStatus(Integer outStatus) 
+    {
+        this.outStatus = outStatus;
+    }
 
     public String getOutStatus() {
         return outStatus;
@@ -234,7 +238,8 @@ public class InventorySheet extends BaseEntity
     {
         return isManager;
     }
-    public void setIsDelete(Boolean isDelete) 
+
+    public void setIsManager(String isManager)
     {
         this.isDelete = isDelete;
     }
@@ -243,6 +248,12 @@ public class InventorySheet extends BaseEntity
     {
         return isDelete;
     }
+
+    public void setIsDelete(Boolean isDelete)
+    {
+        this.isDelete = isDelete;
+    }
+
     public String getWhName() {
         return whName;
     }

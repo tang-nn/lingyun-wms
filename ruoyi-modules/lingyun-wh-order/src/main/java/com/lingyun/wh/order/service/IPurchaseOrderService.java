@@ -1,7 +1,7 @@
 package com.lingyun.wh.order.service;
 
-import com.alibaba.fastjson2.JSONObject;
-import com.lingyun.wh.order.domain.PurchaseOrder;
+import com.lingyun.wh.order.api.domain.PurchaseDetails;
+import com.lingyun.wh.order.api.domain.PurchaseOrder;
 import com.lingyun.wh.order.pojo.dto.PurchaseReviewDto;
 import com.lingyun.wh.order.pojo.vo.PurchaseOrderVo;
 
@@ -21,7 +21,24 @@ public interface IPurchaseOrderService {
      * @return 进货订单
      */
     public PurchaseOrder selectPurchaseOrderByPoId(String poId);
+    /**
+     * 根据进货单 ID 查询进货明细
+     *
+     * @param poid 进货单 ID
+     * @param params 其它查询差数
+     * @return 进货订单
+     */
+    public List<PurchaseDetails> selectPurchaseDetailsById(String poid, Map<String, Object> params);
 
+    /**
+     * 获取进货订单详细信息
+     * 在进货审核后，入库检查数据
+     *
+     * @param poId 进货 ID
+     * @param dids 进货明细 ID
+     * @return
+     */
+    PurchaseOrder queryPurchaseInfoByIds(String poId, String[] dids);
     /**
      * 查询进货订单列表
      *
@@ -46,6 +63,13 @@ public interface IPurchaseOrderService {
      */
     public int updatePurchaseOrder(PurchaseOrder purchaseOrder);
 
+    /**
+     * 更新订单状态
+     *
+     * @param purchaseOrder
+     * @return
+     */
+    boolean updateOrderStatus(PurchaseOrder purchaseOrder);
     /**
      * 批量删除进货订单
      *

@@ -35,3 +35,12 @@ export function putInbound(data) {
     data
   })
 }
+
+// 入库审核记录
+export function inboundReview(data) {
+  return request({
+    url: '/wms/wh/inbound/review',
+    method: 'PUT',
+    data
+  })
+}

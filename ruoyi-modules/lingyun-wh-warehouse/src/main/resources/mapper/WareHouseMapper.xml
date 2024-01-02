@@ -255,8 +255,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </insert>
 
+<select id="queryWarehouseById" resultType="Warehouse">
+    select wh.w_id       wId,
+           wh.w_code     wCode,
+           wh.w_name     wName,
+           wh.`status`,
+           wh.is_default isDefault,
+           wh.is_lock    isLock
+    from wh_warehouse wh
+    where wh.w_id = #{wid}
+</select>
 
-<!--查询仓库下的库位-->
+    <!--查询仓库下的库位-->
     <select id="selectStorageListfindByWid" resultType="map">
         select wsl.sl_id,wsl.w_id, wsl.sl_code,wsl.sl_name,
                wsl.location_capacity,wsl.position_manager,su3.user_name manager,
@@ -285,10 +295,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap id="WareHouseStorageLocationResult" type="WareHouse" extends="WareHouseResult">
         <collection property="storageLocationList" notNullColumn="sub_sl_id" javaType="java.util.List" resultMap="StorageLocationResult" />
     </resultMap>
-    
-    
-    
-    
+
+
+
+
 <!--     1.库存数量占比-->
     <select id="StockNumber" resultType="map">
             SELECT ww.w_name, tatalQuantity, allQuantity, tatalQuantity/allQuantity AS ratio
