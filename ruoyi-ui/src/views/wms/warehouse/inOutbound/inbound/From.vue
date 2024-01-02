@@ -49,9 +49,11 @@
               type="date">
             </el-date-picker>
           </el-form-item>
-          <el-form-item v-if="!currFormStatus.hiddenFields.has('relatedOrder')" ref="selectedOrder"
-                        :label="`${currFormStatus.label}订单号`" :show-message="true" label-width="120px"
-                        prop="selectedOrder.orderId">
+          <el-form-item ref="relatedOrder"
+                        :label="`${currFormHandler.label}订单号`"
+                        :prop="currFormHandler.hiddenFields.has('relatedOrder')?'selectedOrder.orderId':''"
+                        :show-message="true"
+                        label-width="120px">
             <div @click="handlerSelectOrder">
               <el-input v-model="inboundInf.selectedOrder.orderNo" :disabled="!inboundInf.associated || isEditor"
                         placeholder="请选择订单"
@@ -61,7 +63,7 @@
               ></el-input>
             </div>
           </el-form-item>
-          <el-form-item v-if="!currFormStatus.hiddenFields.has('associated')" class="no-margin-left"
+          <el-form-item v-if="!currFormHandler.hiddenFields.has('associated')" class="no-margin-left"
                         label="是否关联订单:" label-width="120px"
                         prop="associated"
                         style="margin-left: 0 !important;display:flex;align-items: center">
@@ -76,9 +78,11 @@
               @change="handlerAssociatedChange">
             </el-switch>
           </el-form-item>
-          <el-form-item v-if="!currFormStatus.hiddenFields.has('supplier')" ref="supplier" :required="true"
-                        label="供应商"
-                        label-width="120px" prop="sid">
+          <el-form-item v-if="!currFormHandler.hiddenFields.has('supplier')" ref="supplier"
+                        :prop="currFormHandler.hiddenFields.has('relatedOrder')?'':'sid'"
+                        label="供应商" label-width="120px"
+                        prop="sid"
+          >
             <el-select v-model="inboundInf.sid"
                        :disabled="inboundInf.associated"
                        placeholder="请选择供应商" @change="handlerSupplierChange">
@@ -90,7 +94,8 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item v-if="!currFormStatus.hiddenFields.has('consumer')" ref="consumer" :required="true" label="客户"
+          <el-form-item v-if="!currFormHandler.hiddenFields.has('consumer')" ref="consumer" :required="true"
+                        label="客户"
                         label-width="120px" prop="cid">
             <el-select v-model="inboundInf.cid"
                        :disabled="inboundInf.associated"
@@ -103,10 +108,10 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item v-if="!currFormStatus.hiddenFields.has('contact')" label="联系人" label-width="120px">
+          <el-form-item v-if="!currFormHandler.hiddenFields.has('contact')" label="联系人" label-width="120px">
             <el-input disabled v-bind:value="contact.contactPerson"/>
           </el-form-item>
-          <el-form-item v-if="!currFormStatus.hiddenFields.has('contact')" label="联系方式" label-width="120px">
+          <el-form-item v-if="!currFormHandler.hiddenFields.has('contact')" label="联系方式" label-width="120px">
             <el-input disabled v-bind:value="contact.contactNumber"/>
           </el-form-item>
           <el-form-item label="经办人" label-width="120px" prop="manager">
@@ -267,7 +272,7 @@
           </el-col>
         </el-row>
         <el-divider></el-divider>
-        <div style="margin: 0 0 20px 10px;">
+        <div v-if="currFormHandler.canAr" style="margin: 0 0 20px 10px;">
           <el-button type="primary" @click="handlerAddInboundDetails">添加</el-button>
           <el-button @click="removeItems(odIds)">移除</el-button>
         </div>
@@ -286,16 +291,17 @@
               <dict-tag :options="dict.type.g_unit_goods" :value="scope.row.unit"/>
             </template>
           </el-table-column>
-          <el-table-column :formatter="(row)=>(row.stockQuantity || '暂无货')" align="center" label="当前库存"
+          <el-table-column :formatter="cumulativeStocks" align="center" label="当前库存"
                            prop="item_quantity" width="100"/>
           <el-table-column :formatter="handlerPurchaseQuantity" align="center" label="进货数量" prop="purchaseQuantity"
                            width="120"/>
           <el-table-column align="center" label="已入库数量" prop="receivedQuantity" width="120"/>
           <el-table-column :formatter="handlerReceivedQuantity" align="center"
                            label="未入库数量" prop="unreceivedQuantity" width="120"/>
-          <el-table-column align="center" label="入库库位" prop="slid" width="140">
+          <el-table-column align="center" class-name="editable-column" label="入库库位" prop="slid" width="140">
             <template slot-scope="scope">
-              <el-form-item :prop="`inboundDetails.${scope.$index}.slid`" :rules="rules.slid" label-width="86px">
+              <el-form-item :ref="`inboundDetails.${scope.$index}.slid`" :prop="`inboundDetails.${scope.$index}.slid`"
+                            :rules="rules.slid" label-width="86px">
                 <el-select
                   v-model="scope.row.slid"
                   placeholder="请选择库位"
@@ -321,7 +327,7 @@
           <el-table-column align="center" class-name="editable-column" label="本次入库数量" prop="quantityInbound"
                            width="140">
             <template slot-scope="scope">
-              <el-form-item :inline-message="true" :prop="`inboundDetails.${scope.$index}.quantityInbound`"
+              <el-form-item :prop="`inboundDetails.${scope.$index}.quantityInbound`"
                             :rules="getQuantityInboundRules(scope.row)"
               >
                 <el-input v-model="scope.row.quantityInbound" placeholder="本次入库数量"></el-input>
@@ -329,7 +335,7 @@
             </template>
           </el-table-column>
           <el-table-column align="center" label="进货单价" prop="puPrice"/>
-          <el-table-column align="center" label="批次号" prop="batchNumber" width="150">
+          <el-table-column align="center" class-name="editable-column" label="批次号" prop="batchNumber" width="150">
             <template slot-scope="scope">
               <el-form-item :prop="`inboundDetails.${scope.$index}.batchNumber`"
                             :rules="rules.batchNumber"
@@ -341,7 +347,7 @@
           <el-table-column :formatter="row=>row.puPrice * (row.quantityInbound || 0)" align="center"
                            label="入库金额"
                            width="120"/>
-          <el-table-column align="center" label="生产日期" prop="productionDate"
+          <el-table-column align="center" class-name="editable-column" label="生产日期" prop="productionDate"
                            width="200">
             <template slot-scope="scope">
               <el-form-item :prop="`inboundDetails.${scope.$index}.productionDate`" :rules="rules.productionDate"
@@ -366,7 +372,7 @@
             </template>
           </el-table-column>
           <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="90">
-            <template slot-scope="scope">
+            <template v-if="currFormHandler.canAr" slot-scope="scope">
               <el-button
                 icon="el-icon-delete"
                 size="mini"
@@ -386,7 +392,7 @@
     </el-form>
     <!-- 入库明细选择明细 -->
     <el-dialog :visible.sync="dialogDetailsVisible" title="添加入库货品" width="750px">
-      <div v-if="inboundInf.inType == 'purchasing_warehousing'">
+      <div v-if="inboundInf.inType === inboundType.PURCHASING_WAREHOUSING">
         <el-form ref="inboundDetailsQForm" :inline="true" :model="inboundDetailsQParams" size="small">
           <el-form-item label-width="86px" prop="unit">
             <el-select
@@ -433,7 +439,7 @@
             </template>
           </el-table-column>
           <el-table-column align="center" label="进货单价（元）" prop="puPrice" width="100"/>
-          <el-table-column :formatter="(row)=>(row.purchaseQuantity || 0)" align="center" label="进货数量"
+          <el-table-column :formatter="(row)=>(row.purchaseQuantity)" align="center" label="进货数量"
                            prop="purchaseQuantity" width="100"/>
           <el-table-column :formatter="(row)=>(row.purchaseQuantity || 0) * row.puPrice" align="center"
                            label="进货金额"
@@ -443,10 +449,17 @@
                            label="未入库" prop="unreceivedQuantity" width="100"/>
         </el-table>
       </div>
-      <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="goInboundDetailsDefine">确定</el-button>
-      <el-button @click="closeGoodsSelect">取消</el-button>
-  </span>
+      <pagination
+        v-show="orderDetailsTotal>0"
+        :limit.sync="inboundDetailsQParams.pageSize"
+        :page.sync="inboundDetailsQParams.pageNum"
+        :total="orderDetailsTotal"
+        @pagination="goSearchDetails"
+      />
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="goInboundDetailsDefine">确定</el-button>
+        <el-button @click="closeGoodsSelect">取消</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -456,14 +469,15 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Treeselect from "@riophae/vue-treeselect";
 import {deptTreeSelect, listUser} from "@/api/system/user";
 import {getToken} from "@/utils/auth";
-import {getPurchaseInf, getSinglePurchase, listPurchase} from "@/api/wms/order/purchase";
+import {getPurchaseDetails, getPurchaseInf, listPurchase} from "@/api/wms/order/purchase";
 import {deepClone} from "@/utils";
-import SelectorUser from "@/components/wms/SelectorUser.vue";
+import SelectorUser from "@/components/wms/user/SelectorUser.vue";
 import {listsWarehouse} from "@/api/wms/standingbook/Inventoryquery";
 import {listStorageByWid} from "@/api/wms/warehouse/warehouse";
 import qs from "qs";
-import {listSupplier} from "@/api/wms/contactUnits/supplier";
-import {InboundType, formStatus} from "@/constant/inboundType.js";
+import {getSupplier, listSupplier} from "@/api/wms/contactUnits/supplier";
+import {formStatus, InboundType} from "@/constant/inboundType.js";
+import {listGoodsStocks} from "@/api/wms/good/goodsinfo";
 
 export default {
   name: "InboundFrom",
@@ -473,7 +487,10 @@ export default {
     SelectorUser
   },
   data() {
+    let inboundType = InboundType;
     return {
+      // 入库库存类型，返回导入的入库类型
+      inboundType,
       // 前入库表单不显示字段
       // 选择入库明细的唯一字段名称, 默认: 货品ID (gid)
       fieldName: 'goodsId',
@@ -499,7 +516,14 @@ export default {
       orderDetailsF: [],
       // 选择的当前订单明细 id
       odIds: [],
-      inboundDetailsQParams: {},
+      orderDetailsTotal: 0,
+      inboundDetailsQParams: {
+        pageNum: 1,
+        pageSize: 5,
+        codeOrName: undefined,
+        unit: undefined
+
+      },
       orderQueryParams: {
         pageNum: 1,
         pageSize: 5,
@@ -508,11 +532,6 @@ export default {
         suppName: undefined,
         dateRange: [],
         status: ['partial_storage', 'not_in_stock']
-      },
-      queryGoodsParams: {
-        pageNum: 1,
-        pageSize: 5,
-        codeOrName: undefined
       },
       selectorUserVisible: false,
       deptTree: [],
@@ -531,6 +550,9 @@ export default {
         inType: [
           {required: true, message: '请选择入库类型', trigger: ["blur", 'change']},
         ],
+        sid: [
+          {required: true, message: '请选择入库类型', trigger: ["blur", 'change']},
+        ],
         manager: [
           {required: true, message: '请选择经办人', trigger: ["blur", 'change']},
         ],
@@ -539,7 +561,7 @@ export default {
         ],
         batchNumber: [
           {required: true, message: '请输入批次号', trigger: 'blur'},
-          {pattern: /^[1-9]\d*$/, message: '请输入正确的数量', trigger: 'input'},
+          // {pattern: /^[1-9]\d*$/, message: '请输入正确的数量', trigger: 'input'},
         ],
         "selectedOrder.orderId": [
           {required: true, message: '请选择订单', trigger: 'change'},
@@ -565,7 +587,7 @@ export default {
         remark: undefined,
         inboundDetails: [],
         selectedOrder: {},
-        inType: InboundType.PURCHASING_WAREHOUSING,
+        inType: inboundType.PURCHASING_WAREHOUSING,
         associated: true,
       },
       orderList: [],
@@ -578,7 +600,16 @@ export default {
         contactPerson: undefined,
         contactNumber: undefined
       },
-
+      // 返回当前入库的类型的不同逻辑
+      formHandlerMap: new Map([
+        [inboundType.PURCHASING_WAREHOUSING, {
+          getOrderList: this.getPurchaseOrderList,
+          getDetailsList: this.getPurchaseDetailsList,
+        }],
+        [inboundType.INVENTORY_PLUS, {}],
+        [inboundType.TRANSFER_RECEIPT, {}],
+        [inboundType.RECEIPT_RETURNS, {}],
+      ]),
     }
   },
   props: {
@@ -611,17 +642,32 @@ export default {
         Authorization: `Bearer ${getToken()}`
       }
     },
-    // 入库库存类型
-    InboundType() {
-      return InboundType; // 返回导入的入库类型
-    },
-    currFormStatus() {
-      let a = formStatus.get(this.inboundInf.inType);
-      console.log("a: ", a)
-      return a;
+    currFormHandler() {
+      let runnable = true;
+      if (!this.inboundInf.inType) {
+        runnable = false;
+        this.$message("请选择入库类型");
+        console.error("未找到当前入库类型, inType: ", this.inboundInf.inType);
+        return;
+      }
+      this.inboundInf.associated = true;
+      let currHandler = this.formHandlerMap.get(this.inboundInf.inType);
+      let fs = {runnable, ...formStatus.get(this.inboundInf.inType), ...currHandler};
+      console.log("当前表单: ", fs)
+      return fs;
     }
   },
   methods: {
+    // 执行表单当前逻辑
+    callFormHandler(funcName, ...params) {
+      if (!this.currFormHandler.runnable) return;
+      let func = this.currFormHandler[funcName];
+      if (func) {
+        return func(...params);
+      } else {
+        console.error("未找到当前入库类型对应的表单逻辑, funcName: ", funcName)
+      }
+    },
     // 判断两个入库明细对象是否 算是同一个
     isObjectEqual(obj1, obj2) {
       return obj1[this.fieldName] === obj2[this.fieldName];
@@ -670,6 +716,11 @@ export default {
     async getOrderList() {
       this.orderTableLoading = true;
       let params = JSON.parse(JSON.stringify(this.orderQueryParams));
+      await this.callFormHandler("getOrderList", params)
+      this.orderTableLoading = false;
+    },
+    // 获取进货订单列表
+    async getPurchaseOrderList(params) {
       if (this.orderQueryParams.dateRange && this.orderQueryParams.dateRange.length) {
         params.beginTime = this.orderQueryParams.dateRange[0];
         params.endTime = this.orderQueryParams.dateRange[1];
@@ -679,42 +730,55 @@ export default {
         rows: this.orderListData,
         total: this.total
       } = (await listPurchase(params)));
-      this.orderTableLoading = false;
     },
-    async getInboundDetailsList(orderId) {
-      // console.log("getInboundDetailsList orderId", orderId)
-      // 进货入库
-      if (this.inboundInf.inType == 'purchasing_warehousing') {
-        let p = (await getSinglePurchase(orderId));
-        if (p.code === 200) {
-          this.contact.contactPerson = p.data.contactPerson;
-          this.contact.contactNumber = p.data.contactNumber;
-          this.inboundInf.sid = p.data.sId;
-        }
-        let {code, data} = (await getPurchaseInf(orderId));
-        if (code === 200) {
-          data.purchaseDetailsList.forEach(pd => {
-            pd.odid = pd.pdId;
-          })
-          this.orderDetailsO = deepClone(data.purchaseDetailsList);
-          this.orderDetailsF = this.orderDetailsO;
-          if (!this.isEditor) {
-            this.inboundInf.inboundDetails = data.purchaseDetailsList;
-          }
-        }
+    // 获取入库明细
+    async goSearchDetails() {
+      this.detailsTableLoading = true;
+      await this.callFormHandler("getDetailsList");
+      this.detailsTableLoading = false;
+      // this.orderDetailsF = this.orderDetailsO?.filter(e => {
+      //   let params = this.inboundDetailsQParams;
+      //   return (e.goods.gname.includes(params.codeOrName) ||
+      //     e.unit === params.unit ||
+      //     e.goods.gcode.includes(params.codeOrName));
+      // })
+    },
+    // 进货明细查询
+    async getPurchaseDetailsList() {
+      let data;
+      if (this.inboundInf.associated) {
+        ({data} = (await getPurchaseDetails(this.inboundInf.selectedOrder.orderId, this.inboundDetailsQParams)));
+      } else {
+        let {total, rows} = (await listGoodsStocks(this.inboundDetailsQParams));
+        this.orderDetailsTotal = total;
+        data = rows;
+      }
+      data?.forEach(pd => pd.odid = pd.pdId);
+      this.orderDetailsO = data;
+      this.orderDetailsF = this.orderDetailsO;
+    },
+    async getSupplier(supplierId) {
+      let p = (await getSupplier(supplierId));
+      if (p.code === 200) {
+        this.contact.contactPerson = p.data.contactPerson;
+        this.contact.contactNumber = p.data.contactNumber;
+        this.inboundInf.sid = p.data.sId;
       }
     },
+    // 双击订单进行确定选择的订单
     handlerRowDblclick(row, column, event) {
       this.selectedOrderTemp = {
         orderId: row.poId,
-        orderNo: row.poCode
+        orderNo: row.poCode,
+        supplierId: row.sId
       }
       this.confirmSelectedOrder();
     },
     singleElectionTable(row, column, cell, event) {
       this.selectedOrderTemp = {
         orderId: row.poId,
-        orderNo: row.poCode
+        orderNo: row.poCode,
+        supplierId: row.sId
       }
     },
     // 确认进货订单
@@ -724,6 +788,7 @@ export default {
         return;
       }
       this.inboundInf.selectedOrder = deepClone(this.selectedOrderTemp)
+      this.inboundInf.sid = this.selectedOrderTemp.supplierId
       this.orderFormVisible = false;
     },
     closeSelectedOrder() {
@@ -747,9 +812,11 @@ export default {
         destroy();
       }
     },
-    resetFormField(formItem) {
-      if (this.$refs[formItem]) {
-        this.$refs[formItem].resetField()
+    resetFormField(formName) {
+      let formItem = this.$refs[formName];
+      if (formItem) {
+        formItem?.resetField();
+        formItem?.clearValidate();
       }
     },
     // 处理表格数量展示
@@ -768,7 +835,15 @@ export default {
     },
     // 处理已选的进货货品已入库数据
     handlerReceivedQuantity(row) {
-      return this.isEditor ? row.unreceivedQuantity : (row?.unreceivedQuantity ? row.unreceivedQuantity : (row.unreceivedQuantity = row.purchaseQuantity - row.receivedQuantity, row.unreceivedQuantity))
+      if (!row?.unreceivedQuantity) {
+        row.unreceivedQuantity = row.purchaseQuantity - row.receivedQuantity
+      }
+      return row.unreceivedQuantity;
+      // return this.isEditor ? (row?.unreceivedQuantity ? row.unreceivedQuantity : (row.unreceivedQuantity = row.purchaseQuantity - row.receivedQuantity, row.unreceivedQuantity)) : row.unreceivedQuantity
+    },
+    // 累加库存 StockList
+    cumulativeStocks(row) {
+      return (row.goods?.stockList?.reduce((accumulator, currentValue) => (accumulator + (currentValue?.itemQuantity || 0)), 0) || 0)
     },
     handlerPurchaseQuantity(row) {
       if (row.purchaseQuantity) {
@@ -814,7 +889,16 @@ export default {
     },
     handlerWhChange(row) {
       this.getSlList(row);
-      this.inboundInf?.inboundDetails?.forEach(e => e.slid = null)
+      // this.inboundInf?.inboundDetails?.forEach(e => e.slid = null);
+      for (let i = 0; i < this.inboundInf?.inboundDetails?.length || 0; i++) {
+        // this.inboundInf.inboundDetails[i].slid = null;
+        this.$set(this.inboundInf.inboundDetails[i], "slid", null)
+        this.resetFormField(`inboundDetails.${i}.slid`)
+        // let fi = this.$refs[`inboundDetails.${i}.slid`];
+        // fi.resetField();
+        // this.$nextTick(()=>fi.clearValidate());
+      }
+      // this.$refs['inboundInf'].clearValidate();
     },
     // 处理关联订单的 Switch 开关变化
     handlerAssociatedChange() {
@@ -823,26 +907,33 @@ export default {
     },
     resetSupplierInf() {
       this.resetFormField("supplier")
-      // this.$set(this.inboundInf, "sid", undefined)
       this.contact.contactNumber = undefined;
-      this.contact.contactPerson = undefined
+      this.contact.contactPerson = undefined;
+      // console.log("this.contact: ", this.contact)
     },
     resetOrderInf() {
-      this.resetFormField("selectedOrder")
+      this.resetFormField("selectedOrder.orderId")
       this.inboundInf.selectedOrder.orderNo = undefined;
       this.inboundInf.inboundDetails = [];
       // this.$.set(this.inboundInf, "inboundDetails", [])
     },
     // 处理供应商选择改变时
     handlerSupplierChange(sid) {
-      this.contact = this.supplierList.filter(e => e.sId === sid)?.[0];
+      let ct = this.supplierList.filter(e => e.sId === sid)?.[0];
+      if (ct)
+        this.contact = ct
     },
     // 处理客户选择改变时
     handlerConsumerChange() {
 
     },
     handlerChangeInType() {
-      // TODO handlerChangeInType
+      this.handlerAssociatedChange();
+      [...this.currFormHandler.hiddenFields, ...this.currFormHandler.disableFields].forEach(e => this.resetFormField(e))
+      // if(this.currFormHandler.hiddenFields.has("contact") || this.currFormHandler.disableFields.has("contact")){
+      //   this.resetFormField("contactNumber");
+      //   this.resetFormField("contactPerson");
+      // }
     },
     closeGoodsSelect() {
       this.dialogDetailsVisible = false;
@@ -858,7 +949,6 @@ export default {
       if (this.inboundInf?.inboundDetails && this.inboundInf.inboundDetails.length) {
         this.detailsTableLoading = true
         let temp = this.orderDetailsO.filter(e => this.selectedDetailTemp.includes(e[this.fieldName]));
-        console.log("temp: ", temp)
         temp.forEach(e => {
           let every = this.inboundInf.inboundDetails.every((ev) => ev[this.fieldName] !== e[this.fieldName]);
           if (every) {
@@ -888,16 +978,8 @@ export default {
       // console.log("inboundDetails: ", this.inboundInf.inboundDetails)
       // console.log("selectedDetailTemp：", this.selectedDetailTemp)
     },
-    goSearchDetails() {
-      this.orderDetailsF = this.orderDetailsO?.filter(e => {
-        let params = this.inboundDetailsQParams;
-        return (e.goods.gname.includes(params.codeOrName) ||
-          e.unit === params.unit ||
-          e.goods.gcode.includes(params.codeOrName));
-      })
-    },
     goResetSearchDetails() {
-      this.resetQuery('inboundDetailsQForm', () => this.orderDetailsF = this.orderDetailsO)
+      this.resetQuery('inboundDetailsQForm', () => this.goSearchDetails())
     },
     cancel() {
       this.$confirm('检测到未保存的内容，是否关闭？', '确认信息', {
@@ -946,7 +1028,7 @@ export default {
     async submitForm() {
       this.$refs.inboundInf.validate(async (valid) => {
         if (valid) {
-          if (!(this.inboundInf.inboundDetails || this.inboundInf.inboundDetails.length)) {
+          if (!(this.inboundInf.inboundDetails && this.inboundInf.inboundDetails.length)) {
             this.$message.error(`请添加入库货品！`);
             return false;
           }
@@ -972,7 +1054,7 @@ export default {
             inCode: this.inboundInf.inCode,
             inType: this.inboundInf.inType,
             wid: this.inboundInf.wid,
-            "sid": this.inboundInf.sid,
+            "sid": this.inboundInf.sid, // 供应商 ID
             manager: this.inboundInf.manager,
             storageDate: this.inboundInf.storageDate,
             orderId: this.inboundInf.selectedOrder.orderId,
@@ -993,7 +1075,7 @@ export default {
       this.inboundInf.inboundDetails = this.inboundInf.inboundDetails.filter(e => !ids.includes(e[this.fieldName]))
     },
     handlerAddInboundDetails() {
-      if (!this.inboundInf.selectedOrder?.orderId) {
+      if (!this.inboundInf.selectedOrder?.orderId && this.inboundInf.associated) {
         this.$message.warning("请先选择订单号！")
         this.$refs["inboundInf"].validateField("selectedOrder.orderId");
         this.$refs["inboundInf"].validateField("inType");
@@ -1001,32 +1083,72 @@ export default {
       }
       this.dialogDetailsVisible = true;
       this.selectedDetailTemp = [];
+      if (!this.inboundInf.associated)
+        this.goSearchDetails();
       this.inboundInf.inboundDetails.forEach(e => this.selectedDetailTemp.push(e[this.fieldName]));
+      // console.log("selectedDetailTemp: ", this.selectedDetailTemp)
+      // detailsTable toggleRowSelection
+      if (this.dialogDetailsVisible) {
+        this.$nextTick(() => {
+          let detailsTable = this.$refs.detailsTable;
+          detailsTable.clearSelection();
+          console.log("detailsTable.toggleRowSelection")
+          for (let id of this.inboundInf.inboundDetails) {
+            for (let e of this.orderDetailsO) {
+              if (e[this.fieldName] === id[this.fieldName]) {
+                // console.log("selected：", e)
+                detailsTable.toggleRowSelection(e, true);
+                break;
+              }
+            }
+          }
+          // this.inboundInf.inboundDetails.forEach(id => {
+          //   this.orderDetailsO.forEach(e => {
+          //     if (e[this.fieldName] === id[this.fieldName]) {
+          //       console.log("selected：", e)
+          //       this.$refs.detailsTable.toggleRowSelection(e, true);
+          //     }
+          //   })
+          // })
+        })
+      }
+      // console.log("handlerAddInboundDetails")
       // this.selectedDetailTemp = this.orderDetailsO.filter(e => this.orderDetailsF.forEach(a => a[this.fieldName] == e[this.fieldName]))
     }
   },
   watch: {
     'inboundInf.selectedOrder': {
-      handler: function (newValue, oldValue) {
+      async handler(newValue, oldValue) {
         if (newValue) {
-          this.getInboundDetailsList(newValue.orderId);
+          if (!this.currFormHandler.hiddenFields.has("contact")) {
+            getSupplier(this.inboundInf.sid).then(({code, data}) => {
+              if (code === 200) {
+                this.contact.contactPerson = data.contactPerson;
+                this.contact.contactNumber = data.contactNumber;
+              }
+            });
+          }
+          await this.goSearchDetails()
+          if (!this.isEditor && this.inboundInf.associated) {
+            this.inboundInf.inboundDetails = this.orderDetailsO;
+          }
         }
       },
-      deep: true // 开启深度监听
+      // deep: true // 开启深度监听
     },
-    "dialogDetailsVisible": {
-      handler: function (val) {
-        this.$nextTick(() => {
-          this.orderDetailsO.forEach(e => {
-            this.inboundInf.inboundDetails.forEach(id => {
-              if (e[this.fieldName] === id[this.fieldName]) {
-                this.$refs.detailsTable.toggleRowSelection(e, true)
-              }
-            })
-          })
-        })
-      }
-    }
+    // "dialogDetailsVisible": {
+    //   handler: function (val) {
+    //     this.$nextTick(() => {
+    //       this.orderDetailsO.forEach(e => {
+    //         this.inboundInf.inboundDetails.forEach(id => {
+    //           if (e[this.fieldName] === id[this.fieldName]) {
+    //             this.$refs.detailsTable.toggleRowSelection(e, true);
+    //           }
+    //         })
+    //       })
+    //     })
+    //   }
+    // }
   }
 }
 
@@ -1061,7 +1183,7 @@ export default {
 /*
 * 用于 table
 */
-.editable-column {
+.editable-column .cell {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -1069,6 +1191,7 @@ export default {
   right: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .app-main {

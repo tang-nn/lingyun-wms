@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author : Tang
@@ -22,6 +23,6 @@ import java.util.List;
 public interface RemoteGoodsService {
 
     @GetMapping(value = "/goods/inbound/")
-    R<ArrayList<Goods>> getInfoByIds(@RequestParam("ids") String[] ids);
+    R<ArrayList<Goods>> getInfoByIds(@RequestParam("ids") String[] ids, @RequestParam(required = false) Map<String, Object> params);
 
 }

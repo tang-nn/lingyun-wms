@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import com.lingyun.wh.warehouse.mapper.StockMapper;
 import com.lingyun.wh.goods.api.domain.Stock;
 import com.lingyun.wh.warehouse.service.IStockService;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 /**
  * 库存Service业务层处理
@@ -91,16 +93,20 @@ public class StockServiceImpl implements IStockService {
      */
     @Transactional(rollbackFor = SQLException.class)
     public boolean batchInsertStock(List<Stock> stocks) {
+        if (stocks == null || stocks.size() == 0) {
+            return true;
+        }
         return stockMapper.batchInsertStock(stocks) > 0;
     }
 
     /**
-     * 批量添加库存, -- 业务: 新增入库, 修改计划数量
+     * 批量添加库存, -- 业务:
      *
      * @param stocks 库存
      * @return 结果
      */
-    @Transactional(rollbackFor = SQLException.class)
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean batchAddStock(List<Stock> stocks) {
         if (stocks == null || stocks.size() == 0) {
             //
@@ -109,7 +115,7 @@ public class StockServiceImpl implements IStockService {
         List<Stock> stockToBeAdded = new ArrayList<>();
         List<Stock> stockToBeUpdated = new ArrayList<>();
         stocks.forEach(stock -> {
-            Stock goodsStock = selectStock(stock.getWid(), stock.getSlid(), stock.getGid());
+            Stock goodsStock = selectStock(stock.getSlid(), stock.getWid(), stock.getGid());
             goodsStock = goodsStock == null ? new Stock() : goodsStock;
             Date nowDate = DateUtils.getNowDate();
             String userId = String.valueOf(SecurityUtils.getUserId());
@@ -120,39 +126,56 @@ public class StockServiceImpl implements IStockService {
                 stock.setUpdateTime(nowDate);
                 stock.setUpdateBy(userId);
                 stock.setSid(goodsStock.getSid());
+                stock.setItemQuantity(stock.getItemQuantity().add(goodsStock.getItemQuantity()));
                 stock.setNumberPlans(stock.getNumberPlans().add(goodsStock.getNumberPlans()));
                 stockToBeUpdated.add(stock);
             } else {
                 stock.setCreateBy(userId);
                 stock.setCreateTime(nowDate);
+                stock.setUpdateTime(nowDate);
+                stock.setUpdateBy(userId);
                 BigDecimal iq = stock.getItemQuantity();
                 stock.setItemQuantity(iq != null ? iq : BigDecimal.ZERO);
+                stock.setNumberPlans(iq != null ? iq : BigDecimal.ZERO);
                 stockToBeAdded.add(stock);
             }
+            Assert.isTrue(stock.getItemQuantity().compareTo(BigDecimal.ZERO) >= 0, "库存数量不足，请检查出库明细");
         });
         System.out.println("stockToBeAdded: ");
         stockToBeAdded.forEach(System.out::println);
         System.out.println("stockToBeUpdated: ");
         stockToBeUpdated.forEach(System.out::println);
         batchInsertStock(stockToBeAdded);
-        batchUpdateStock(stockToBeUpdated);
+        try {
+            boolean f = batchUpdateStock(stockToBeUpdated);
+            if (!f) {
+                throw new RuntimeException("批量修改库存失败");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return true;
     }
 
     /**
-     * 批量修改库存
+     * 批量修改库存 - 开启新事务
      *
      * @param stocks 库存
      * @return 结果
      */
-    @Transactional(rollbackFor = SQLException.class)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean batchUpdateStock(List<Stock> stocks) {
         if (stocks == null || stocks.size() == 0) {
             return true;
         }
+        boolean success = true;
         for (Stock stock : stocks) {
-            stockMapper.updateStock(stock);
+            success = success && (stockMapper.updateStock(stock) > 0);
+            System.out.println("stock: " + stock + "; 执行结果：" + success);
+            if (!success) {
+                return false;
+            }
         }
         return true;
     }

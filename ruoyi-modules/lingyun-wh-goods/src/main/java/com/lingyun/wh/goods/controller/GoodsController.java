@@ -142,15 +142,16 @@ public class GoodsController extends BaseController {
      */
     @RequiresPermissions("lingyun-wh-goods:goods:query")
     @GetMapping(value = "/inbound")
-    public R<ArrayList<Goods>> getInfoByIds(@RequestParam String[] ids) {
+    public R<ArrayList<Goods>> getInfoByIds(@RequestParam String[] ids, @RequestParam(required = false) Map<String, Object> params) {
         System.out.println("ids: " + Arrays.toString(ids));
+        System.out.println("query params: "+ params);
         boolean flag = ids == null || ids.length == 0;
         if (flag) {
             R<ArrayList<Goods>> fail = R.fail(new ArrayList<>());
             fail.setMsg("goods id 不能为空");
             return fail;
         }
-        ArrayList<Goods> goodsList = goodsService.queryGoodsByIds(ids);
+        ArrayList<Goods> goodsList = goodsService.queryGoodsByIds(ids, params);
         goodsList.forEach(System.out::println);
         return R.ok(goodsList);
     }
@@ -163,9 +164,9 @@ public class GoodsController extends BaseController {
      */
     @RequiresPermissions("lingyun-wh-goods:goods:query")
     @GetMapping(value = "/inbound/all")
-    public TableDataInfo inboundQuery() {
+    public TableDataInfo inboundQuery(@RequestParam Map<String, Object> params) {
         startPage();
-        List<Goods> goodsList = goodsService.queryGoodsByIds(null);
+        List<Goods> goodsList = goodsService.queryGoodsByIds(null, params);
         return getDataTable(goodsList);
     }
 

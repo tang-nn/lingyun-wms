@@ -1,5 +1,6 @@
 package com.lingyun.wh.warehouse.domain;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -54,6 +55,15 @@ public class Transfer extends BaseEntity
     @Excel(name = "调入库")
     private String inName;
 
+    /**
+     *  本次调拨数量总和
+     */
+    private BigDecimal transferQuantity;
+
+    /**
+     * 本次调拨金额总和 sum（调拨数量 * 单价）
+     */
+    private BigDecimal transferAmount;
     /** 出库状态 */
     @Excel(name = "出库状态")
     private String outStatus;
@@ -95,18 +105,30 @@ public class Transfer extends BaseEntity
     /** 调拨明细信息 */
     private List<TransferDetails> transferDetailsList;
 
-    public void setTid(String tid) 
-    {
-        this.tid = tid;
+    public BigDecimal getTransferQuantity() {
+        return transferQuantity;
     }
 
-    public String getTid() 
+    public void setTransferQuantity(BigDecimal transferQuantity) {
+        this.transferQuantity = transferQuantity;
+    }
+
+    public BigDecimal getTransferAmount() {
+        return transferAmount;
+    }
+
+    public void setTransferAmount(BigDecimal transferAmount) {
+        this.transferAmount = transferAmount;
+    }
+
+    public String getTid()
     {
         return tid;
     }
-    public void setTdCode(String tdCode) 
+
+    public void setTid(String tid)
     {
-        this.tdCode = tdCode;
+        this.tid = tid;
     }
 
     public String getOutName() {
@@ -145,86 +167,100 @@ public class Transfer extends BaseEntity
     {
         return tdCode;
     }
-    public void setDocStatus(String docStatus) 
+
+    public void setTdCode(String tdCode)
+    {
+        this.tdCode = tdCode;
+    }
+
+    public String getDocStatus()
+    {
+        return docStatus;
+    }
+
+    public void setDocStatus(String docStatus)
     {
         this.docStatus = docStatus;
     }
 
-    public String getDocStatus() 
+    public Date getDate()
     {
-        return docStatus;
+        return date;
     }
-    public void setDate(Date date) 
+
+    public void setDate(Date date)
     {
         this.date = date;
     }
 
-    public Date getDate() 
+    public String getOutWId()
     {
-        return date;
+        return outWId;
     }
-    public void setOutWId(String outWId) 
+
+    public void setOutWId(String outWId)
     {
         this.outWId = outWId;
     }
 
-    public String getOutWId() 
-    {
-        return outWId;
-    }
-    public void setInWId(String inWId) 
-    {
-        this.inWId = inWId;
-    }
-
-    public String getInWId() 
+    public String getInWId()
     {
         return inWId;
     }
-    public void setOutStatus(String outStatus)
+
+    public void setInWId(String inWId)
     {
-        this.outStatus = outStatus;
+        this.inWId = inWId;
     }
 
     public String getOutStatus()
     {
         return outStatus;
     }
-    public void setType(String type) 
+
+    public void setOutStatus(String outStatus)
     {
-        this.type = type;
+        this.outStatus = outStatus;
     }
 
-    public String getType() 
+    public String getType()
     {
         return type;
     }
-    public void setInStatus(String inStatus)
+
+    public void setType(String type)
     {
-        this.inStatus = inStatus;
+        this.type = type;
     }
 
     public String getInStatus()
     {
         return inStatus;
     }
-    public void setManager(String manager) 
+
+    public void setInStatus(String inStatus)
+    {
+        this.inStatus = inStatus;
+    }
+
+    public String getManager()
+    {
+        return manager;
+    }
+
+    public void setManager(String manager)
     {
         this.manager = manager;
     }
 
-    public String getManager() 
-    {
-        return manager;
-    }
-    public void setDeleted(Boolean deleted) 
-    {
-        this.deleted = deleted;
-    }
-
-    public Boolean getDeleted() 
+    public Boolean getDeleted()
     {
         return deleted;
+    }
+
+    public void setDeleted(Boolean deleted)
+    {
+        this.deleted = deleted;
     }
 
     public List<TransferDetails> getTransferDetailsList()
@@ -280,6 +316,8 @@ public class Transfer extends BaseEntity
                 ", outName='" + outName + '\'' +
                 ", inWId='" + inWId + '\'' +
                 ", inName='" + inName + '\'' +
+                ", transferQuantity=" + transferQuantity +
+                ", transferAmount=" + transferAmount +
                 ", outStatus='" + outStatus + '\'' +
                 ", type='" + type + '\'' +
                 ", inStatus='" + inStatus + '\'' +

@@ -30,7 +30,13 @@ public class Stock extends BaseEntity {
      */
     private String slid;
     private String unit;
+    /**
+     * 库存数量，可用库存
+     */
     private BigDecimal itemQuantity;
+    /**
+     * 计划数量
+     */
     private BigDecimal numberPlans;
     /**
      * 货品 ID
@@ -71,10 +77,16 @@ public class Stock extends BaseEntity {
     }
 
     public BigDecimal getItemQuantity() {
+        if (itemQuantity == null) {
+            itemQuantity = BigDecimal.ZERO;
+        }
         return itemQuantity;
     }
 
     public void setItemQuantity(BigDecimal itemQuantity) {
+        if (itemQuantity == null) {
+            itemQuantity = BigDecimal.ZERO;
+        }
         this.itemQuantity = itemQuantity;
     }
 

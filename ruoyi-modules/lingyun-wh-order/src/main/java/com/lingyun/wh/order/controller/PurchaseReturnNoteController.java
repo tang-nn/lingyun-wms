@@ -1,6 +1,6 @@
 package com.lingyun.wh.order.controller;
 
-import com.lingyun.wh.order.domain.PurchaseReturnNote;
+import com.lingyun.wh.order.api.domain.PurchaseReturnNote;
 import com.lingyun.wh.order.service.IPurchaseReturnNoteService;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;

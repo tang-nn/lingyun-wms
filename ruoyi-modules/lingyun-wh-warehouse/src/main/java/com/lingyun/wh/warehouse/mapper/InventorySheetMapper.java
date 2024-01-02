@@ -9,19 +9,27 @@ import org.apache.ibatis.annotations.Param;
 
 /**
  * 盘点单Mapper接口
- * 
+ *
  * @author LiJin
  * @date 2023-12-13
  */
-public interface InventorySheetMapper 
-{
+public interface InventorySheetMapper {
 
     /**
      * 查询盘点单列表
      *
      * @return 盘点单集合
      */
-    public List<InventorySheet> selectInventorySheetList(Map<String,Object>map);
+    public List<InventorySheet> selectInventorySheetList(Map<String, Object> map);
+
+    /**
+     * 盘点明细查询 - 出入库查询
+     *
+     * @param params
+     * @return
+     */
+    List<InventoryDetails> selectInventoryDetails(@Param("isdId") String[] isdId, @Param("params") Map<String, Object> params);
+
     /**
      * 批量删除盘点单
      *
@@ -50,12 +58,10 @@ public interface InventorySheetMapper
 
     /**
      * 根据仓库查询下面的盘点货品
+     *
      * @return
      */
-    public  List<Map<String,Object>> selectInventorySheetByWid(Map<String,Object> map);
-
-
-
+    public List<Map<String, Object>> selectInventorySheetByWid(Map<String, Object> map);
 
 
     /**
@@ -82,23 +88,25 @@ public interface InventorySheetMapper
      * @param isId 盘点单主键
      * @return 盘点单
      */
-    public InventorySheet selectInventorySheetByIsId(String isId);
-
+    public InventorySheet selectInventorySheetByIsId(@Param("isId") String isId, @Param("isdIds") String[] isdIds);
 
 
     /**
      * 修改盘点单
-     * 
+     *
      * @param inventorySheet 盘点单
      * @return 结果
      */
     public int updateInventorySheet(InventorySheet inventorySheet);
 
 
+    /**
+     * 修改盘点单明细
+     *
+     * @param details 盘点单明细
+     * @return 结果
+     */
+    public int updateInventoryDetails(InventoryDetails details);
 
-    
-
-    
-
-
+    Map<String, Boolean> getInventoryInOutStatus(String isId);
 }

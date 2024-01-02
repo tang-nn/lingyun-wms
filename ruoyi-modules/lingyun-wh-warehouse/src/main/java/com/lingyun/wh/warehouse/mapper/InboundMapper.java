@@ -46,6 +46,14 @@ public interface InboundMapper {
     public int updateInbound(Inbound inbound);
 
     /**
+     * 修改入库状态
+     *
+     * @param inbound
+     * @return
+     */
+    int updateInboundStatus(Inbound inbound);
+
+    /**
      * 删除入库管理
      *
      * @param inid 入库管理主键

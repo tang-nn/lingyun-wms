@@ -10,7 +10,7 @@ export function listGood(query) {
 }
 
 //查询商品分类
-export function TypesList(){
+export function TypesList() {
   return request({
     url: '/wms/goods/type/select',
     method: 'get'
@@ -27,12 +27,11 @@ export function delGoodsInfo(g_ids) {
 }
 
 
-
 // 货品信息状态修改
 export function changeGoodsStatus(gId, status) {
   const data = {
-    "status":status,
-    "gId":gId
+    "status": status,
+    "gId": gId
   }
   console.info(data);
   return request({
@@ -52,18 +51,24 @@ export function SupplierList() {
 }
 
 
-
-
 //新增货品
 
 export function addGoods(data) {
   return request({
     url: '/wms/goods/agds',
     method: 'post',
-    data:data,
+    data: data,
   })
 }
 
+// 查询货品库存 - 用于入库选择货品查询
+export function listGoodsStocks(query) {
+  return request({
+    url: '/wms/goods/inbound/all',
+    method: 'get',
+    params: query
+  })
+}
 
 
 

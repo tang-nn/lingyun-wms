@@ -3,6 +3,8 @@ package com.lingyun.wh.warehouse.domain;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lingyun.wh.goods.api.domain.Goods;
 import com.lingyun.wh.goods.api.domain.Stock;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -12,40 +14,59 @@ import com.ruoyi.common.core.web.domain.BaseEntity;
 
 /**
  * 调拨明细对象 wh_transfer_details
- * 
+ *
  * @author LIJin
  * @date 2023-12-18
  */
-public class TransferDetails extends BaseEntity
-{
+public class TransferDetails extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
-    /** 调拨明细ID */
+    /**
+     * 调拨明细ID
+     */
     private String tdId;
 
-    /** 调拨ID */
+    /**
+     * 调拨ID
+     */
     @Excel(name = "调拨ID")
     private String tid;
 
 
-    /** 库存ID */
+    /**
+     * 库存ID
+     */
     @Excel(name = "库存ID")
     private String stockId;
 
-    /** 调拨数量 */
+    /**
+     * 调拨数量
+     */
     @Excel(name = "调拨数量")
     private BigDecimal quantity;
 
 
-    /** 0：存在；1：已删除，不存在 */
+    /**
+     * 0：存在；1：已删除，不存在
+     */
     @Excel(name = "0：存在；1：已删除，不存在")
     private Boolean deleted;
 
     /**
+     * 已入库数量
+     */
+    @JsonProperty(defaultValue = "0.00")
+    private BigDecimal receivedQuantity;
+
+    /**
+     * 已出库数量
+     */
+    @JsonProperty(defaultValue = "0.00")
+    private BigDecimal quantityShipped;
+    /**
      * 入库仓库货品库存数
      */
     private Integer totalItemQuantity;
-
     /*入库仓库货品的库位id*/
     private String inLocationId;
     /*库存*/
@@ -54,8 +75,24 @@ public class TransferDetails extends BaseEntity
     /*货品*/
     private Goods goods;
     private String g_id;
-    //库位
+    // 库位
     private StorageLocation location;
+
+    public BigDecimal getReceivedQuantity() {
+        return receivedQuantity;
+    }
+
+    public void setReceivedQuantity(BigDecimal receivedQuantity) {
+        this.receivedQuantity = receivedQuantity;
+    }
+
+    public BigDecimal getQuantityShipped() {
+        return quantityShipped;
+    }
+
+    public void setQuantityShipped(BigDecimal quantityShipped) {
+        this.quantityShipped = quantityShipped;
+    }
 
     public String getInLocationId() {
         return inLocationId;
@@ -161,6 +198,8 @@ public class TransferDetails extends BaseEntity
                 ", stockId='" + stockId + '\'' +
                 ", quantity=" + quantity +
                 ", deleted=" + deleted +
+                ", receivedQuantity=" + receivedQuantity +
+                ", quantityShipped=" + quantityShipped +
                 ", totalItemQuantity=" + totalItemQuantity +
                 ", inLocationId='" + inLocationId + '\'' +
                 ", stock=" + stock +

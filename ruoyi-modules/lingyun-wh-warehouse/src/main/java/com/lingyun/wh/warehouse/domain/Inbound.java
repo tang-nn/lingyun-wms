@@ -97,6 +97,11 @@ public class Inbound extends BaseEntity {
     private Date reviewerTime;
 
     /**
+     * 审核建议
+     */
+    private String comments;
+
+    /**
      * 入库日期
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -234,6 +239,14 @@ public class Inbound extends BaseEntity {
 
     public void setReviewerTime(Date reviewerTime) {
         this.reviewerTime = reviewerTime;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 
     public Date getStorageDate() {

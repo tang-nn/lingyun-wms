@@ -1,16 +1,16 @@
 <template>
-  <From v-if="rendering" :inboundData="inboundData" :is-editor="true" @submitForm="submitForm"></From>
+  <InboundForm v-if="rendering" :inboundData="inboundData" :is-editor="true" @submitForm="submitForm"></InboundForm>
 </template>
 
 <script>
-import From from './From.vue'
+import InboundForm from './InboundForm.vue'
 import {getPurchaseInf} from "@/api/wms/order/purchase";
 import {getInbound, putInbound} from "@/api/wms/inboundOutbound/inboundMgt";
 
 export default {
   name: "InboundEditor",
   components: {
-    From,
+    InboundForm,
   },
   data() {
     return {
@@ -29,12 +29,15 @@ export default {
           orderId: data.orderId
         };
         // 状态: 已完成，审核通过
-        let status = ['is_done', 'approved'];
+        let status = ['done', 'approved'];
         if (status.includes(this.inboundData.status)) {
           this.$message.error("当前状态无法编辑！")
           // 禁止编辑
           this.goToInboundListPage();
         }
+        let inboundDetailsList = this.inboundData.inboundDetails;
+        this.inboundData.inboundDetailsList = inboundDetailsList
+        delete this.inboundData.inboundDetails;
         this.rendering = true;
         // console.log("inboundData: ", this.inboundData)
       } else {
@@ -50,7 +53,7 @@ export default {
     goToInboundListPage() {
       // this.$message.error("获取入库单失败，请稍后再试")
       try {
-        this.$tab.closeOpenPage({path: '/inboundOutbound/inbound'});
+        this.$tab.closeOpenPage({path: '/inOutbound/inbound'});
       } catch (err) {
         console.log("关闭入库单失败：", err)
       }

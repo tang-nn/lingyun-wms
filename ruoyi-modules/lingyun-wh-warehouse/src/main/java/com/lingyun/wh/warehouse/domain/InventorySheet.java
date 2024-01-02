@@ -53,11 +53,11 @@ public class InventorySheet extends BaseEntity
 
     /** 出库状态 */
     @Excel(name = "出库状态")
-    private Integer outStatus;
+    private String outStatus;
 
     /** 入库状态 */
     @Excel(name = "入库状态")
-    private Integer inStatus;
+    private String inStatus;
 
     /** 关联用户表,盘点经办人 ID*/
     private String isManager;
@@ -89,105 +89,112 @@ public class InventorySheet extends BaseEntity
         isDelete = delete;
     }
 
+    public String getIsId()
+    {
+        return isId;
+    }
+
     public void setIsId(String isId)
     {
         this.isId = isId;
     }
 
-    public String getIsId() 
+    public String getIsCode()
     {
-        return isId;
+        return isCode;
     }
-    public void setIsCode(String isCode) 
+
+    public void setIsCode(String isCode)
     {
         this.isCode = isCode;
     }
 
-    public String getIsCode() 
+    public String getIsResult()
     {
-        return isCode;
+        return isResult;
     }
-    public void setIsResult(String isResult) 
+
+    public void setIsResult(String isResult)
     {
         this.isResult = isResult;
     }
 
-    public String getIsResult() 
+    public String getwId()
     {
-        return isResult;
+        return wId;
     }
-    public void setwId(String wId) 
+
+    public void setwId(String wId)
     {
         this.wId = wId;
     }
 
-    public String getwId() 
+    public String getIsType()
     {
-        return wId;
+        return isType;
     }
-    public void setIsType(String isType) 
+
+    public void setIsType(String isType)
     {
         this.isType = isType;
     }
 
-    public String getIsType() 
+    public Date getIsStartTime()
     {
-        return isType;
+        return isStartTime;
     }
-    public void setIsStartTime(Date isStartTime) 
+
+    public void setIsStartTime(Date isStartTime)
     {
         this.isStartTime = isStartTime;
     }
 
-    public Date getIsStartTime() 
+    public Date getIsEndTime()
     {
-        return isStartTime;
+        return isEndTime;
     }
-    public void setIsEndTime(Date isEndTime) 
+
+    public void setIsEndTime(Date isEndTime)
     {
         this.isEndTime = isEndTime;
     }
 
-    public Date getIsEndTime() 
-    {
-        return isEndTime;
+    public String getOutStatus() {
+        return outStatus;
     }
-    public void setOutStatus(Integer outStatus) 
-    {
+
+    public void setOutStatus(String outStatus) {
         this.outStatus = outStatus;
     }
 
-    public Integer getOutStatus() 
-    {
-        return outStatus;
+    public String getInStatus() {
+        return inStatus;
     }
-    public void setInStatus(Integer inStatus) 
-    {
+
+    public void setInStatus(String inStatus) {
         this.inStatus = inStatus;
     }
 
-    public Integer getInStatus() 
+    public String getIsManager()
     {
-        return inStatus;
+        return isManager;
     }
-    public void setIsManager(String isManager) 
+
+    public void setIsManager(String isManager)
     {
         this.isManager = isManager;
     }
 
-    public String getIsManager() 
+    public Boolean getIsDelete()
     {
-        return isManager;
+        return isDelete;
     }
-    public void setIsDelete(Boolean isDelete) 
+
+    public void setIsDelete(Boolean isDelete)
     {
         this.isDelete = isDelete;
     }
 
-    public Boolean getIsDelete() 
-    {
-        return isDelete;
-    }
     public String getWhName() {
         return whName;
     }

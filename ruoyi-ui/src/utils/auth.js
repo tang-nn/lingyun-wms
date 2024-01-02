@@ -13,7 +13,8 @@ export function setToken(token) {
 }
 
 export function removeToken() {
-  return Cookies.remove(TokenKey)
+  // TODO 移除 Token
+  // return Cookies.remove(TokenKey)
 }
 
 export function getExpiresIn() {
@@ -25,5 +26,6 @@ export function setExpiresIn(time) {
 }
 
 export function removeExpiresIn() {
-  return Cookies.remove(ExpiresInKey)
+  // TODO 移除 ExpiresIn
+  // return Cookies.remove(ExpiresInKey)
 }

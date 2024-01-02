@@ -198,7 +198,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </insert>
 
-
+<select id="queryWarehouseById" resultType="Warehouse">
+    select wh.w_id       wId,
+           wh.w_code     wCode,
+           wh.w_name     wName,
+           wh.`status`,
+           wh.is_default isDefault,
+           wh.is_lock    isLock
+    from wh_warehouse wh
+    where wh.w_id = #{wid}
+</select>
 
 
     <select id="selectStorageListfindByWid" resultType="map">

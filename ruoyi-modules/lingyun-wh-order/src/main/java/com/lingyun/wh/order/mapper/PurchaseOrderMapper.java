@@ -1,10 +1,11 @@
 package com.lingyun.wh.order.mapper;
 
-import com.lingyun.wh.order.domain.PurchaseDetails;
-import com.lingyun.wh.order.domain.PurchaseOrder;
+import com.lingyun.wh.order.api.domain.PurchaseDetails;
+import com.lingyun.wh.order.api.domain.PurchaseOrder;
 import com.lingyun.wh.order.pojo.vo.PurchaseOrderVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,14 @@ public interface PurchaseOrderMapper {
      * @return 进货订单
      */
     public PurchaseOrder selectPurchaseOrderByPoId(String poId);
+
+    /**
+     * 根据进货单 ID 查询进货明细
+     *
+     * @param poid 进货单 ID
+     * @return 进货订单
+     */
+    List<PurchaseDetails> selectOrderDetailsListById(@Param("poid") String poid, @Param("params") Map<String, Object> params);
 
     /**
      * 查询进货订单列表
@@ -45,6 +54,8 @@ public interface PurchaseOrderMapper {
      * @return 结果
      */
     public int updatePurchaseOrder(PurchaseOrder purchaseOrder);
+
+    boolean queryInboundCompleted(@Param("pid") String pid);
 
     /**
      * 删除进货订单
@@ -86,4 +97,19 @@ public interface PurchaseOrderMapper {
      * @return 结果
      */
     public int deletePurchaseDetailsByPoId(String poId);
+
+    /**
+     * 用于入库审核查询
+     *
+     * @param poId
+     * @param dids
+     * @return
+     */
+    PurchaseOrder selectPurchaseInfoByIds(@Param("poId") String poId, @Param("dids") String[] dids);
+
+    /**
+     * 更新入库数量
+     * @return
+     */
+    int updateInboundInStock(@Param("pd") PurchaseDetails pd);
 }

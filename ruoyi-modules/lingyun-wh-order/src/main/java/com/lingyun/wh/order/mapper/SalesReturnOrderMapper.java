@@ -1,7 +1,8 @@
 package com.lingyun.wh.order.mapper;
 
-import com.lingyun.wh.order.domain.SalesReturnDetails;
-import com.lingyun.wh.order.domain.SalesReturnOrder;
+
+import com.lingyun.wh.order.api.domain.SalesReturnDetails;
+import com.lingyun.wh.order.api.domain.SalesReturnOrder;
 
 import java.util.List;
 

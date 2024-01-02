@@ -1,8 +1,15 @@
 package com.lingyun.wh.warehouse.controller;
 
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.core.constant.HttpStatus;
 import org.apache.commons.collections4.MapUtils;
+
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.lingyun.wh.warehouse.domain.StorageLocation;
@@ -41,7 +48,7 @@ public class TransferController extends BaseController {
     public TableDataInfo list(Transfer transfer) {
         startPage();
         List<Transfer> list = transferService.selectTransferList(transfer);
-        if(list != null && !list.isEmpty()){
+        if (list != null && !list.isEmpty()) {
             Transfer t = list.get(0); // 获取第一个Transfer对象
             String w_id = t.getInWId(); // 获取入库仓库inWId属性值
             List<TransferDetails> transferDetailsList = t.getTransferDetailsList(); // 获取TransferDetails列表
@@ -59,9 +66,7 @@ public class TransferController extends BaseController {
      */
     @RequiresPermissions("transfer:transfer:query")
     @GetMapping(value = "/{tId}")
-    public AjaxResult getInfo(@PathVariable("tId") String tId)
-    {
-
+    public AjaxResult getInfo(@PathVariable("tId") String tId) {
         Transfer transfer = transferService.transferByTid(tId);
         List<TransferDetails> t = transfer.getTransferDetailsList();
         if (t != null && t.size() > 0)
@@ -69,9 +74,9 @@ public class TransferController extends BaseController {
                 String gId = transferDetails.getGoods().getGId(); // 获取gId属性值
                 transferDetails.setTotalItemQuantity(transferService.InItemQuantity(transfer.getInWId(), gId));
                 List<StorageLocation> location = transferService.getLocation(transfer.getInWId(), gId);
-                System.out.println("location======="+location+";;;;"+transfer.getInWId()+"[][][]"+gId);
+                System.out.println("location=======" + location + ";;;;" + transfer.getInWId() + "[][][]" + gId);
 
-                if (location!=null){
+                if (location != null) {
                     for (StorageLocation s : location) {
                         String slId = s.getSlId();
                         transferDetails.setInLocationId(slId);
@@ -81,6 +86,34 @@ public class TransferController extends BaseController {
 
             }
         return success(transfer);
+    }
+
+    /**
+     * 调拨出入库，订单查询
+     */
+    @RequiresPermissions("transfer:transfer:list")
+    @GetMapping("/list/inOutbound")
+    public TableDataInfo getTransferList(@RequestParam Map<String, Object> map, @RequestParam(required = false) List<String> outStatus, @RequestParam(required = false) List<String> inStatus) {
+        startPage();
+        if (outStatus != null && !outStatus.isEmpty()) {
+            map.put("outStatus", outStatus);
+        }
+        if (inStatus != null && !inStatus.isEmpty()) {
+            map.put("inStatus", inStatus);
+        }
+        List<Transfer> list = transferService.getTransferList(map);
+        return getDataTable(list);
+    }
+
+    /**
+     * 调拨出入库，订单查询
+     */
+    @RequiresPermissions("transfer:transfer:list")
+    @GetMapping("/list/details")
+    public TableDataInfo transferDetails(@RequestParam Map<String, Object> map) {
+        startPage();
+        List<TransferDetails> list = transferService.getTransferDetails(map);
+        return getDataTable(list);
     }
 
 

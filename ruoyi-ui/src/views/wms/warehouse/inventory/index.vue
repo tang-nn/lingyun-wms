@@ -1,19 +1,19 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="68px" size="small">
       <el-form-item label="盘点单号" prop="is_code">
         <el-input
           v-model="queryParams.is_code"
-          placeholder="请输入盘点单号"
           clearable
+          placeholder="请输入盘点单号"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="盘点结果">
         <el-select
           v-model="queryParams.is_result"
-          placeholder="请选择"
           clearable
+          placeholder="请选择"
           style="width: 240px"
         >
           <el-option
@@ -27,8 +27,8 @@
       <el-form-item label="盘点类型">
         <el-select
           v-model="queryParams.is_type"
-          placeholder="请选择"
           clearable
+          placeholder="请选择"
           style="width: 240px"
         >
           <el-option
@@ -42,8 +42,8 @@
       <el-form-item label="仓库名称" prop="w_id">
         <el-select
           v-model="queryParams.w_id"
-          placeholder="请选择"
           clearable
+          placeholder="请选择"
           style="width: 240px"
         >
           <el-option
@@ -56,7 +56,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -64,64 +64,64 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
           v-hasPermi="['InventorySheet:inventory:add']"
+          icon="el-icon-plus"
+          plain
+          size="mini"
+          type="primary"
+          @click="handleAdd"
         >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
           v-hasPermi="['InventorySheet:inventory:remove']"
+          :disabled="multiple"
+          icon="el-icon-delete"
+          plain
+          size="mini"
+          type="danger"
+          @click="handleDelete"
         >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          plain
+          v-hasPermi="['InventorySheet:inventory:export']"
           icon="el-icon-unlock"
+          plain
           size="mini"
           @click="lock"
-          v-hasPermi="['InventorySheet:inventory:export']"
         >锁定仓库
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
           v-hasPermi="['transfer:transfer:edit']"
+          :disabled="single"
+          icon="el-icon-edit"
+          plain
+          size="mini"
+          type="success"
         >审核</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-    <el-table max-height="520"  v-loading="loading" :data="inventoryList" @selection-change="handleSelectionChange">
-      <el-table-column fixed="left" type="selection" width="55" align="center"/>
-      <el-table-column fixed="left" label="盘点ID" align="center" prop="isId"/>
-      <el-table-column fixed="left" label="盘点单号" align="center" prop="isCode" width="120px">
+    <el-table v-loading="loading"  :data="inventoryList" max-height="520" @selection-change="handleSelectionChange">
+      <el-table-column align="center" fixed="left" type="selection" width="55"/>
+      <el-table-column align="center" fixed="left" label="盘点ID" prop="isId"/>
+      <el-table-column align="center" fixed="left" label="盘点单号" prop="isCode" width="120px">
         <template slot-scope="{ row }">
           <span @click="goToDetails(row.isId)">{{row.isCode}}</span>
         </template>
       </el-table-column>
-      <el-table-column fixed="left" label="盘点结果" align="center" prop="isResult">
+      <el-table-column align="center" fixed="left" label="盘点结果" prop="isResult">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.p_result_check" :value="scope.row.isResult"/>
         </template>
       </el-table-column>
-      <el-table-column label="仓库名称" align="center" prop="whName"/>
-      <el-table-column label="盘点类型" align="center" prop="isType">
+      <el-table-column align="center" label="仓库名称" prop="whName"/>
+      <el-table-column align="center" label="盘点类型" prop="isType">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.pd_type_check" :value="scope.row.isType"/>
         </template>
@@ -136,28 +136,28 @@
           <span>{{ parseTime(scope.row.isEndTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="出库状态" align="center">
+      <el-table-column align="center" label="出库状态">
         <template slot-scope="scope">
           {{ scope.row.outStatus === 0 ? '已出库' : '未出库' }}
         </template>
       </el-table-column>
-      <el-table-column label="入库状态" align="center">
+      <el-table-column align="center" label="入库状态">
         <template slot-scope="scope">
           {{ scope.row.inStatus === 0 ? '已入库' : '未入库' }}
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" label="盘点货品" :formatter="handlerProductName" align="center" prop="gname"/>
-      <el-table-column label="盘点数量" align="center" :formatter="handlerCountQuantity"/>
-      <el-table-column :formatter="handlerProfitQuantity" label="盘盈数量" align="center"/>
-      <el-table-column :formatter="handlerLossQuantity" label="盘亏数量" align="center"
+      <el-table-column :formatter="handlerProductName" :show-overflow-tooltip="true" align="center" label="盘点货品" prop="gname"/>
+      <el-table-column :formatter="handlerCountQuantity" align="center" label="盘点数量"/>
+      <el-table-column :formatter="handlerProfitQuantity" align="center" label="盘盈数量"/>
+      <el-table-column :formatter="handlerLossQuantity" align="center" label="盘亏数量"
                        prop="profit_loss_quantity" style="color: red"/>
-      <el-table-column :formatter="handlerCountAmount" label="盘点金额"  align="center" width="100"/>
-      <el-table-column :formatter="handlerProfitAmount" label="盘盈金额" align="center" prop="count_amount" width="100" style="color: #1ab394"/>
-      <el-table-column :formatter="handlerLossAmount" label="盘亏金额" align="center" prop="count_amount" width="100" style="color: red"/>
-      <el-table-column label="经办人" align="center" prop="managerName"/>
-      <el-table-column label="制单人" fixed="right" align="center" prop="creatorName"/>
-      <el-table-column label="所在部门" fixed="right" align="center" prop="creatorDept" width="140px"/>
-      <el-table-column label="制单时间" fixed="right" align="center" prop="createTime" width="110px">
+      <el-table-column :formatter="handlerCountAmount" align="center"  label="盘点金额" width="100"/>
+      <el-table-column :formatter="handlerProfitAmount" align="center" label="盘盈金额" prop="count_amount" style="color: #1ab394" width="100"/>
+      <el-table-column :formatter="handlerLossAmount" align="center" label="盘亏金额" prop="count_amount" style="color: red" width="100"/>
+      <el-table-column align="center" label="经办人" prop="managerName"/>
+      <el-table-column align="center" fixed="right" label="制单人" prop="creatorName"/>
+      <el-table-column align="center" fixed="right" label="所在部门" prop="creatorDept" width="140px"/>
+      <el-table-column align="center" fixed="right" label="制单时间" prop="createTime" width="110px">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
@@ -186,9 +186,9 @@
 
     <pagination
       v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
+      :page.sync="queryParams.pageNum"
+      :total="total"
       @pagination="getList"
     />
 
@@ -357,7 +357,6 @@ export default {
     handlerProfitAmount(row) {
       return row.inventoryDetailsList?.reduce((accumulator, currentValue)=> (currentValue.goods.wrPrice || 0) * row.pq, 0).toFixed(2);
     },
-
     //盘亏金额
     handlerLossAmount(row){
       return row.inventoryDetailsList?.reduce((accumulator, currentValue) =>

@@ -1,4 +1,4 @@
-package com.lingyun.wh.order.domain;
+package com.lingyun.wh.order.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.annotation.Excel;

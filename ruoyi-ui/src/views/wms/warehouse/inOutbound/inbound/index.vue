@@ -33,7 +33,7 @@
           style="width: 120px"
         >
           <el-option
-            v-for="dict in dict.type.inbound_status"
+            v-for="dict in dict.type.doc_review_status"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -174,7 +174,7 @@
       </el-table-column>
       <el-table-column align="center" fixed label="单据状态" prop="status" width="80">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.inbound_status" :value="scope.row.status"/>
+          <dict-tag :options="dict.type.doc_review_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
       <el-table-column align="center" fixed label="入库日期" prop="storageDate" width="130">
@@ -199,7 +199,7 @@
       <el-table-column align="center" label="审核人" prop="reviewerName" width="100"/>
       <el-table-column align="center" label="审核时间" prop="reviewerTime" width="100"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
-        <template v-if="scope.row.roleId !== 1" slot-scope="scope">
+        <template v-if="scope.row.status !== 'done'" slot-scope="scope">
           <el-button
             v-hasPermi="['system:role:edit']"
             icon="el-icon-edit"
@@ -230,12 +230,12 @@
     <el-dialog :visible.sync="reviewFormVisible" title="订单审核">
       <el-form :model="reviewForm">
         <el-form-item label="审核结果">
-          <el-radio v-model="reviewForm.status" label="pending_review">通过</el-radio>
-          <el-radio v-model="reviewForm.status" label="turn_down">驳回</el-radio>
+          <el-radio v-model="reviewForm.status" label="is_done">通过</el-radio>
+          <el-radio v-model="reviewForm.status" label="is_turn_down">驳回</el-radio>
         </el-form-item>
         <el-form-item label="审核意见">
           <el-input
-            v-model="reviewForm.reviewComments"
+            v-model="reviewForm.comments"
             :rows="3" placeholder="请输入内容"
             resize="none"
             type="textarea"/>
@@ -251,11 +251,11 @@
 
 <script>
 
-import {listInbound} from "@/api/wms/inboundOutbound/inboundMgt";
+import {inboundReview, listInbound} from "@/api/wms/inboundOutbound/inboundMgt";
 
 export default {
   name: "purchaseList",
-  dicts: ['incoming_type', 'inbound_status', 'inbound_status'],
+  dicts: ['incoming_type', 'doc_review_status', 'inbound_status'],
   data() {
     return {
       // 遮罩层
@@ -302,7 +302,10 @@ export default {
       // 表单校验
       rules: {},
       // 审核表单
-      reviewForm: {}
+      reviewForm: {
+        comments: '',
+        status: '',
+      }
     };
   },
   created() {
@@ -397,16 +400,21 @@ export default {
     async handlerReview() {
       console.log("handlerReview: ", this.reviewForm);
       this.loading = true;
-      this.reviewForm.poId = this.ids?.[0];
-      let {code, msg} = (await reviewPurchase(this.reviewForm));
-      if (code === 200) {
-        this.$message.success("审核成功！");
-        await this.getList();
-      } else {
-        console.log("审核失败信息：", msg)
-        this.$message.error("审核失败！");
+      this.reviewForm.inid = this.ids?.[0];
+      try {
+        let {code, msg} = (await inboundReview(this.reviewForm));
+        if (code === 200) {
+          this.reviewFormVisible = false;
+          this.$message.success("审核成功！");
+          await this.getList();
+        } else {
+          console.log("审核失败信息：", msg)
+          this.$message.error("审核失败！");
+        }
+      } finally {
         this.loading = false;
       }
+
     },
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.inid);

@@ -1,55 +1,60 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lingyun.wh.warehouse.mapper.TransferMapper">
 
-<!--    主表调拨单映射字段-->
+    <!--    主表调拨单映射字段-->
     <resultMap type="Transfer" id="TransferResult" autoMapping="true">
-        <result property="tid"    column="t_id"    />
-        <result property="tdCode"    column="td_code"    />
-        <result property="docStatus"    column="doc_status"    />
-        <result property="date"    column="t_date"    />
-        <result property="outWId"    column="out_w_id"    />
-        <result property="inWId"    column="in_w_id"    />
-        <result property="outStatus"    column="out_status"    />
-        <result property="type"    column="t_type"    />
-        <result property="remark"    column="remark"    />
-        <result property="inStatus"    column="in_status"    />
-        <result property="manager"    column="t_manager"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="deleted"    column="is_delete"    />
+        <result property="tid" column="t_id"/>
+        <result property="tdCode" column="td_code"/>
+        <result property="docStatus" column="doc_status"/>
+        <result property="date" column="t_date"/>
+        <result property="outWId" column="out_w_id"/>
+        <result property="inWId" column="in_w_id"/>
+        <result property="outStatus" column="out_status"/>
+        <result property="type" column="t_type"/>
+        <result property="remark" column="remark"/>
+        <result property="inStatus" column="in_status"/>
+        <result property="manager" column="t_manager"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleted" column="is_delete"/>
         <!--        调拨明细表   集合-->
         <collection property="transferDetailsList" autoMapping="true"
                     select="selectTransferByTid" column="t_id">
         </collection>
     </resultMap>
 
-    <!--    子表调拨明细单映射字段-->
+    <!--    子表调拨明细单映射字段 -->
     <resultMap type="TransferDetails" id="TransferDetailsResults">
-        <result property="tdId"    column="td_id"    />
-        <result property="tid"      column="t_id"    />
-        <result property="quantity"    column="t_quantity"    />
-        <result property="stockId"  column="stock_id"/>
-        <result property="remark"    column="remark"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="deleted"    column="is_delete"    />
+        <result property="tdId" column="td_id"/>
+        <result property="tid" column="t_id"/>
+        <result property="quantity" column="t_quantity"/>
+        <result property="stockId" column="stock_id"/>
+        <result property="quantityShipped" column="quantity_shipped"/>
+        <result property="receivedQuantity" column="received_quantity"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleted" column="is_delete"/>
         <!--     子表关联的 goods stock       -->
         <association property="goods" javaType="com.lingyun.wh.goods.api.domain.Goods">
             <result column="g_name" property="gName"/>
+            <result column="gt_name" property="gtName"/>
             <result column="g_id" property="gId"/>
             <result column="wr_price" property="wrPrice"/>
             <result column="g_code" property="gCode"/>
             <result column="spec_code" property="specCode"/>
         </association>
-        <association property="stock" javaType="com.lingyun.wh.warehouse.domain.Stock">
+        <association property="stock" javaType="com.lingyun.wh.goods.api.domain.Stock">
             <result column="unit" property="unit"/>
+            <result property="gid" column="g_id"/>
+            <result property="slid" column="sl_id"/>
             <result column="item_quantity" property="itemQuantity"/>
         </association>
         <association property="location" javaType="com.lingyun.wh.warehouse.domain.StorageLocation">
@@ -60,7 +65,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
 
-<!--主表相关查询-->
+    <!--主表相关查询-->
     <select id="selectTransferList" parameterType="Transfer" resultMap="TransferResult">
         select wt.t_id, wt.td_code, wt.doc_status, wt.t_date,
         wt.out_w_id, ckb.w_name outName,wt.in_w_id,ckb2.w_name inName,
@@ -77,34 +82,155 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         left join sys_user revieer on wt.reviewer=revieer.user_id
         inner join sys_dept dp on dp.dept_id=creater.dept_id
         <where>
-            <if test="tdCode != null  and tdCode != ''"> and wt.td_code = #{tdCode}</if>
-            <if test="docStatus != null  and docStatus != ''"> and wt.doc_status = #{docStatus}</if>
+            <if test="tdCode != null  and tdCode != ''">and wt.td_code = #{tdCode}</if>
+            <if test="docStatus != null  and docStatus != ''">and wt.doc_status = #{docStatus}</if>
             <if test="dates != null and dates.size() > 0">
                 and wt.t_date BETWEEN #{dates[0]} AND #{dates[1]}
             </if>
-            <if test="outStatus != null "> and wt.out_status = #{outStatus} or wt.in_status = #{outStatus}</if>
-        and wt.is_delete=0
+            <if test="outStatus != null ">and wt.out_status = #{outStatus} or wt.in_status = #{outStatus}</if>
+            and wt.is_delete=0
         </where>
     </select>
 
-
-<!--    字表相关查询-->
+    <!-- 字表相关查询 -->
     <select id="selectTransferByTid" parameterType="String" resultMap="TransferDetailsResults">
         SELECT wtd.td_id,wtd.t_id,wtd.stock_id,wtd.t_quantity,wtd.remark,
-               gdb.g_name,gdb.g_id, gdb.wr_price, gdb.g_code,gdb.spec_code,
-               kcb.unit,kcb.item_quantity,sl.sl_id,sl.sl_name
-               from wh_transfer_details wtd
-               inner join wh_stock kcb on  wtd.stock_id=kcb.s_id
-               inner join wh_goods gdb on kcb.g_id=gdb.g_id
-               inner join wh_storage_location sl on kcb.sl_id=sl.sl_id
+        gdb.g_name,gdb.g_id, gdb.wr_price, gdb.g_code,gdb.spec_code,
+        kcb.unit,kcb.item_quantity,sl.sl_id,sl.sl_name
+        from wh_transfer_details wtd
+        inner join wh_stock kcb on wtd.stock_id=kcb.s_id
+        inner join wh_goods gdb on kcb.g_id=gdb.g_id
+        inner join wh_storage_location sl on kcb.sl_id=sl.sl_id
         <where>
             wtd.t_id = #{t_id}
         </where>
     </select>
 
+    <!-- 调拨列表查询 - 用于出入库 -->
+    <select id="getTransferList" resultType="com.lingyun.wh.warehouse.domain.Transfer">
+        SELECT
+        tf.t_id tid,
+        tf.td_code tdCode,
+        tf.t_date date,
+        tf.out_w_id outWId,
+        tf.in_w_id inWId,
+        tf.out_status outStatus,
+        tf.t_type type,
+        tf.remark,
+        tf.in_status inStatus,
+        tf.t_manager manager,
+        tf.create_time createTime,
+        cu.nick_name creatorName,
+        cd.dept_name creatorDept,
+        tfd.transferQuantity,
+        tfd.transferAmount,
+        inWh.w_name inName,
+        outWh.w_name outName,
+        mu.nick_name managerName
+        FROM wh_transfer tf
+        INNER JOIN (SELECT SUM(t_quantity) transferQuantity,SUM(t_quantity * g.wr_price) transferAmount, t_id FROM
+        wh_transfer_details tfd
+        INNER JOIN wh_stock stock on tfd.stock_id = stock.s_id
+        INNER JOIN wh_goods g on g.g_id = stock.g_id
+        GROUP BY t_id) tfd on tfd.t_id=tf.t_id
+        INNER JOIN sys_user cu on cu.user_id = tf.create_by
+        INNER JOIN sys_dept cd on cd.dept_id = cu.dept_id
+        INNER JOIN wh_warehouse outWh on outWh.w_id = tf.out_w_id
+        INNER JOIN wh_warehouse inWh on inWh.w_id = tf.in_w_id
+        INNER JOIN sys_user mu on mu.user_id = tf.t_manager
+        <where>
+            <if test="map != null and !map.isEmpty()">
+                <if test="map.tid != null and map.tid != ''">
+                    and tf.t_id = #{map.tid}
+                </if>
+                <if test="map.transferOrder != null and map.transferOrder != ''">
+                    and tf.td_code like concat('%',#{map.transferOrder},'%')
+                </if>
+                <if test="map.inStatus != null and map.inStatus != ''">
+                    and tf.in_status = #{map.inStatus}
+                </if>
+                <if test="map.outStatus != null and map.outStatus != ''">
+                    and tf.out_status = #{map.outStatus}
+                </if>
+                <if test="map.iStatus != null and map.iStatus == 'inbound'">
+                    tf.in_status in('not_in_stock','partial_warehousing')
+                </if>
+                <if test="map.iStatus != null and map.iStatus == 'outbound'">
+                    tf.out_status in ('partial_inbound','not_shipped_put')
+                </if>
+                <if test="map.beginTime != null and map.beginTime != ''"><!-- 开始时间检索 -->
+                    AND date_format(tf.t_date,'%y%m%d') &gt;= date_format(#{map.beginTime},'%y%m%d')
+                </if>
+                <if test="map.endTime != null and map.endTime != ''"><!-- 结束时间检索 -->
+                    AND date_format(tf.t_date,'%y%m%d') &lt;= date_format(#{map.endTime},'%y%m%d')
+                </if>
+                <if test="map.creator != null and map.creator != ''">
+                    and cu.nick_name like concat('%', #{map.creator}, '%')
+                </if>
+            </if>
+            and tf.doc_status = 'done'
+        </where>
+    </select>
 
+    <!-- 调拨出入库，订单明细查询 -->
+    <select id="getTransferDetails" resultMap="TransferDetailsResults">
+        SELECT
+        tfd.td_id,
+        tfd.t_id,
+        tfd.stock_id,
+        tfd.t_quantity,
+        tfd.quantity_shipped,
+        tfd.received_quantity,
+        tfd.remark tfd_remark,
+        stock.s_id stock_id,
+        stock.g_id,
+        stock.w_id ,
+        stock.sl_id,
+        stock.unit,
+        stock.item_quantity,
+        stock.remark,
+        gt.gt_name,
+        g.g_code,
+        g.g_name,
+        g.spec_code,
+        g.or_price,
+        g.wr_price
+        FROM wh_transfer_details tfd
+        INNER JOIN wh_stock stock on tfd.stock_id = stock.s_id
+        INNER JOIN wh_goods g on g.g_id = stock.g_id
+        INNER JOIN wh_goods_type gt on gt.gt_id = g.gt_id
+        <where>
+            <if test="params != null and !params.isEmpty()">
+                <if test="params.tid != null and params.tid != ''">
+                    and tfd.t_id = #{params.tid}
+                </if>
+                <if test="params.tdids != null and params.tdids.getClass().isArray() and params.tdids.length > 0">
+                    and tfd.td_id in (
+                    <foreach collection="params.tdids" item="tdid" separator=",">
+                        #{tdid}
+                    </foreach>
+                    )
+                </if>
+                <if test="params.codeOrName != null and params.codeOrName != ''">
+                    and g.g_code like concat('%', #{params.codeOrName}, '%')
+                    and g.g_name like concat('%', #{params.codeOrName}, '%')
+                </if>
+                <if test="params.unit != null and params.unit != ''">
+                    stock.unit = #{unit}
+                </if>
+                <if test="params.iStatus != null and params.iStatus == 'inbound'">
+                    <!-- 入库库查询 -->
+                    and tfd.t_quantity &gt; tfd.received_quantity
+                </if>
+                <if test="params.iStatus != null and params.iStatus == 'outbound'">
+                    <!-- 出库查询 -->
+                    and tfd.t_quantity &gt; tfd.quantity_shipped
+                </if>
+            </if>
+        </where>
+    </select>
 
-<!--  根据tid查询调拨单  -->
+    <!--  根据tid查询调拨单  -->
     <select id="transferByTid" parameterType="Transfer" resultMap="TransferResult">
         select wt.t_id, wt.td_code, wt.doc_status, wt.t_date,
         wt.out_w_id, ckb.w_name outName,wt.in_w_id,ckb2.w_name inName,
@@ -121,7 +247,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         left join sys_user revieer on wt.reviewer=revieer.user_id
         inner join sys_dept dp on dp.dept_id=creater.dept_id
         <where>
-            <if test="tid != null  and tid != ''"> and wt.t_id = #{tid}</if>
+            <if test="tid != null  and tid != ''">and wt.t_id = #{tid}</if>
             and wt.is_delete=0
         </where>
     </select>
@@ -165,9 +291,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!--    1批量新增调拨明细-->
     <insert id="batchTransferDetails">
-        insert into wh_transfer_details( t_id, stock_id,t_quantity,remark,create_by, create_time, update_by, update_time, is_delete) values
+        insert into wh_transfer_details( t_id, stock_id,t_quantity,remark,create_by, create_time, update_by,
+        update_time, is_delete) values
         <foreach item="item" index="index" collection="list" separator=",">
-            ( #{item.tid}, #{item.stockId}, #{item.quantity}  ,#{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime}, 0)
+            ( #{item.tid}, #{item.stockId}, #{item.quantity} ,#{item.remark}, #{item.createBy}, #{item.createTime},
+            #{item.updateBy}, #{item.updateTime}, 0)
         </foreach>
     </insert>
 
@@ -175,42 +303,49 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <!--    根据调拨仓库id查询所有库位-->
 
     <select id="location" resultType="com.lingyun.wh.warehouse.domain.StorageLocation">
-        select sl_id slId, sl_name slName from wh_storage_location where w_id = #{w_id}
+        select sl_id slId, sl_name slName
+        from wh_storage_location
+        where w_id = #{w_id}
     </select>
 
     <!--    查询调入仓库货品库存-->
     <select id="InItemQuantity" resultType="integer">
         SELECT COALESCE(SUM(item_quantity), 0) AS itemQuantity
         FROM wh_stock
-        WHERE w_id=#{w_id} AND g_id=#{g_id};
+        WHERE w_id = #{w_id}
+          AND g_id = #{g_id};
     </select>
 
-<!--    &lt;!&ndash;    查询调入仓库某库位下的货品货品计划数量&ndash;&gt;-->
-<!--    <select id="numberPlansIn" resultType="integer">-->
-<!--        select number_plans from wh_stock where w_id=#{w_id} and sl_id=#{sl_id} and  g_id=#{g_id}-->
-<!--    </select>-->
-
+    <!--    &lt;!&ndash;    查询调入仓库某库位下的货品货品计划数量&ndash;&gt;-->
+    <!--    <select id="numberPlansIn" resultType="integer">-->
+    <!--        select number_plans from wh_stock where w_id=#{w_id} and sl_id=#{sl_id} and  g_id=#{g_id}-->
+    <!--    </select>-->
 
 
     <!--     /*change出库仓库调拨goods的计划数量*/-->
     <update id="changePlanNums">
-        UPDATE wh_stock set number_plans = number_plans-#{quantity}
-        where w_id=#{w_id} and sl_id=#{sl_id} and g_id=#{g_id}
+        UPDATE wh_stock
+        set number_plans = number_plans - #{quantity}
+        where w_id = #{w_id}
+          and sl_id = #{sl_id}
+          and g_id = #{g_id}
     </update>
 
-<!--    查询调入仓库货品的库位(调入仓库id 货品id)-->
+    <!-- 查询调入仓库货品的库位(调入仓库id 货品id)-->
     <select id="getLocation" resultType="com.lingyun.wh.warehouse.domain.StorageLocation">
-        SELECT sl.sl_id slId,sl.sl_name slName from wh_storage_location sl
-        inner join wh_transfer wt on sl.w_id=wt.in_w_id
-        inner join wh_transfer_details wtd  on wt.t_id=wtd.t_id
-        inner join wh_stock ws on wtd.stock_id=ws.s_id
-        where wt.in_w_id=#{w_id} and  ws.g_id=#{g_id}
+        SELECT sl.sl_id slId, sl.sl_name slName
+        from wh_storage_location sl
+                 inner join wh_transfer wt on sl.w_id = wt.in_w_id
+                 inner join wh_transfer_details wtd on wt.t_id = wtd.t_id
+                 inner join wh_stock ws on wtd.stock_id = ws.s_id
+        where wt.in_w_id = #{w_id}
+          and ws.g_id = #{g_id}
     </select>
 
 
     <!--    批量删除调拨单-->
     <delete id="deleteTransferByTids" parameterType="String">
-        update  wh_transfer set is_delete=1 where t_id in
+        update wh_transfer set is_delete=1 where t_id in
         <foreach item="tid" collection="array" open="(" separator="," close=")">
             #{tid}
         </foreach>
@@ -218,12 +353,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!--    通过调拨单主键批量删除调拨明细-->
     <delete id="deleteTransferDetailsByTIds" parameterType="String">
-        update  wh_transfer_details set is_delete=1 where t_id in
+        update wh_transfer_details set is_delete=1 where t_id in
         <foreach item="tId" collection="array" open="(" separator="," close=")">
             #{tId}
         </foreach>
     </delete>
-
 
 
     <update id="updateTransfer" parameterType="Transfer">
@@ -248,8 +382,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where t_id = #{tid}
     </update>
 
+    <update id="updateTransferDetails">
+        update wh_transfer_details
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="quantityShipped != null">quantity_shipped = #{quantityShipped},</if>
+            <if test="receivedQuantity != null">received_quantity = #{receivedQuantity},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime}</if>
+        </trim>
+        where t_id = #{tid} and td_id = #{tdId}
+    </update>
 
-
-
-
+    <select id="getOutInboundStatus" resultType="map">
+        SELECT
+        (SUM(t_quantity - quantity_shipped) = 0) allShipped,
+        (SUM(t_quantity - received_quantity) = 0) allInStock
+        FROM wh_transfer_details WHERE t_id = #{tfId} GROUP BY t_id
+    </select>
 </mapper>

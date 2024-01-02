@@ -1,11 +1,14 @@
 package com.lingyun.wh.warehouse.mapper;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.lingyun.wh.warehouse.domain.StorageLocation;
 import com.lingyun.wh.warehouse.domain.Transfer;
 import com.lingyun.wh.warehouse.domain.TransferDetails;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -31,6 +34,22 @@ public interface TransferMapper
      * @return 调拨单集合
      */
     public List<Transfer> selectTransferList(Transfer transfer);
+
+    /**
+     * 调拨出入库，订单查询
+     *
+     * @param map
+     * @return
+     */
+    List<Transfer> getTransferList(@Param("map") Map<String, Object> map);
+
+    /**
+     * 调拨出入库，订单明细查询
+     *
+     * @param params
+     * @return
+     */
+    List<TransferDetails> getTransferDetails(@Param("params") Map<String, Object> params);
 
     /**
      * 新增调拨单
@@ -95,6 +114,19 @@ public interface TransferMapper
      */
     public int updateTransfer(Transfer transfer);
 
+    /**
+     * 更新调拨明细，的出入库数量
+     *
+     * @param transferDetails 调拨明细
+     * @return 结果
+     */
+    public int updateTransferDetails(TransferDetails transferDetails);
 
-
+    /**
+     * 查询指定调拨单出入库状态
+     *
+     * @param tfId 调拨单 id
+     * @return
+     */
+    Map<String, Boolean> getOutInboundStatus(String tfId);
 }

@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingyun.wh.warehouse.mapper.OutboundMapper">
+
+    <resultMap type="Outbound" id="OutboundResult" autoMapping="true">
+        <result property="outId" column="out_id"/>
+        <result property="outCode" column="out_code"/>
+        <result property="outType" column="out_type"/>
+        <result property="wid" column="w_id"/>
+        <result property="whName" column="w_name"/>
+        <result property="status" column="status"/>
+        <result property="outboundDate" column="outbound_date"/>
+        <result property="consumerId" column="consumer_id"/>
+        <result property="relatedOrder" column="related_order"/>
+        <result property="orderId" column="order_id"/>
+        <result property="associated" column="associated"/>
+        <result property="remark" column="remark"/>
+        <result property="manager" column="manager"/>
+        <result property="reviewer" column="reviewer"/>
+        <result property="comments" column="comments"/>
+        <result property="reviewerTime" column="reviewer_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleted" column="deleted"/>
+    </resultMap>
+
+    <resultMap id="OutboundOutboundDetailsResult" type="Outbound" extends="OutboundResult">
+        <collection property="outboundDetailsList" notNullColumn="sub_obd_id" javaType="java.util.List"
+                    resultMap="OutboundDetailsResult"/>
+    </resultMap>
+
+    <resultMap type="OutboundDetails" id="OutboundDetailsResult">
+        <result property="obdId" column="sub_obd_id"/>
+        <result property="outId" column="sub_out_id"/>
+        <result property="odid" column="sub_od_id"/>
+        <result property="unit" column="sub_unit"/>
+        <result property="goodsId" column="sub_goods_id"/>
+        <result property="puPrice" column="sub_pu_price"/>
+        <result property="outboundQuantity" column="sub_outbound_quantity"/>
+        <result property="slid" column="sub_sl_id"/>
+        <result property="batchNumber" column="sub_batch_number"/>
+        <result property="remark" column="sub_remark"/>
+        <result property="createBy" column="sub_create_by"/>
+        <result property="createTime" column="sub_create_time"/>
+        <result property="updateBy" column="sub_update_by"/>
+        <result property="updateTime" column="sub_update_time"/>
+    </resultMap>
+
+    <resultMap type="OutboundDetails" id="detailsResult">
+        <result property="obdId" column="obd_id"/>
+        <result property="outId" column="out_id"/>
+        <result property="odid" column="od_id"/>
+        <result property="unit" column="unit"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="puPrice" column="pu_price"/>
+        <result property="outboundQuantity" column="outbound_quantity"/>
+        <result property="slid" column="sl_id"/>
+        <result property="batchNumber" column="batch_number"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+    <sql id="selectOutboundVo">
+        select out_id,
+               out_code,
+               out_type,
+               w_id,
+               status,
+               outbound_date,
+               consumer_id,
+               related_order,
+               order_id,
+               associated,
+               remark,
+               manager,
+               reviewer,
+               comments,
+               reviewer_time,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               deleted
+        from wh_outbound
+    </sql>
+
+    <select id="selectOutboundList" parameterType="Outbound" resultMap="OutboundResult">
+        SELECT
+        ob.out_id,
+        ob.out_code,
+        ob.out_type,
+        ob.w_id,
+        ob.status,
+        ob.outbound_date,
+        ob.supplier_id,
+        ob.consumer_id,
+        ob.related_order,
+        ob.order_id,
+        ob.associated,
+        ob.remark,
+        ob.reviewer_time,
+        ob.create_by,
+        ob.create_time,
+        wh.w_name,
+        obd.outboundQuantity,
+        obd.outboundAmount,
+        obd.goodsNames,
+        mu.nick_name managerName,
+        ru.nick_name reviewerName,
+        cu.nick_name creatorName,
+        cd.dept_name creatorDept
+        FROM wh_outbound ob
+        INNER JOIN (
+        SELECT
+        sum(outbound_quantity) outboundQuantity, sum(outbound_quantity * pu_price) outboundAmount, GROUP_CONCAT(g_name)
+        goodsNames, out_id
+        FROM wh_outbound_details obd
+        INNER JOIN wh_goods g on g.g_id = obd.goods_id
+        GROUP BY out_id
+        ) obd on obd.out_id = ob.out_id
+        INNER JOIN wh_warehouse wh on wh.w_id = ob.w_id
+        INNER JOIN sys_user mu on mu.user_id = ob.manager
+        INNER JOIN sys_user cu on cu.user_id = ob.create_by
+        INNER JOIN sys_dept cd on cd.dept_id = cu.dept_id
+        LEFT JOIN wh_consumer c on ob.consumer_id = c.c_id
+        LEFT JOIN wh_supplier s on ob.supplier_id = s.s_id
+        LEFT JOIN sys_user ru on ru.user_id = ob.reviewer
+        <where>
+            and ob.deleted = b'0'
+            <if test="outCode != null  and outCode != ''">and ob.out_code like concat('%',#{outCode},'%')</if>
+            <if test="outType != null  and outType != ''">and ob.out_type = #{outType}</if>
+            <if test="wid != null  and wid != ''">and ob.w_id = #{wid}</if>
+            <if test="status != null  and status != ''">and ob.status = #{status}</if>
+        </where>
+        order by ob.update_time desc
+    </select>
+
+    <select id="selectOutboundByOutId" parameterType="String" resultMap="OutboundOutboundDetailsResult">
+        select a.out_id,
+               a.out_code,
+               a.out_type,
+               a.w_id,
+               a.status,
+               a.outbound_date,
+               a.consumer_id,
+               a.related_order,
+               a.order_id,
+               a.associated,
+               a.remark,
+               a.manager,
+               a.reviewer,
+               a.comments,
+               a.reviewer_time,
+               a.create_by,
+               a.create_time,
+               a.update_by,
+               a.update_time,
+               a.deleted,
+               b.obd_id            as sub_obd_id,
+               b.out_id            as sub_out_id,
+               b.od_id             as sub_od_id,
+               b.unit              as sub_unit,
+               b.goods_id          as sub_goods_id,
+               b.pu_price          as sub_pu_price,
+               b.outbound_quantity as sub_outbound_quantity,
+               b.sl_id             as sub_sl_id,
+               b.batch_number      as sub_batch_number,
+               b.remark            as sub_remark,
+               b.create_by         as sub_create_by,
+               b.create_time       as sub_create_time,
+               b.update_by         as sub_update_by,
+               b.update_time       as sub_update_time
+        from wh_outbound a
+                 left join wh_outbound_details b on b.out_id = a.out_id
+        where a.out_id = #{outId}
+    </select>
+
+    <!-- 出库明细查询 -->
+    <select id="selectOutboundDetailsList" resultMap="detailsResult">
+        select obd_id,
+        out_id,
+        od_id,
+        unit,
+        goods_id,
+        pu_price,
+        outbound_quantity,
+        sl_id,
+        batch_number,
+        remark
+        from wh_outbound_details
+        <where>
+            <if test="params != null and !params.isEmpty()">
+                <if test="params.outId != null and params.outId != ''">
+                    out_id = #{outId}
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertOutbound" parameterType="Outbound" useGeneratedKeys="true" keyProperty="outId">
+        insert into wh_outbound
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="outCode != null and outCode != ''">out_code,</if>
+            <if test="outType != null and outType != ''">out_type,</if>
+            <if test="wid != null and wid != ''">w_id,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="outboundDate != null">outbound_date,</if>
+            <if test="consumerId != null and consumerId != ''">consumer_id,</if>
+            <if test="relatedOrder != null and relatedOrder != ''">related_order,</if>
+            <if test="orderId != null and orderId != ''">order_id,</if>
+            <if test="associated != null and associated != ''">associated,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            <if test="manager != null and manager != ''">manager,</if>
+            <if test="reviewer != null and reviewer != ''">reviewer,</if>
+            <if test="comments != null and comments != ''">comments,</if>
+            <if test="reviewerTime != null">reviewer_time,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="outCode != null and outCode != ''">#{outCode},</if>
+            <if test="outType != null and outType != ''">#{outType},</if>
+            <if test="wid != null and wid != ''">#{wid},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="outboundDate != null">#{outboundDate},</if>
+            <if test="consumerId != null and consumerId != ''">#{consumerId},</if>
+            <if test="relatedOrder != null and relatedOrder != ''">#{relatedOrder},</if>
+            <if test="orderId != null and orderId != ''">#{orderId},</if>
+            <if test="associated != null and associated != ''">#{associated},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="manager != null and manager != ''">#{manager},</if>
+            <if test="reviewer != null and reviewer != ''">#{reviewer},</if>
+            <if test="comments != null and comments != ''">#{comments},</if>
+            <if test="reviewerTime != null">#{reviewerTime},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+        </trim>
+    </insert>
+
+    <update id="updateOutbound" parameterType="Outbound">
+        update wh_outbound
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="outCode != null and outCode != ''">out_code = #{outCode},</if>
+            <if test="outType != null and outType != ''">out_type = #{outType},</if>
+            <if test="wid != null and wid != ''">w_id = #{wid},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="outboundDate != null">outbound_date = #{outboundDate},</if>
+            <if test="consumerId != null and consumerId != ''">consumer_id = #{consumerId},</if>
+            <if test="relatedOrder != null and relatedOrder != ''">related_order = #{relatedOrder},</if>
+            <if test="orderId != null and orderId != ''">order_id = #{orderId},</if>
+            <if test="associated != null and associated != ''">associated = #{associated},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="manager != null and manager != ''">manager = #{manager},</if>
+            <if test="reviewer != null and reviewer != ''">reviewer = #{reviewer},</if>
+            <if test="comments != null and comments != ''">comments = #{comments},</if>
+            <if test="reviewerTime != null">reviewer_time = #{reviewerTime},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where out_id = #{outId}
+    </update>
+
+    <delete id="deleteOutboundByOutId" parameterType="String">
+        delete
+        from wh_outbound
+        where out_id = #{outId}
+    </delete>
+
+    <delete id="deleteOutboundByOutIds" parameterType="String">
+        delete from wh_outbound where out_id in
+        <foreach item="outId" collection="array" open="(" separator="," close=")">
+            #{outId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteOutboundDetailsByOutIds" parameterType="String">
+        delete from wh_outbound_details where out_id in
+        <foreach item="outId" collection="array" open="(" separator="," close=")">
+            #{outId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteOutboundDetailsByOutId" parameterType="String">
+        delete
+        from wh_outbound_details
+        where out_id = #{outId}
+    </delete>
+
+    <insert id="batchOutboundDetails">
+        insert into wh_outbound_details( obd_id, out_id, od_id, unit, goods_id, pu_price,
+        outbound_quantity, sl_id, batch_number, remark, create_by, create_time, update_by, update_time) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.obdId}, #{item.outId}, #{item.odid}, #{item.unit}, #{item.goodsId},
+            #{item.puPrice}, #{item.outboundQuantity}, #{item.slid}, #{item.batchNumber}, #{item.remark},
+            #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime})
+        </foreach>
+    </insert>
+</mapper>

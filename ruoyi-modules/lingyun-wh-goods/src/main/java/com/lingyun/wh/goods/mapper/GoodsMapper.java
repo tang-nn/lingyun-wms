@@ -59,7 +59,7 @@ public interface GoodsMapper {
      * @author tang-nn
      * @return
      */
-    ArrayList<Goods> selectGoodsByIds(@Param("ids") String[] ids);
+    ArrayList<Goods> selectGoodsByIds(@Param("ids") String[] ids, @Param("params") Map<String, Object> params);
     /**
      * 根据商品名称查询是否存在
      * @param gname

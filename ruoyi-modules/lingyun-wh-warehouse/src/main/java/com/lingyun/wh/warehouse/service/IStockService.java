@@ -49,12 +49,12 @@ public interface IStockService {
     public int insertStock(Stock stock);
 
     /**
-     * 批量添加库存, -- 业务: 新增入库, 修改计划数量
+     * 批量添加库存, -- 业务: 新增入库, 修改实际库存数量
      *
      * @param stocks 库存
      * @return 结果
      */
-    @Transactional(rollbackFor = SQLException.class)
+    @Transactional(rollbackFor = Exception.class)
     boolean batchAddStock(List<Stock> stocks);
 
     /**

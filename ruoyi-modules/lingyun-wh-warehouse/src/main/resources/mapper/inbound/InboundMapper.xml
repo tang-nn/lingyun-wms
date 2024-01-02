@@ -66,6 +66,15 @@
             <result property="itemLimit" column="item_limit"/>
             <result property="lowerLimit" column="lower_limit"/>
             <result property="gtName" column="gt_name"/>
+            <collection property="stockList" ofType="com.lingyun.wh.goods.api.domain.Stock">
+                <result property="sid" column="stockId"/>
+                <result property="wid" column="w_id"/>
+                <result property="slid" column="sl_id"/>
+                <result property="unit" column="unit"/>
+                <result property="itemQuantity" column="item_quantity"/>
+                <result property="numberPlans" column="number_plans"/>
+                <result property="gid" column="stock_goodsId"/>
+            </collection>
         </association>
     </resultMap>
 
@@ -144,6 +153,7 @@
             </if>
             and inb.deleted = b'0'
         </where>
+        order by inb.update_time desc
     </select>
 
     <select id="inboundDetailsListVo" resultMap="InboundDetailsResult">
@@ -165,8 +175,6 @@
                ind.goods_id,
                ind.unit,
                ind.sl_id,
-               ind.received_quantity,
-               ind.unreceived_quantity,
                ind.quantity_inbound,
                ind.pu_price,
                ind.production_date,
@@ -176,15 +184,24 @@
                ind.create_time             create_time,
                ind.update_by               update_by,
                ind.update_time             update_time,
-               (select sum(item_quantity) stockQuantity
-                from wh_stock
-                where g_id = ind.goods_id) stockQuantity
+               stock.s_id stockId,
+               stock.w_id,
+               stock.sl_id,
+               stock.unit,
+               stock.g_id stock_goodsId,
+               stock.item_quantity,
+               stock.number_plans
+        <!--
+    # (select sum(item_quantity) stockQuantity
+    #  from wh_stock
+    #  where g_id = ind.goods_id) stockQuantity
+         -->
         FROM wh_inbound_details ind
                  INNER JOIN wh_goods g on g.g_id = ind.goods_id
                  inner join wh_goods_type gt on gt.gt_id = g.gt_id
+                 left join wh_stock stock on stock.g_id = ind.goods_id
         where ind.in_id = #{in_id}
     </select>
-
     <resultMap id="InboundDetailsResultInfo" type="Inbound" extends="InboundResult" autoMapping="true">
         <collection property="inboundDetails" ofType="inboundDetails" resultMap="InboundDetailsResult"/>
     </resultMap>
@@ -301,6 +318,17 @@
         where in_id = #{inid}
     </update>
 
+    <update id="updateInboundStatus">
+        update wh_inbound
+        set status      = #{status},
+            update_by   = #{updateBy},
+            update_time = #{updateTime},
+            reviewer = #{reviewer},
+            reviewer_time = #{reviewerTime},
+            comments    = #{comments}
+        where in_id = #{inid}
+    </update>
+
     <delete id="deleteInboundByInid" parameterType="String">
         delete
         from wh_inbound
@@ -328,13 +356,12 @@
     </delete>
 
     <insert id="batchInboundDetails">
-        insert into wh_inbound_details(in_id, od_id, goods_id, unit, sl_id, received_quantity, unreceived_quantity,
+        insert into wh_inbound_details(in_id, od_id, goods_id, unit, sl_id,
         quantity_inbound, pu_price, production_date, batch_number, remark, create_by, create_time, update_by,
         update_time)
         values
         <foreach item="item" index="index" collection="list" separator=",">
-            (#{item.inid}, #{item.odid}, #{item.goodsId}, #{item.unit}, #{item.slid}, #{item.receivedQuantity},
-            #{item.unreceivedQuantity},
+            (#{item.inid}, #{item.odid}, #{item.goodsId}, #{item.unit}, #{item.slid},
             #{item.quantityInbound}, #{item.puPrice}, #{item.productionDate}, #{item.batchNumber}, #{item.remark},
             #{item.createBy}, #{item.createTime},
             #{item.updateBy}, #{item.updateTime})

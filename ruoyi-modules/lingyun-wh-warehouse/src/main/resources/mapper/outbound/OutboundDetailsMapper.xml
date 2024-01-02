@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingyun.wh.warehouse.mapper.OutboundDetailsMapper">
+    
+    <resultMap type="OutboundDetails" id="OutboundDetailsResult">
+        <result property="obdId"    column="obd_id"    />
+        <result property="outId"    column="out_id"    />
+        <result property="odid"    column="od_id"    />
+        <result property="unit"    column="unit"    />
+        <result property="goodsId"    column="goods_id"    />
+        <result property="itemQuantity"    column="item_quantity"    />
+        <result property="puPrice"    column="pu_price"    />
+        <result property="outboundQuantity"    column="outbound_quantity"    />
+        <result property="slid"    column="sl_id"    />
+        <result property="batchNumber"    column="batch_number"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectOutboundDetailsVo">
+        select obd_id, out_id, od_id, unit, goods_id, item_quantity, pu_price, outbound_quantity, sl_id, batch_number, remark, create_by, create_time, update_by, update_time from wh_outbound_details
+    </sql>
+
+    <select id="selectOutboundDetailsList" parameterType="OutboundDetails" resultMap="OutboundDetailsResult">
+        <include refid="selectOutboundDetailsVo"/>
+        <where>  
+            <if test="outId != null  and outId != ''"> and out_id = #{outId}</if>
+            <if test="odid != null  and odid != ''"> and od_id = #{odid}</if>
+            <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+            <if test="goodsId != null  and goodsId != ''"> and goods_id = #{goodsId}</if>
+            <if test="itemQuantity != null "> and item_quantity = #{itemQuantity}</if>
+            <if test="puPrice != null "> and pu_price = #{puPrice}</if>
+            <if test="outboundQuantity != null "> and outbound_quantity = #{outboundQuantity}</if>
+            <if test="slid != null  and slid != ''"> and sl_id = #{slid}</if>
+            <if test="batchNumber != null  and batchNumber != ''"> and batch_number = #{batchNumber}</if>
+        </where>
+    </select>
+    
+    <select id="selectOutboundDetailsByObdId" parameterType="String" resultMap="OutboundDetailsResult">
+        <include refid="selectOutboundDetailsVo"/>
+        where obd_id = #{obdId}
+    </select>
+        
+    <insert id="insertOutboundDetails" parameterType="OutboundDetails" useGeneratedKeys="true" keyProperty="obdId">
+        insert into wh_outbound_details
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="outId != null and outId != ''">out_id,</if>
+            <if test="odid != null and odid != ''">od_id,</if>
+            <if test="unit != null and unit != ''">unit,</if>
+            <if test="goodsId != null and goodsId != ''">goods_id,</if>
+            <if test="itemQuantity != null">item_quantity,</if>
+            <if test="puPrice != null">pu_price,</if>
+            <if test="outboundQuantity != null">outbound_quantity,</if>
+            <if test="slid != null and slid != ''">sl_id,</if>
+            <if test="batchNumber != null and batchNumber != ''">batch_number,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="outId != null and outId != ''">#{outId},</if>
+            <if test="odid != null and odid != ''">#{odid},</if>
+            <if test="unit != null and unit != ''">#{unit},</if>
+            <if test="goodsId != null and goodsId != ''">#{goodsId},</if>
+            <if test="itemQuantity != null">#{itemQuantity},</if>
+            <if test="puPrice != null">#{puPrice},</if>
+            <if test="outboundQuantity != null">#{outboundQuantity},</if>
+            <if test="slid != null and slid != ''">#{slid},</if>
+            <if test="batchNumber != null and batchNumber != ''">#{batchNumber},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOutboundDetails" parameterType="OutboundDetails">
+        update wh_outbound_details
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="outId != null and outId != ''">out_id = #{outId},</if>
+            <if test="odid != null and odid != ''">od_id = #{odid},</if>
+            <if test="unit != null and unit != ''">unit = #{unit},</if>
+            <if test="goodsId != null and goodsId != ''">goods_id = #{goodsId},</if>
+            <if test="itemQuantity != null">item_quantity = #{itemQuantity},</if>
+            <if test="puPrice != null">pu_price = #{puPrice},</if>
+            <if test="outboundQuantity != null">outbound_quantity = #{outboundQuantity},</if>
+            <if test="slid != null and slid != ''">sl_id = #{slid},</if>
+            <if test="batchNumber != null and batchNumber != ''">batch_number = #{batchNumber},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where obd_id = #{obdId}
+    </update>
+
+    <delete id="deleteOutboundDetailsByObdId" parameterType="String">
+        delete from wh_outbound_details where obd_id = #{obdId}
+    </delete>
+
+    <delete id="deleteOutboundDetailsByObdIds" parameterType="String">
+        delete from wh_outbound_details where obd_id in 
+        <foreach item="obdId" collection="array" open="(" separator="," close=")">
+            #{obdId}
+        </foreach>
+    </delete>
+</mapper>

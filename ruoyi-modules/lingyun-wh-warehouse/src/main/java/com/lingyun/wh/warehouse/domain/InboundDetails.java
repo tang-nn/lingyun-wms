@@ -62,15 +62,15 @@ public class InboundDetails extends BaseEntity {
     private BigDecimal stockQuantity;
 
     /**
-     * 已入库入库数量
+     * 已入库入库数量，在相关联的表
      */
-    @Excel(name = "已入库入库数量")
+    @Deprecated
     private BigDecimal receivedQuantity;
 
     /**
-     * 未入库数量
+     * 未入库数量，在相关联的表
      */
-    @Excel(name = "未入库数量")
+    @Deprecated
     private BigDecimal unreceivedQuantity;
 
     /**

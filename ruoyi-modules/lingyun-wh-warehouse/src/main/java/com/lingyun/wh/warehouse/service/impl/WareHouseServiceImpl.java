@@ -23,6 +23,7 @@ import java.util.Map;
 
 import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.validation.Validator;
 
@@ -36,13 +37,11 @@ import javax.validation.Validator;
 public class WareHouseServiceImpl implements IWareHouseService {
     private static final Logger log = LoggerFactory.getLogger(WareHouseServiceImpl.class);
     @Autowired
+    protected Validator validator;
+    @Autowired
     private WareHouseMapper wareHouseMapper;
-
     @Autowired
     private RemoteEncodeRuleService remoteEncodeRuleService;
-
-    @Autowired
-    protected Validator validator;
 
     /**
      * 查询仓库
@@ -103,16 +102,16 @@ public class WareHouseServiceImpl implements IWareHouseService {
         String wid = wareHouse.getwId();
         if (rows > 0) {
             R<String> r = remoteEncodeRuleService.increaseCurrentSerialNumber(OrderType.WARE_CODE, 1, SecurityConstants.INNER);
-            System.out.println("流水号迭代 Res: "+ r);
+            System.out.println("流水号迭代 Res: " + r);
             if (r == null || r.getCode() != 200) {
                 log.error("insertWareHouse 流水号迭代失败");
                 throw new RuntimeException("仓库数据插入失败");
             }
         }
 
-        //先获取新增仓库的wid
+        // 先获取新增仓库的wid
         wareHouse.setwId(wid);
-        //新增库位
+        // 新增库位
         insertStorageLocation(wareHouse);
         return rows;
     }
@@ -126,7 +125,7 @@ public class WareHouseServiceImpl implements IWareHouseService {
     @Transactional
     public void insertStorageLocation(WareHouse wareHouse) {
         R<String[]> res = null;
-        List<StorageLocation> storageLocationList = wareHouse.getStorageLocationList();//获取仓库下的库位集合
+        List<StorageLocation> storageLocationList = wareHouse.getStorageLocationList();// 获取仓库下的库位集合
         String wId = wareHouse.getwId();
         if (StringUtils.isNotNull(storageLocationList)) {
             List<StorageLocation> list = new ArrayList<StorageLocation>();
@@ -153,8 +152,8 @@ public class WareHouseServiceImpl implements IWareHouseService {
                 System.out.println("batchStorageLocation i: " + i);
                 if (i > 0) {
                     R<String> r = remoteEncodeRuleService.increaseCurrentSerialNumber(OrderType.STORAGE_CODE, size, SecurityConstants.INNER);
-                    System.out.println("insertStorageLocation 流水号迭代 Res: "+ r);
-                    if (r == null || r.getCode() != 200){
+                    System.out.println("insertStorageLocation 流水号迭代 Res: " + r);
+                    if (r == null || r.getCode() != 200) {
                         log.error("insertStorageLocation 流水号迭代失败");
                         throw new RuntimeException("库位数据插入失败");
                     }
@@ -214,6 +213,19 @@ public class WareHouseServiceImpl implements IWareHouseService {
     public int deleteWareHouseByWId(String wId) {
         wareHouseMapper.deleteStorageLocationByWId(wId);
         return wareHouseMapper.deleteWareHouseByWId(wId);
+    }
+
+    /**
+     * 查看某个仓库是否锁库
+     *
+     * @param wId 仓库 id
+     * @return true：已锁库，false：未锁库
+     */
+    @Override
+    public boolean warehouseLocked(String wId) {
+        WareHouse wareHouse = wareHouseMapper.queryWarehouseById(wId);
+        Assert.notNull(wareHouse, "仓库 id: [" + wId + "] 不存在");
+        return wareHouse.getStatus() == 2;
     }
 
     @Override

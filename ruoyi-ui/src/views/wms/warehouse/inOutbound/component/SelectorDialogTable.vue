@@ -9,6 +9,20 @@ export default {
       type: Array,
       required: true
     }
+  },
+  data() {
+    return{
+      selectorVisible: false,
+      selectedData: []
+    }
+  },
+  methods: {
+    close(){
+      this.selectorVisible = false
+    },
+    confirmSelected(){
+      this.$emit('confirmSelected', this.selectedData)
+    }
   }
 }
 </script>
@@ -130,15 +144,15 @@ export default {
       <el-table-column :formatter="handlerFormatPrice" align="center" label="货品金额" width="100"/>
     </el-table>
     <pagination
-      v-show="orderTotal>0"
-      :limit.sync="purchaseQueryParams.pageSize"
-      :page.sync="purchaseQueryParams.pageNum"
-      :total="orderTotal"
-      @pagination="getOrderList"
+      v-show="total>0"
+      :limit.sync="queryParams.pageSize"
+      :page.sync="queryParams.pageNum"
+      :total="total"
+      @pagination="getDataList"
     />
     <div slot="footer" class="dialog-footer">
-      <el-button @click="orderFormVisible = false">取 消</el-button>
-      <el-button type="primary" @click="confirmSelectedOrder">确 定</el-button>
+      <el-button @click="close">取 消</el-button>
+      <el-button type="primary" @click="confirmSelected">确 定</el-button>
     </div>
   </el-dialog>
 </template>

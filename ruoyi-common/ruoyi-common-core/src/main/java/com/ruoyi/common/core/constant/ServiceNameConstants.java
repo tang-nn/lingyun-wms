@@ -31,4 +31,9 @@ public class ServiceNameConstants
      * 仓库-货物服务的 serviceid
      */
     public static final String WH_GOODS_SERVICE = "lingyun-wh-goods";
+
+    /**
+     * 仓库-订单服务的 serviceid
+     */
+    public static final String WH_ORDER_SERVICE = "lingyun-wh-order";
 }

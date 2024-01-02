@@ -26,10 +26,11 @@ public interface IGoodsService {
     /**
      * 根据多个 ID 获取多个货品信息详细信息
      * @param ids 货品 ID 数组
+     * @param params 其它查询差数
      * @author Tang
      * @return
      */
-    ArrayList<Goods> queryGoodsByIds(String[] ids);
+    ArrayList<Goods> queryGoodsByIds(String[] ids, Map<String, Object> params);
 
     /**
      * 根据商品名称查询是否存在
